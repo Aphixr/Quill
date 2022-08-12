@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A note taking website.">
+
+        <link href="imgs/logo-256.png" rel="icon" type="image/png">
+
+        <title>Quill</title>
+
+        <!-- CSS -->
+        <link href="app/css/init.css" rel="stylesheet" type="text/css">
+        <link href="app/css/utilities.css" rel="stylesheet" type="text/css">
+        <link href="app/css/specific.css" rel="stylesheet" type="text/css">
+
+        <!-- Initialize JavaScript -->
+        <script>
+            const DEV_MODE = true;</script>
+        <script>DEV_MODE && console.time("Quill")</script>
+        <script src="app/js/quartz.js"></script>
+    </head>
+    <body>
+
+        <!-- The side nav -->
+        <nav>
+            <div id="notebooks">
+                <h2></h2>
+            </div>
+        </nav>
+
+        <!-- The main stuff -->
+        <main id="editor">
+            <!-- The panel on the top -->
+            <div id="editor-panel">
+                <!-- The tabs and notebook title -->
+                <div id="editor-bar" class="flex">  
+                    <button class="nav-open" title="Show all notebooks">
+                        <img src="imgs/logo-256.png" alt="" class="unselectable">
+                    </button>
+                    <div id="editor-tabs"></div>
+                    <input placeholder="Notebook title" title="Notebook title">
+                </div>
+
+                <!-- Controls for the tabs -->
+                <div id="editor-controls" class="flex"></div>
+            </div>
+
+            <!-- The notes the user takes goes here-->
+            <div id="editor-content"></div>
+        </main>
+
+        <!-- JavaScript -->
+        <script src="app/js/init.js"></script>
+        <script src="app/js/index.js"></script>
+        <script>DEV_MODE && console.timeEnd("Quill")</script>
+
+    </body>
+</html>

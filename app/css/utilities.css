@@ -1,0 +1,19 @@
+/* =====================
+ *  Utilities
+ * ===================== */
+
+.flex {
+    display: flex;
+}
+.grid {
+    display: grid;
+}
+.unselectable {
+    user-select: none;
+}
+.uninteractable {
+    user-select: none;
+    pointer-events: none;
+}
+
+
