@@ -1,4 +1,4 @@
-/** Quartz.js - vGamma.1.0.0
+/** Quartz.js - Gamma 1.0.0
  * 
  * hope I don't have to go back to this file to fix anything
  * or even worse, start all over
@@ -28,8 +28,6 @@
 
 
 "use strict";
-
-console.time("Quartz.js vGamma");
 
 // HTML content class
 class HTMLContent {
@@ -222,6 +220,6 @@ class Component {
     }
 }
 
-console.timeEnd("Quartz.js vGamma");
+quill.milestoneTrack.next();
 
 

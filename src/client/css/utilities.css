@@ -15,5 +15,8 @@
     user-select: none;
     pointer-events: none;
 }
+.hidden {
+    display: none;
+}
 
 

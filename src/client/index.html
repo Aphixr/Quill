@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A note taking app.">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+        
+        <link href="../../res/logo-256.png" rel="icon" type="image/png">
+
+        <title>Quill</title>
+
+        <!-- CSS -->
+        <link href="css/init.css" rel="stylesheet" type="text/css">
+        <link href="css/utilities.css" rel="stylesheet" type="text/css">
+        <link href="css/animations.css" rel="stylesheet" type="text/css">
+        <link href="css/specific.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+
+        <!-- Show this message if a fatal error occurred -->
+        <div id="error-fatal" class="hidden">
+            <p><b>Uh oh</b><br>Something went wrong :(</p>
+            <p class="details"></p>
+        </div>
+
+        <!-- Loading screen -->
+        <div id="loading">
+            <div class="flex">
+                <img src="../../res/logo-256.png">
+                <h2>Quill</h2>
+            </div>
+            <p>Loading</p>
+            <div class="progress">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+
+        <main id="app"></main>
+
+        <!-- JavaScript -->
+        <script src="js/init.js"></script>
+        <script src="js/quartz.js"></script>
+        <script src="js/load.js"></script>
+        <script src="js/index.js"></script>
+
+    </body>
+</html>

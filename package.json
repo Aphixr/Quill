@@ -1,0 +1,19 @@
+{
+    "name": "quill",
+    "version": "0.1.0",
+    "description": "Note taking app",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "electron ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Aphixr/Quill.git"
+    },
+    "author": "Aphixr",
+    "license": "MIT",
+    "homepage": "https://github.com/Aphixr/Quill#readme",
+    "devDependencies": {
+        "electron": "^20.0.2"
+    }
+}

@@ -1,4 +1,55 @@
 /* =====================
+ *  Special screens
+ * ===================== */
+
+/* Fatal error */
+#error-fatal {
+    text-align: center;
+    padding: 40vh 30vw;
+}
+#error-fatal .details {
+    color: #aaa;
+    font: 12px var(--ff-mono);
+    margin-top: 48px;
+}
+
+/* Loading screen */
+#loading {
+    text-align: center;
+    z-index: 9999;
+    padding: 36vh 0px;
+}
+#loading > .flex {
+    justify-content: center;
+}
+#loading > .flex img {
+    display: inline-block;
+    width: 60px;
+}
+#loading > .flex h2 {
+    font-size: var(--fs-xxl);
+    font-weight: 400;
+    display: inline-block;
+}
+#loading > p {
+    margin-top: 55px;
+}
+#loading .progress {
+    background-color: #e0e0e0;
+    width: 160px;
+    height: 9px;
+    margin: 15px auto;
+    border-radius: 9px;
+}
+#loading .progress .progress-bar {
+    background-color: var(--clr-sub-2);
+    width: 0px;
+    height: inherit;
+    border-radius: inherit;
+    transition: 0.1s;
+}
+
+/* =====================
  *  Editor panel
  * ===================== */
 

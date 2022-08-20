@@ -41,10 +41,11 @@ button {
     --fs-m: 1rem;
     --fs-l: 1.24rem;
     --fs-xl: 1.55rem;
-    --fs-xxl: 2.2rem;
+    --fs-xxl: 3rem;
 
     /* Font families */
     --ff-sans: 'calibri', 'arial', sans-serif;
+    --ff-mono: 'consolas', monospace;
 }
 
 /* =====================
@@ -86,6 +87,7 @@ body {
     background-color: #fcfcfc;
 }
 
+h1, h2, h3, h4, h5, h6, b, strong { font-weight: bold }
 h1 { font-size: var(--fs-xl) }
 h2 { font-size: var(--fs-l) }
 h3 { font-size: var(--fs-m) }
