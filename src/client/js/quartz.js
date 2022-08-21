@@ -220,6 +220,6 @@ class Component {
     }
 }
 
-quill.milestoneTrack.next();
+export { HTMLContent, html, ComponentAction, ComponentState, Component }
 
 

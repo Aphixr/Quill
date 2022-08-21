@@ -4,7 +4,8 @@
     "description": "Note taking app",
     "main": "src/index.js",
     "scripts": {
-        "start": "electron ."
+        "start": "electron .",
+        "start-web": "node ./src/index-web.js"
     },
     "repository": {
         "type": "git",
@@ -15,5 +16,8 @@
     "homepage": "https://github.com/Aphixr/Quill#readme",
     "devDependencies": {
         "electron": "^20.0.2"
+    },
+    "dependencies": {
+        "express": "^4.18.1"
     }
 }

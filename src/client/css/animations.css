@@ -11,8 +11,8 @@
     animation: 0.4s rotate infinite;
 }
 .animation-fade-out {
-    animation: 0.75s fade-out;
-    animation-delay: 0.2s;
+    animation: 0.4s fade-out;
+    animation-delay: 0.15s;
 }
 
 

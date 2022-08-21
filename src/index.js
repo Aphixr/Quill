@@ -1,3 +1,9 @@
+/**
+ * index.js
+ * 
+ * Running Quill with Electron
+ */
+
 "use strict";
 
 const { app, BrowserWindow } = require("electron");

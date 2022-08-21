@@ -6,15 +6,15 @@
         <meta name="description" content="A note taking app.">
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
         
-        <link href="../../res/logo-256.png" rel="icon" type="image/png">
+        <link href="./img/logo-256.png" rel="icon" type="image/png">
 
         <title>Quill</title>
 
         <!-- CSS -->
-        <link href="css/init.css" rel="stylesheet" type="text/css">
-        <link href="css/utilities.css" rel="stylesheet" type="text/css">
-        <link href="css/animations.css" rel="stylesheet" type="text/css">
-        <link href="css/specific.css" rel="stylesheet" type="text/css">
+        <link href="./css/init.css" rel="stylesheet" type="text/css">
+        <link href="./css/utilities.css" rel="stylesheet" type="text/css">
+        <link href="./css/animations.css" rel="stylesheet" type="text/css">
+        <link href="./css/specific.css" rel="stylesheet" type="text/css">
     </head>
     <body>
 
@@ -27,7 +27,7 @@
         <!-- Loading screen -->
         <div id="loading">
             <div class="flex">
-                <img src="../../res/logo-256.png">
+                <img src="./img/logo-256.png">
                 <h2>Quill</h2>
             </div>
             <p>Loading</p>
@@ -36,13 +36,10 @@
             </div>
         </div>
 
-        <main id="app"></main>
+        <div id="app"></div>
 
         <!-- JavaScript -->
-        <script src="js/init.js"></script>
-        <script src="js/quartz.js"></script>
-        <script src="js/load.js"></script>
-        <script src="js/index.js"></script>
+        <script type="module" src="./js/index.js"></script>
 
     </body>
 </html>

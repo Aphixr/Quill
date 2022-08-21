@@ -4,7 +4,9 @@
 
 /* Fatal error */
 #error-fatal {
+    background-color: white;
     text-align: center;
+    z-index: 999999;
     padding: 40vh 30vw;
 }
 #error-fatal .details {
@@ -15,8 +17,14 @@
 
 /* Loading screen */
 #loading {
+    background-color: white;
     text-align: center;
     z-index: 9999;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
     padding: 36vh 0px;
 }
 #loading > .flex {
@@ -47,6 +55,14 @@
     height: inherit;
     border-radius: inherit;
     transition: 0.1s;
+}
+
+/* =====================
+ *  Editor
+ * ===================== */
+
+#editor {
+    z-index: 0;
 }
 
 /* =====================

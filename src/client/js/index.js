@@ -5,9 +5,20 @@
  * will be displayed to the user.
  */
 
+
 "use strict";
 
-// Last milestone
-quill.milestoneTrack.next();
+import quill from "./quill.js"
+import { Editor } from "./components.js"
+
+
+Editor.init();
+
+quill.milestoneTrack.done("loading");
+
+
+Editor.render();
+
+quill.milestoneTrack.done("display");
 
 

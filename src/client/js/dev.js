@@ -1,9 +1,10 @@
 /**
- * js/init.js
+ * js/dev.js
  * 
- * Initialize some things. Utilities in the `dev` object can
- * be used for development and debugging.
+ * Utilities in the `dev` object can be used for
+ * development and debugging.
  */
+
 
 "use strict";
 
@@ -113,9 +114,9 @@ const dev = {
 
         // Reached a milestone
         done(milestone) {
-            if (this.milestones[this.index] !== milestone) {
+            if (this.milestones[this.index + 1] !== milestone) {
                 throw new SyntaxError(
-                    `Unexpected milestone '${milestone}'; expected '${this.milestones[this.index]}'`
+                    `Unexpected milestone '${milestone}'; expected '${this.milestones[this.index + 1]}'`
                 );
             }
             
@@ -141,48 +142,7 @@ const dev = {
     }
 };
 
-// Quill
-const quill = {
-    // App properties
-    _version: "0.1.0",
-
-    // Milestone tracking
-    milestoneTrack: new dev.MilestoneTrack("quill",
-        ["initialize", "quartz.js", "components", "loading", "display"],
-        function({ name, milestone, index, time }) {
-            document.querySelector("#loading .progress-bar").style.width =
-                `${(index + 1) / this.milestones.length * 100}%`;
-            console.log(
-                `${name} milestone: '${milestone}'\t(${index+1}/${this.milestones.length}; ${time}ms)`
-            );
-            if (index === this.milestones.length - 1) {
-                const loading = document.querySelector("#loading");
-                loading.classList.add("animation-fade-out")
-                setTimeout(() => {
-                    loading.classList.add("hidden");
-                }, 750 + 200 - 10);
-            }
-        }
-    )
-};
-
-// Enumerated type
-// Might switch to using TypeScript some day
-// const Color = new Enum("red", "blue", "green");
-class Enum {
-    constructor() {
-        for (let i = 0, len = arguments.length; i < len; i++) {
-            this[String(arguments[i])] = String(arguments[i]);
-        }
-    }
-}
-
-// Error codes
-const ErrorCode = new Enum(
-    "FileFailure",
-    "_Other", "_Unknown", "_Unspec"
-);
-
-quill.milestoneTrack.next();
+// Export
+export default dev
 
 
