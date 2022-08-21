@@ -22,7 +22,7 @@ const Quill = {
         });
 
         // Load HTML
-        mainWindow.loadFile("src/client/index.html");
+        mainWindow.loadFile("src/client/app/index.html");
 
         // Maximize automatically
         mainWindow.once("ready-to-show", () => {
