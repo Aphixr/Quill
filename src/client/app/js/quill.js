@@ -37,7 +37,7 @@ const quill = {
                 loading.classList.add("animation-fade-out");
                 setTimeout(() => {
                     loading.classList.add("hidden");
-                }, 400 + 150 - 10);
+                }, 400 + 150 - 20);
             }
         }
     )
