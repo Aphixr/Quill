@@ -58,6 +58,14 @@
 }
 
 /* =====================
+ *  App
+ * ===================== */
+
+#app {
+    height: 100vh;
+}
+
+/* =====================
  *  Editor
  * ===================== */
 
@@ -75,23 +83,23 @@
 }
 
 /* =====================
- *  Editor bar
+ *  Editor menu
  * ===================== */
 
-#editor-bar {
+#editor-menu {
     height: 3.6rem;
     align-items: center;
     flex-basis: content;
 }
-#editor-bar button.nav-open {
+#editor-menu button.nav-open {
     background: transparent;
     height: 60%;
     margin: calc(3.6rem * 0.2) 1rem;
 }
-#editor-bar button.nav-open img {
+#editor-menu button.nav-open img {
     height: 100%;
 }
-#editor-bar input {
+#editor-menu input {
     background-color: transparent;
     font-size: var(--fs-l);
     text-align: right;
@@ -103,11 +111,11 @@
     border-radius: 3px;
     opacity: 0.8;
 }
-#editor-bar input:hover {
+#editor-menu input:hover {
     opacity: 1;
     cursor: default;
 }
-#editor-bar input:focus {
+#editor-menu input:focus {
     opacity: 1;
     cursor: text;
 }

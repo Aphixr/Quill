@@ -9,29 +9,25 @@
 
 "use strict";
 
+import Component from "../quartz.js"
 import EditorPanel, { EditorMenu, EditorControls } from "./editor-panel.js"
 import EditorView, { EditorNavigation, EditorContent } from "./editor-view.js"
 
 // Editor
 // The main part of the program is here
-const Editor = {
-    // Editor element
-    element: document.createElement("div"),
+class Editor extends Component {
+    constructor() {
+        // Initialize element
+        super(document.createElement("div"));
+        this.element.id = "editor";
 
-    // Components
-    Panel: EditorPanel,
-    View: EditorView,
-
-    // Initialize
-    init: function() {
-        
-    },
-
-    // Render the element
-    render: function(where) {
-        
+        // Add some components
+        this.setComponent("Panel", new EditorPanel);
+        this.setComponent("View", new EditorView);
+        this.attachComponent("Panel");
+        this.attachComponent("View");
     }
-};
+}
 
 // Export
 export default Editor

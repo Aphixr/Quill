@@ -2,7 +2,7 @@
  * js/index.js
  * 
  * The main script. Puts everything together. Things
- * will be displayed to the user.
+ * will be loaded and displayed to the user.
  */
 
 
@@ -12,12 +12,12 @@ import quill from "./quill.js"
 import { Editor } from "./components.js"
 
 
-Editor.init();
+const editor = new Editor();
 
 quill.milestoneTrack.done("loading");
 
 
-Editor.render();
+editor.render(quill.app);
 
 quill.milestoneTrack.done("display");
 

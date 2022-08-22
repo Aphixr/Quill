@@ -9,62 +9,42 @@
 
 "use strict";
 
+import Component from "../quartz.js"
+
 // Editor menu bar
 // Has tabs that you can click on and edit notebook title
-const EditorMenu = {
-    // Element
-    element: document.createElement("div"),
-
-    // Initialize
-    init: function() {
-        
-    },
-
-    // Render the element
-    render: function(where) {
-        
+class EditorMenu extends Component {
+    constructor() {
+        super(document.createElement("div"));
+        this.element.id = "editor-menu";
     }
-};
+}
 
 // Editor controls
 // Controls for editing the notebook. Click on the tabs
-// in `EditorMenu` to change what `EditorControls`
-// will display
-const EditorControls = {
-    // Element
-    element: document.createElement("div"),
-
-    // Initialize
-    init: function() {
-        
-    },
-
-    // Render the element
-    render: function(where) {
-        
+// in `EditorMenu` to change what `EditorControls` will display
+class EditorControls extends Component {
+    constructor() {
+        super(document.createElement("div"));
+        this.element.id = "editor-controls";
     }
-};
+}
 
 // Editor panel
 // Includes the editor menu and the controls
-const EditorPanel = {
-    // Element
-    element: document.createElement("div"),
+class EditorPanel extends Component {
+    constructor() {
+        // Initialize element
+        super(document.createElement("div"));
+        this.element.id = "editor-panel";
 
-    // Components
-    Menu: EditorMenu,
-    Controls: EditorControls,
-
-    // Initialize
-    init: function() {
-        
-    },
-
-    // Render the element
-    render: function(where) {
-        
+        // Add some components
+        this.setComponent("Menu", new EditorMenu);
+        this.setComponent("Controls", new EditorControls);
+        this.attachComponent("Menu");
+        this.attachComponent("Controls");
     }
-};
+}
 
 // Export
 export default EditorPanel

@@ -9,60 +9,41 @@
 
 "use strict";
 
+import Component from "../quartz.js"
+
 // Editor navigation
 // Navigate between sections and pages of a notebook
-const EditorNavigation = {
-    // Element
-    element: document.createElement("div"),
-
-    // Initialize
-    init: function() {
-        
-    },
-
-    // Render the element
-    render: function(where) {
-        
+class EditorNavigation extends Component {
+    constructor() {
+        super(document.createElement("div"));
+        this.element.id = "editor-navigation";
     }
-};
+}
 
 // Editor content
 // Displays the content of a notebook page
-const EditorContent = {
-    // Element
-    element: document.createElement("div"),
-
-    // Initialize
-    init: function() {
-        
-    },
-
-    // Render the element
-    render: function(where) {
-        
+class EditorContent extends Component {
+    constructor() {
+        super(document.createElement("div"));
+        this.element.id = "editor-content";
     }
-};
+}
 
 // Editor view
 // Shows the contents of the notebook and notebook page
-const EditorView = {
-    // Element
-    element: document.createElement("div"),
+class EditorView extends Component {
+    constructor() {
+        // Initialize this element
+        super(document.createElement("div"));
+        this.element.id = "editor-view";
 
-    // Components
-    Navigation: EditorNavigation,
-    Content: EditorContent,
-
-    // Initialize
-    init: function() {
-        
-    },
-
-    // Render the element
-    render: function(where) {
-        
+        // Add some components
+        this.setComponent("Navigation", new EditorNavigation);
+        this.setComponent("Content", new EditorContent);
+        this.attachComponent("Navigation");
+        this.attachComponent("Content");
     }
-};
+}
 
 // Export
 export default EditorView
