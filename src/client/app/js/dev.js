@@ -68,6 +68,16 @@ const dev = {
         return value instanceof Element;
     },
 
+    // Other helper functions
+    class: {
+        // Makes a class abstract
+        abstract: function(Class) {
+            if (new.target === Class) {
+                throw new SyntaxError("Cannot create instance of abstract class");
+            }
+        }
+    },
+
     // Timer class
     Timer: class {
         constructor(name) {
@@ -127,6 +137,8 @@ const dev = {
                 index: this.index,
                 time: +new Date - this.startTime
             });
+
+            return this.index++;
         }
 
         // Another way to finish a milestone
@@ -138,6 +150,8 @@ const dev = {
                 index: this.index,
                 time: +new Date - this.startTime
             });
+
+            return this.index++;
         }
     }
 };
