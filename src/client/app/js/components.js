@@ -10,7 +10,7 @@
 
 import quill from "./quill.js"
 
-export * from "./editor/editor.js"
+export * from "./components/editor/editor.js"
 
 quill.milestoneTrack.done("components");
 

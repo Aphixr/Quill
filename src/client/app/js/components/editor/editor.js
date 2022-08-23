@@ -9,7 +9,7 @@
 
 "use strict";
 
-import Component from "../quartz.js"
+import Component from "../../quartz.js"
 import EditorPanel, { EditorMenu, EditorControls } from "./editor-panel.js"
 import EditorView, { EditorNavigation, EditorContent } from "./editor-view.js"
 

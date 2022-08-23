@@ -9,7 +9,7 @@
 
 "use strict";
 
-import Component from "../quartz.js"
+import Component from "../../quartz.js"
 
 // Editor menu bar
 // Has tabs that you can click on and edit notebook title

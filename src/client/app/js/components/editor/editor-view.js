@@ -9,7 +9,7 @@
 
 "use strict";
 
-import Component from "../quartz.js"
+import Component from "../../quartz.js"
 
 // Editor navigation
 // Navigate between sections and pages of a notebook
@@ -37,7 +37,7 @@ class EditorView extends Component {
         super(document.createElement("div"));
         this.element.id = "editor-view";
 
-        // Add some components
+        // Add navigation and content components
         this.setComponent("Navigation", new EditorNavigation);
         this.setComponent("Content", new EditorContent);
         this.attachComponent("Navigation");
