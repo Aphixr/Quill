@@ -9,8 +9,8 @@
         constructor() {
             super(document.createElement('button'));
             this.count = 0;
-            this.element.addEventListener(() => {
-                return this.element.innerText = ++this.count;
+            this.element.addEventListener('click', () => {
+                return this.element.innerText = this.increase();
             });
         }
         increase() {
