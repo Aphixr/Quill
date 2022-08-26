@@ -138,7 +138,7 @@ const dev = {
                 time: +new Date - this.startTime
             });
 
-            return this.index++;
+            return this.index;
         }
 
         // Another way to finish a milestone
@@ -151,7 +151,7 @@ const dev = {
                 time: +new Date - this.startTime
             });
 
-            return this.index++;
+            return this.index;
         }
     }
 };
