@@ -18,6 +18,11 @@ const quill = {
     app: document.getElementById("app"),
     loading: document.getElementById("loading"),
 
+    // File paths
+    path: {
+        logo: "../img/logo-256.png"
+    },
+
     // Milestone tracking
     milestoneTrack: new dev.MilestoneTrack("quill",
         ["initialize", "components", "loading", "display"],
