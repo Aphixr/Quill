@@ -71,6 +71,7 @@
 
 #editor {
     z-index: 0;
+    height: 100%;
 }
 
 /* =====================
@@ -91,12 +92,12 @@
     align-items: center;
     flex-basis: content;
 }
-#editor-menu button.nav-open {
+#editor-menu button.navigator-toggler {
     background: transparent;
     height: 60%;
     margin: calc(3.6rem * 0.2) 1rem;
 }
-#editor-menu button.nav-open img {
+#editor-menu button.navigator-toggler img {
     height: 100%;
 }
 #editor-menu input {
