@@ -22,10 +22,8 @@ class Editor extends Component {
         this.element.id = "editor";
 
         // Add some components
-        this.setComponent("Panel", new EditorPanel);
-        this.setComponent("View", new EditorView);
-        this.attachComponent("Panel");
-        this.attachComponent("View");
+        this.addComponent("panel", new EditorPanel);
+        this.addComponent("view", new EditorView);
     }
 }
 

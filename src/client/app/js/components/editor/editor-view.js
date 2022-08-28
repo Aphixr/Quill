@@ -38,10 +38,8 @@ class EditorView extends Component {
         this.element.id = "editor-view";
 
         // Add navigation and content components
-        this.setComponent("Navigation", new EditorNavigation);
-        this.setComponent("Content", new EditorContent);
-        this.attachComponent("Navigation");
-        this.attachComponent("Content");
+        this.addComponent("navigation", new EditorNavigation);
+        this.addComponent("content", new EditorContent);
     }
 }
 
