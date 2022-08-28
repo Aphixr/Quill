@@ -1,0 +1,98 @@
+/* =====================
+ *  Reset
+ * ===================== */
+
+*, *::before, *::after {
+    font: inherit;
+    margin: 0px;
+    padding: 0px;
+    border: none;
+    box-sizing: border-box;
+    outline: none;
+}
+html, body {
+    min-height: 100vh;
+}
+h1, h2, h3, h4, h5, h6, p {
+    overflow-wrap: break-word;
+}
+img {
+    max-width: 100%;
+}
+button {
+    cursor: pointer;
+}
+
+/* =====================
+ *  Variables
+ * ===================== */
+
+:root {
+    /* Colors */
+    --clr-main: #f5f5f5;
+    --clr-sub-1: #2e323b;
+    --clr-sub-2: #5a42f7;
+    --clr-text: #121212;
+
+    /* Font sizes */
+    --fs-xxs: 0.67rem;
+    --fs-xs: 0.75rem;
+    --fs-s: 0.9rem;
+    --fs-m: 1rem;
+    --fs-l: 1.24rem;
+    --fs-xl: 1.55rem;
+    --fs-xxl: 3rem;
+
+    /* Font families */
+    --ff-sans: 'calibri', 'arial', sans-serif;
+    --ff-mono: 'consolas', monospace;
+}
+
+/* =====================
+ *  Others
+ * ===================== */
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    background: inherit;
+    width: 12px;
+    height: 12px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #2e323b;
+    border-radius: 12px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #3e424b;
+}
+::-webkit-scrollbar-corner {
+    background: inherit;
+}
+
+/* Selection */
+::selection, ::-moz-selection {
+    background-color: #b1b6fb;
+    color: unset;
+}
+
+/* =====================
+ *  Defaults
+ * ===================== */
+
+* {
+    font-family: 'calibri', sans-serif;
+}
+
+body {
+    background-color: #fcfcfc;
+}
+
+h1, h2, h3, h4, h5, h6, b, strong { font-weight: bold }
+h1 { font-size: var(--fs-xl) }
+h2 { font-size: var(--fs-l) }
+h3 { font-size: var(--fs-m) }
+h4 { font-size: var(--fs-s) }
+h5 { font-size: var(--fs-xs) }
+h6 { font-size: var(--fs-xxs) }
+
+
