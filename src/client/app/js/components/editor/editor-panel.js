@@ -17,6 +17,7 @@ class EditorMenu extends Component {
     constructor() {
         super(document.createElement("div"));
         this.element.id = "editor-menu";
+        this.element.classList.add("flex");
     }
 }
 
@@ -39,10 +40,8 @@ class EditorPanel extends Component {
         this.element.id = "editor-panel";
 
         // Add some components
-        this.setComponent("Menu", new EditorMenu);
-        this.setComponent("Controls", new EditorControls);
-        this.attachComponent("Menu");
-        this.attachComponent("Controls");
+        this.addComponent("menu", new EditorMenu);
+        this.addComponent("controls", new EditorControls);
     }
 }
 
