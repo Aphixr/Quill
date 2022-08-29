@@ -8,6 +8,9 @@
 .grid {
     display: grid;
 }
+.table-cell {
+    display: table-cell;
+}
 .unselectable {
     user-select: none;
 }
@@ -17,6 +20,26 @@
 }
 .hidden {
     display: none;
+}
+.resizer {
+    background-color: #a2bdffe0;
+    opacity: 0;
+    position: relative;
+    border-radius: 50px;
+    box-shadow: 0px 0px 9px #a2bdffe0;
+    transition: 0.2s;
+}
+.resizer:hover, .resizer.active {
+    opacity: 1;
+}
+.resizer.horizontal-resizer {
+    height: 100%;
+    cursor: ew-resize;
+}
+.resizer.horizontal-resizer[data-horizontal-resizer-position="right"] {
+    width: 6px;
+    float: right;
+    right: -3px;
 }
 
 
