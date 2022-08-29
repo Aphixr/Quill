@@ -58,7 +58,8 @@ class Component {
         if (!(component instanceof Component)) {
             throw new TypeError("Unexpected value for argument 1");
         }
-        this.components[name] = component
+        component.parentComponent = this;
+        this.components[name] = component;
         this.element.appendChild(component.element);
     }
 
@@ -77,6 +78,14 @@ class Component {
             component = component.getComponent(names[i]);
         }
         return component;
+    }
+
+    /**
+     * Get the parent component of this component
+     * @returns {(Component|void)} The parent component or `null` if has no parent
+     */
+    getParentComponent() {
+        return this.parentComponent ? this.parentComponent : null;
     }
 
     /**
