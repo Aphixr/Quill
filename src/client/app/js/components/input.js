@@ -17,7 +17,7 @@ import Component from "../quartz.js"
 // Input class (abstract)
 // Anything the user can input any form of information
 // or interaction is extended from this class
-// REV: is this class too useful?
+// REV: is this class too general?
 class Input extends Component {
     // Constructor
     // `element` argument should be a `document.createElement()`
@@ -46,13 +46,13 @@ class Button extends Input {
 // Toggler
 // A button that toggles something on or off
 class Toggler extends Button {
-    constructor(info, initialIsActive) {
+    constructor(initialIsActive, info) {
         super(info);
         this.isActive = !!initialIsActive;
         this.onActive = this.onInactive = null;
         this.element.classList.add("toggler");
     }
-    setOnclickListener() {
+    setClickListener() {
         // Does addEventListener change `this`?
         this.element.addEventListener("click", () => {
             this.isActive = !this.isActive;
@@ -66,13 +66,13 @@ class Toggler extends Button {
     setActiveListener(callback) {
         this.onActive = callback;
         if (this.onInactive) {
-            this.setOnclickListener();
+            this.setClickListener();
         }
     }
     setInactiveListener(callback) {
         this.onInactive = callback;
         if (this.onActive) {
-            this.setOnclickListener();
+            this.setClickListener();
         }
     }
 }
@@ -82,11 +82,144 @@ class TextField extends Input {
     constructor(info) {
         super(document.createElement("input"));
         this.setProperties(info);
+        this.element.classList.add("text-field");
     }
 }
 
 /* ===================== */
-/* Navigator classes    */
+/* Other components      */
+/* ===================== */
+
+// Resizer (abstract)
+class Resizer extends Input {
+    constructor(direction, info) {
+        dev.class.abstract(Resizer);
+        if (!dev.isValid(direction, "horizontal", "vertical")) {
+            dev.throw({
+                Type: SyntaxError,
+                message: "'direction' argument must be 'horizontal' or 'vertical'"
+            });
+        }
+        super(document.createElement("div"));
+        this.setProperties(info);
+        this.direction = direction; 
+        this.isMouseDown = false;
+        this.element.classList.add("resizer");
+    }
+
+    // Set the mousedown listener
+    setMousedownListener(callback=function(){}) {
+        // Callback cannot be an arrow function!
+        // .call does not work with arrow functions
+        if (dev.isArrowFunction()) {
+            dev.throw({
+                Type: SyntaxError,
+                message: "'callback' cannot me an arrow function"
+            });
+        }
+
+        // Add the event listener
+        this.element.addEventListener("mousedown", (event) => {
+            // Update info
+            this.isMouseDown = true;
+            this.element.classList.add("active");
+            this.element.classList.remove("inactive");
+
+            // This makes sure the cursor stays the way it is
+            // even if the cursor is not on this.element
+            document.body.style.cursor =
+                this.direction === "horizontal"
+                    ? "ew-resize"
+                    : "ns-resize";
+
+            // Call the callback
+            callback.call(this.getParentComponent(), event);
+        });
+    }
+
+    // Set the mouseup listener
+    setMouseupListener(callback=function(){}) {
+        // Callback cannot be an arrow function!
+        // .call does not work with arrow functions
+        if (dev.isArrowFunction()) {
+            dev.throw({
+                Type: SyntaxError,
+                message: "'callback' cannot me an arrow function"
+            });
+        }
+
+        // Add event listener
+        // This must be on <body>
+        document.body.addEventListener("mouseup", (event) => {
+            // If mouse is not held down, just ignore it
+            if (!this.isMouseDown) {
+                return;
+            }
+
+            // Update info
+            this.isMouseDown = false;
+            this.element.classList.add("inactive");
+            this.element.classList.remove("active");
+
+            // Resets cursor
+            document.body.style.cursor = "";
+
+            // Call the callback
+            callback.call(this.getParentComponent(), event);
+        });
+    }
+
+    // Set the mousemove listener
+    // Provide a simple default callback if they did not provide one
+    // Just sets the element's width property
+    setMousemoveListener(callback = function(event) {
+        const element = this.element;
+        element.style.width =
+            `${element.getBoundingClientRect().x + event.clientX}px`;
+    }) {
+        // Callback cannot be an arrow function!
+        // .call does not work with arrow functions
+        if (dev.isArrowFunction()) {
+            dev.throw({
+                Type: SyntaxError,
+                message: "'callback' cannot me an arrow function"
+            });
+        }
+
+        // Add event listener
+        // This must be on <body>
+        document.body.addEventListener("mousemove", (event) => {
+            // If mouse is not held down, just ignore it
+            if (!this.isMouseDown) {
+                return;
+            }
+
+            // Call the callback
+            callback.call(this.getParentComponent(), event);
+        });
+    }
+}
+
+// Horizontal resizer
+class HorizontalResizer extends Resizer {
+    constructor(position, info) {
+        super("horizontal", info);
+        this.element.classList.add("horizontal-resizer");
+
+        // Set the position
+        // Checks if `position` argument has a valid value
+        if (!dev.isValid(position, "left", "right")) {
+            dev.throw({
+                Type: SyntaxError,
+                message: "'position' argument must be 'left' or 'right'"
+            });
+        }
+        this.element.setAttribute("data-horizontal-resizer-position", position);
+    }
+}
+
+/* ===================== */
+/* Navigator classes     */
 /* ===================== */
 
 // Navigator button
@@ -127,7 +260,7 @@ class NavigatorToggler extends Toggler {
             `
         };
         Object.assign(superArgument, info);
-        super(superArgument);
+        super(false, superArgument);
 
         // Target menu is the element that will be opened/closed
         // when clicked on
@@ -173,6 +306,7 @@ export {
     Input,
     Button, Toggler,
     TextField,
+    HorizontalResizer,
     // Navigator related
     Navigator, NavigatorButton
 }
