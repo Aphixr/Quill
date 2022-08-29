@@ -48,7 +48,9 @@ const quill = {
     )
 };
 
-quill.milestoneTrack.done("initialize")
+document.getElementById("version").innerText = quill._version;
+
+quill.milestoneTrack.done("initialize");
 
 export default quill
 
