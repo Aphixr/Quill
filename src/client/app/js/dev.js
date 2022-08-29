@@ -67,8 +67,21 @@ const dev = {
     isElement: function(value) {
         return value instanceof Element;
     },
+    isValid: function(value, ...validValues) {
+        return validValues.flat().includes(value);
+    },
+    isArrowFunction: function(func) {
+        return typeof func === "function"
+            && func.toString().match(/\)(\s|(\/\*(.|\s)*\*\/))*=>\s\{/);
+    },
 
     // Other helper functions
+    getPageSize: function() {
+        return {
+            width: document.documentElement.clientWidth,
+            height: document.documentElement.clientHeight
+        };
+    },
     class: {
         // Makes a class abstract
         abstract: function(Class) {
