@@ -36,6 +36,7 @@ class EditorView extends Component {
         // Initialize this element
         super(document.createElement("div"));
         this.element.id = "editor-view";
+        this.element.classList.add("flex");
 
         // Add navigation and content components
         this.addComponent("navigation", new EditorNavigation);
