@@ -23,6 +23,48 @@ const quill = {
         logo: "../img/logo-256.png"
     },
 
+    // Cookies
+    cookies: {
+        // Set a cookie
+        set: function({ name, value, expires, path, domain, secure }) {
+            let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
+            if (expires instanceof Date) {
+                cookie += ";expires=" + expires.toGMTString();
+            }
+            if (path) {
+                cookie += ";path=" + path;
+            }
+            if (domain) {
+                cookie += ";domain=" + domain;
+            }
+            if (secure) {
+                cookie += ";secure";
+            }
+            document.cookie = cookie;
+            return this;
+        },
+        get: function(name) {
+            const cookie = document.cookie;
+            let index = NaN, semicolon = NaN;
+            name = decodeURIComponent(name);
+            return decodeURIComponent(cookie.slice(
+                index = cookie.indexOf(name + "=") + name.length + 1,
+                (semicolon = cookie.substring(index).indexOf(";")) !== -1 ? semicolon + index : undefined
+            ));
+        },
+        remove: function({ name, path, domain, secure }) {
+            this.set({
+                name: name,
+                value: "",
+                expires: new Date(0),
+                path: path,
+                domain: domain,
+                secure: secure
+            });
+            return this;
+        }
+    },
+
     // Milestone tracking
     milestoneTrack: new dev.MilestoneTrack("quill",
         ["initialize", "components", "loading", "display"],
