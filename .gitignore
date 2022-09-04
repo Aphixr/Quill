@@ -2,4 +2,5 @@ unused/
 node_modules/
 docs/
 *.sh
+*.min.js
 coming-soon.html
