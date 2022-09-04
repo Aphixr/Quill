@@ -10,13 +10,23 @@
 "use strict";
 
 import Component from "../../quartz.js"
+import { Navigator } from "../input.js"
 
-// Editor navigation
-// Navigate between sections and pages of a notebook
-class EditorNavigation extends Component {
+// Editor sidebar
+// Displays content of whatever tab user clicked on in EditorActivity
+class EditorSideBar extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.id = "editor-navigation";
+        this.element.id = "editor-side-bar";
+    }
+}
+
+// Editor activity bar
+// Shows tabs that can be switched between
+class EditorActivityBar extends Component {
+    constructor() {
+        super(document.createElement("div"));
+        this.element.id = "editor-activity-bar";
     }
 }
 
@@ -38,14 +48,18 @@ class EditorView extends Component {
         this.element.id = "editor-view";
         this.element.classList.add("flex");
 
-        // Add navigation and content components
-        this.addComponent("navigation", new EditorNavigation);
-        this.addComponent("content", new EditorContent);
+        // Add components
+        this.activityBar = this.addComponent("activity-bar", new EditorActivityBar);
+        this.sideBar = this.addComponent("side-bar", new EditorSideBar);
+        this.content = this.addComponent("content", new EditorContent);
+        
+        // Initialize the navigator
+        this.activityNavigator = new Navigator();
     }
 }
 
 // Export
 export default EditorView
-export { EditorNavigation, EditorContent }
+export { EditorSideBar, EditorContent }
 
 
