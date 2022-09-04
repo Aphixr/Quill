@@ -20,6 +20,10 @@ const dev = {
     trace: function() {
         console.trace(...arguments);
     },
+    
+    lorem: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quas \
+minima vel reiciendis incidunt? Unde suscipit eveniet excepturi possimus deleniti \
+nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
 
     // Call this function to throw an error
     throw: function({ Type, fatal, message, code }) {
@@ -167,6 +171,14 @@ const dev = {
             return this.index;
         }
     }
+};
+
+// Highlight an element
+// Make an element stand out
+// Useful for debugging CSS styling and layout
+Element.prototype.highlight = function(style) {
+    this.classList.add("highlight");
+    Object.assign(this.style, style);
 };
 
 // Export
