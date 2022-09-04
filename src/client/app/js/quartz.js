@@ -52,7 +52,7 @@ class Component {
      * Adds a component to this component
      * @param {string} name The name of the component
      * @param {Component} component A component instance
-     * @returns {void} `undefined`
+     * @returns {Component} The attached component
      */
     addComponent(name, component) {
         if (!(component instanceof Component)) {
@@ -61,6 +61,7 @@ class Component {
         component.parentComponent = this;
         this.components[name] = component;
         this.element.appendChild(component.element);
+        return component;
     }
 
     /**
