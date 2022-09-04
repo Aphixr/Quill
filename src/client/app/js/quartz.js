@@ -34,6 +34,9 @@ class Component {
      * @param {Element} element A DOM element the component will be using
      */
     constructor(element) {
+        if (!(element instanceof Element)) {
+            throw new TypeError("`element` argument should be an element");
+        }
         this.element = element;
         this.components = {};
     }
@@ -44,8 +47,10 @@ class Component {
      * @returns {void} `undefined`
      */
     render(where) {
+        if (!(where instanceof Element)) {
+            throw new TypeError("`where` argument should be an element");
+        }
         where.appendChild(this.element);
-        return this;
     }
 
     /**
@@ -56,7 +61,7 @@ class Component {
      */
     addComponent(name, component) {
         if (!(component instanceof Component)) {
-            throw new TypeError("Unexpected value for argument 1");
+            throw new TypeError("`component` argument should be an instance of Component");
         }
         component.parentComponent = this;
         this.components[name] = component;
@@ -67,16 +72,20 @@ class Component {
     /**
      * Get a component that was added to this component
      * @param {...string} names The name of the component. Multiple parameters searches components in a component
-     * @returns {(Component|void)} The component or `undefined` if component does not exist
+     * @returns {(Component|void)} The component or `null` if component does not exist
      */
     getComponent(...names) {
-        let component;
+        let component = null;
         for (let i = 0; i < names.length; i++) {
             if (i == 0) {
                 component = this.components[names[0]];
                 continue;
             }
-            component = component.getComponent(names[i]);
+            try {
+                component = component.components[names[i]];
+            } catch (error) {
+                return null;
+            }
         }
         return component;
     }
@@ -86,7 +95,7 @@ class Component {
      * @returns {(Component|void)} The parent component or `null` if has no parent
      */
     getParentComponent() {
-        return this.parentComponent ? this.parentComponent : null;
+        return this.parentComponent || null;
     }
 
     /**
