@@ -11,7 +11,7 @@
 
 import Component from "../../quartz.js"
 import EditorPanel, { EditorMenu, EditorControls } from "./editor-panel.js"
-import EditorView, { EditorNavigation, EditorContent } from "./editor-view.js"
+import EditorView, { EditorSideBar, EditorContent } from "./editor-view.js"
 
 // Editor
 // The main part of the program is here
@@ -32,7 +32,7 @@ export default Editor
 export {
     Editor,
     EditorMenu, EditorControls, EditorPanel,
-    EditorNavigation, EditorContent, EditorView
+    EditorSideBar, EditorContent, EditorView
 }
 
 
