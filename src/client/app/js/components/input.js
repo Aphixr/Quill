@@ -224,6 +224,7 @@ class HorizontalResizer extends Resizer {
 
 // Navigator button
 // A button in the menu the user can click on
+// This class shouldn't be directly constructed (use new Navigator)
 class NavigatorButton extends Button {
     constructor(info) {
         super(info);
@@ -233,9 +234,10 @@ class NavigatorButton extends Button {
 
 // Navigator menu
 // Shows all the links/buttons
+// This class shouldn't be directly constructed (use new Navigator)
 class NavigatorMenu extends Component {
-    constructor() {
-        super(document.createElement("div"));
+    constructor(element) {
+        super(element || document.createElement("div"));
         this.element.classList.add("navigator-menu");
     }
 
@@ -249,6 +251,7 @@ class NavigatorMenu extends Component {
 
 // Navigator toggle button
 // Opens and closes the navigator
+// This class shouldn't be directly constructed (use new Navigator)
 class NavigatorToggler extends Toggler {
     constructor(targetMenu, info) {
         // Call parent constructor
@@ -291,10 +294,10 @@ class NavigatorToggler extends Toggler {
 // Navigator
 // Combines all the previous classes into one
 class Navigator {
-    constructor() {
+    constructor(menuElement) {
         // Properties
         // The menu; all buttons will be display here
-        this.menu = new NavigatorMenu();
+        this.menu = new NavigatorMenu(menuElement);
         // The toggler button
         this.toggler = new NavigatorToggler(this.menu);
     }
