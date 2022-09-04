@@ -11,7 +11,7 @@
 import dev from "./dev.js"
 import quill from "./quill.js"
 import {
-    Editor, Navigator, TextField, HorizontalResizer
+    Editor, Button, TextField, HorizontalResizer
 } from "./components.js"
 
 
@@ -19,16 +19,28 @@ import {
 /* Load                */
 /* =================== */
 
+// Globals
+const quickSettings = new Proxy({
+    getCookie: () => {
+        return quill.cookies.get("quick-settings");
+    }
+}, {});
+
 // Components
-const navigator = new Navigator();
+const homeButton = new Button({
+    innerHTML: /* html */ `<img src="${quill.path.logo}">`,
+    onclick: (event) => {
+        location.hash = "#view:notebooks";
+    }
+});
 const editor = new Editor();
 const editorPanelMenu = editor.getComponent("panel", "menu");
-const editorViewNavigation = editor.getComponent("view", "navigation");
+const editorViewSidebar = editor.getComponent("view", "side-bar");
 const editorViewContent = editor.getComponent("view", "content");
 
 // Attaches the navigator toggler to the menu bar
 // Toggler is an image of logo
-editorPanelMenu.addComponent("navigatorToggler", navigator.toggler);
+editorPanelMenu.addComponent("button", homeButton);
 
 // Attach the input for changing the notebook title
 editorPanelMenu.addComponent("notebookTitleTextField", new TextField({
@@ -39,26 +51,28 @@ editorPanelMenu.addComponent("notebookTitleTextField", new TextField({
 }));
 
 // Add the horizontal resizer
-editorViewNavigation.addComponent("horizontalResizer", new HorizontalResizer("right"));
+editorViewSidebar.addComponent("horizontalResizer", new HorizontalResizer("right"));
 
 // Add listeners
-editorViewNavigation.getComponent("horizontalResizer").setMousedownListener();
-editorViewNavigation.getComponent("horizontalResizer")
-    .setMouseupListener(function(event) {
+editorViewSidebar.getComponent("horizontalResizer").setMousedownListener();
+editorViewSidebar.getComponent("horizontalResizer").setMouseupListener();
+editorViewSidebar.getComponent("horizontalResizer")
+    // The extra +/-55 is for the activity bar
+    .setMousemoveListener(function(event) {
         // Collapse the editor navigation completely
         // if the cursor reaches a certain point
-        if (event.clientX < 120) {
+        if (event.clientX < 100 + 55) {
             this.element.style.width = this.element.style.minWidth = "0px";
+            editorViewContent.element.style.width = `${dev.getPageSize().width - 55}px`;
+            return;
         } else {
-            this.element.style.minWidth = "14rem";
+            this.element.style.width = this.element.style.minWidth = "";
         }
-    });
-editorViewNavigation.getComponent("horizontalResizer")
-    .setMousemoveListener(function(event) {
+
         // Update width
         const nav = this.element;
         nav.style.minWidth = "";
-        nav.style.width = `${event.clientX}px`;
+        nav.style.width = `${event.clientX - 55}px`;
         editorViewContent.element.style.width = `${dev.getPageSize().width - event.clientX}px`;
     });
 
