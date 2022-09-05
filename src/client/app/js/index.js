@@ -27,28 +27,10 @@ const quickSettings = new Proxy({
 }, {});
 
 // Components
-const homeButton = new Button({
-    innerHTML: /* html */ `<img src="${quill.path.logo}">`,
-    onclick: (event) => {
-        location.hash = "#view:notebooks";
-    }
-});
 const editor = new Editor();
 const editorPanelMenu = editor.getComponent("panel", "menu");
 const editorViewSidebar = editor.getComponent("view", "side-bar");
 const editorViewContent = editor.getComponent("view", "content");
-
-// Attaches the navigator toggler to the menu bar
-// Toggler is an image of logo
-editorPanelMenu.addComponent("button", homeButton);
-
-// Attach the input for changing the notebook title
-editorPanelMenu.addComponent("notebookTitleTextField", new TextField({
-    id: "notebook-title",
-    value: "Untitled notebook",
-    placeholder: "Notebook title",
-    title: "Notebook title"
-}));
 
 // Add the horizontal resizer
 editorViewSidebar.addComponent("horizontalResizer", new HorizontalResizer("right"));
@@ -85,6 +67,11 @@ quill.milestoneTrack.done("loading");
 /* =================== */
 
 editor.render(quill.app);
+
+// Auto activate the Edit button
+// This must be done after the editor is rendered
+// Otherwise, the active indicator cannot use .getBoundingClientRect()
+editor.getComponent("panel").controlsNavigator.menu.components["button-1"].activate();
 
 // Display milestone (4/4)
 quill.milestoneTrack.done("display");
