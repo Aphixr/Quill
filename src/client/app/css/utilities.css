@@ -21,6 +21,14 @@
 .hidden {
     display: none;
 }
+.visually-hidden {
+    visibility: hidden;
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    width: 0px;
+    height: 0px;
+}
 .highlight {
     background: #ffffa0;
     outline-width: 6px;
