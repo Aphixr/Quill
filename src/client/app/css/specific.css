@@ -95,33 +95,48 @@
     align-items: center;
     flex-basis: content;
 }
-#editor-menu > button {
+#editor-menu > #home-button {
     background: transparent;
     height: 60%;
-    margin: calc(3.6rem * 0.2) 1rem;
+    margin: calc(3.6rem * 0.2) 10px calc(3.6rem * 0.2) 15px;
 }
-#editor-menu > button img {
+#editor-menu #home-button img {
     height: 100%;
+}
+#editor-menu .navigator-menu > .navigator-button {
+    background-color: transparent;
+    font-size: var(--fs-s);
+    margin-top: 2px;
+    padding: 2px 12px 2px;
+    border-bottom: 2px solid transparent;
+    transition: 0.3s;
+    transition-property: border-bottom-color;
+}
+#editor-menu .navigator-menu > .navigator-button:hover {
+    background-color: #f0f0f0;
 }
 #editor-menu input {
     background-color: transparent;
-    font-size: var(--fs-l);
-    text-align: right;
+    font-size: calc(var(--fs-m) + 2px);
     min-width: 24rem;
     flex-grow: 1;
-    margin: 0px 24px 0px auto;
-    padding: 0.3em 6px;
+    margin: 9px 0px 0px;
+    padding: 0px 6px 0px 12px;
     border-bottom: 2px solid transparent;
-    border-radius: 3px;
-    opacity: 0.8;
+    border-radius: 2px;
+    transition: 0.2s;
 }
 #editor-menu input:hover {
-    opacity: 1;
-    cursor: default;
+    border-bottom-color: #f3f3f3;
 }
 #editor-menu input:focus {
-    opacity: 1;
-    cursor: text;
+    border-bottom-color: #e0e0e0;
+}
+#editor-menu .active-indicator {
+    background-color: var(--clr-sub-2);
+    width: 0px;
+    height: 2px;
+    transition: 0.2s;
 }
 
 /* =====================
