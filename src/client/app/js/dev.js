@@ -45,19 +45,19 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
         for (let i = 0, len = value.length; i < len; i++) {
             switch (type.toLowerCase().trim()) {
                 case "number":
-                    return typeof value === "number";
+                    return typeof value[i] === "number";
                 case "string":
-                    return typeof value === "string";
+                    return typeof value[i] === "string";
                 case "boolean":
-                    return typeof value === "boolean";
+                    return typeof value[i] === "boolean";
                 case "array":
-                    return Array.isArray(value);
+                    return Array.isArray(value[i]);
                 case "object":
-                    return value && value.constructor === Object;
+                    return value[i] && value[i].constructor === Object;
                 case "function":
-                    return typeof value === "function";
+                    return typeof value[i] === "function";
                 case "symbol":
-                    return typeof value === "symbol";
+                    return typeof value[i] === "symbol";
                 default:
                     throw new Error(`Invalid first argument '${type}'`);
             }
