@@ -20,10 +20,13 @@ class EditorMenu extends Component {
         super(document.createElement("div"));
         this.element.id = "editor-menu";
         this.element.classList.add("flex");
+
+        // Holds the buttons
+        this.buttons = {};
         
         // Attach the home button
         // Home button brings user to a page where they see all the notebooks
-        this.homeButton = this.addComponent("home-button", new Button({
+        this.buttons.home = this.addComponent("home-button", new Button({
             id: "home-button",
             innerHTML: /* html */ `<img src="${quill.path.logo}">`,
             onclick: (event) => {
@@ -37,17 +40,71 @@ class EditorMenu extends Component {
         this.notebookPanel = this.addComponent("notebook-panel", new Component(
             document.createElement("div")
         ));
+        this.notebookPanel.element.classList.add("section");
 
         // Notebook title text field
-        this.notebookPanel.notebookTitleTextField =
-            this.notebookPanel.addComponent("notebook-title-text-field", new TextField({
-                id: "notebook-title",
-                value: "Untitled notebook",
-                placeholder: "Notebook title"
-            }));
-        this.notebookPanel.notebookTitleTextField.element.setAttribute(
-            "maxlength", 40
-        );
+        {
+            // Attach the title text field
+            this.notebookPanel.notebookTitleTextField =
+                this.notebookPanel.addComponent("notebook-title-text-field", new TextField({
+                    id: "notebook-title",
+                    value: "Untitled notebook"
+                }));
+            
+            // Constants
+            const notebookTitleInput = this.notebookPanel.notebookTitleTextField;
+            // Automatically resize input element
+            notebookTitleInput.element.resizeWidth = () => {
+                // Create an element
+                let valueElement = this.element.querySelector("#notebook-title-text-field-value");
+                if (!valueElement) {
+                    valueElement = document.createElement("div");
+                    valueElement.id = "notebook-title-text-field-value";
+                    valueElement.classList.add("visually-hidden");
+                    Object.assign(valueElement.style, {
+                        fontSize: "18px",
+                        whiteSpace: "auto",
+                        width: "auto"
+                    });
+                    this.element.appendChild(valueElement);
+                }
+                valueElement.innerText = notebookTitleInput.element.value;
+                notebookTitleInput.element.style.width =
+                    (valueElement.clientWidth + 27) + "px";
+            };
+
+            // Maximum length
+            notebookTitleInput.element.setAttribute(
+                "maxlength", 64
+            );
+            // Auto select all the text when focused on
+            notebookTitleInput.element.addEventListener(
+                "focus", (event) => {
+                    notebookTitleInput.element.select();
+                }
+            );
+            // On unfocus (blur)
+            notebookTitleInput.element.addEventListener(
+                "blur", (event) => {
+                    if (notebookTitleInput.element.value.trim() === "") {
+                        notebookTitleInput.element.value = "Untitled notebook";
+                        notebookTitleInput.element.resizeWidth();
+                    }
+                }
+            );
+            // When the user types something
+            notebookTitleInput.element.addEventListener(
+                "input", (event) => {
+                    notebookTitleInput.element.resizeWidth();
+                }
+            );
+        }
+
+        // Attach the settings button
+        this.buttons.settings = this.addComponent("settings-button", new Button({
+            id: "settings-button",
+            innerHTML: /* html */ `<img src="img/settings.svg">`
+        }));
     }
 }
 
@@ -77,13 +134,13 @@ class EditorPanel extends Component {
 
         this.controlsNavigator.menu.addButtons(
             new NavigatorButton({
-                innerText: "File"
+                innerText: "Setup"
             }),
             new NavigatorButton({
                 innerText: "Edit"
             }),
             new NavigatorButton({
-                innerText: "Media"
+                innerText: "Insert"
             }),
             new NavigatorButton({
                 innerText: "Draw"
@@ -117,6 +174,9 @@ class EditorPanel extends Component {
                     // Translate the active indicator
                     activeIndicator.style.transform = `translateX(calc(${boundingRect.x}px - 60px))`;
                     activeIndicator.style.width = `${boundingRect.width}px`;
+
+                    // Auto unfocus the button
+                    this.element.blur();
                 });
             }
         }
