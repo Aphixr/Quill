@@ -224,11 +224,30 @@ class HorizontalResizer extends Resizer {
 
 // Navigator button
 // A button in the menu the user can click on
-// This class shouldn't be directly constructed (use new Navigator)
 class NavigatorButton extends Button {
     constructor(info) {
         super(info);
         this.element.classList.add("navigator-button");
+        this.isActive = false;
+        this.onClick = null;
+    }
+    activate() {
+        this.isActive = true;
+        this.element.classList.add("active");
+        if (dev.isType("function", this.onClick)) {
+            this.onClick.call(this, {});
+        }
+    }
+    deactivate() {
+        this.isActive = false;
+        this.element.classList.remove("active");
+    }
+    setClickListener(callback) {
+        this.onClick = callback;
+        this.element.addEventListener("click", (event) => {
+            this.getParentComponent().deactivateAllButtons();
+            this.activate();
+        });
     }
 }
 
@@ -243,8 +262,15 @@ class NavigatorMenu extends Component {
 
     // Add some buttons onto the navigator menu
     addButtons(...navigatorButtons) {
-        for (let i = 0; i < navigatorButtons; i++) {
-            this.addComponent("button-" + i, navigatorButtons[i]);
+        for (let i = 0; i < navigatorButtons.length; i++) {
+            this.addComponent("button-" + Object.keys(this.components).length, navigatorButtons[i]);
+        }
+    }
+
+    // Makes all the buttons inactive
+    deactivateAllButtons() {
+        for (const i in this.components) {
+            this.components[i].deactivate();
         }
     }
 }
