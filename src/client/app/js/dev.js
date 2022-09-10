@@ -86,12 +86,20 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
             height: document.documentElement.clientHeight
         };
     },
+
+    // Class functions
+    // Put these functions in the constructor
     class: {
         // Makes a class abstract
         abstract: function(Class) {
             if (new.target === Class) {
-                throw new SyntaxError("Cannot create instance of abstract class");
+                throw new SyntaxError(`Cannot create instance of abstract class '${Class.name}'`);
             }
+        },
+
+        // Makes a singleton without using objects
+        singleton: function(Class) {
+            throw new SyntaxError(`Cannot create instance of singleton class '${Class.name}'`);
         }
     },
 
