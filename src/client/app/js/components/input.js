@@ -12,7 +12,7 @@
 
 import dev from "../dev.js"
 import quill from "../quill.js"
-import Component from "../quartz.js"
+import { State, Component } from "../quartz.js"
 
 // Input class (abstract)
 // Anything the user can input any form of information
@@ -133,7 +133,7 @@ class Resizer extends Input {
                     : "ns-resize";
 
             // Call the callback
-            callback.call(this.getParentComponent(), event);
+            callback.call(this.getParent(), event);
         });
     }
 
@@ -165,7 +165,7 @@ class Resizer extends Input {
             document.body.style.cursor = "";
 
             // Call the callback
-            callback.call(this.getParentComponent(), event);
+            callback.call(this.getParent(), event);
         });
     }
 
@@ -195,7 +195,7 @@ class Resizer extends Input {
             }
 
             // Call the callback
-            callback.call(this.getParentComponent(), event);
+            callback.call(this.getParent(), event);
         });
     }
 }
@@ -245,7 +245,7 @@ class NavigatorButton extends Button {
     setClickListener(callback) {
         this.onClick = callback;
         this.element.addEventListener("click", (event) => {
-            this.getParentComponent().deactivateAllButtons();
+            this.getParent().deactivateAllButtons();
             this.activate();
         });
     }
@@ -258,19 +258,20 @@ class NavigatorMenu extends Component {
     constructor(element) {
         super(element || document.createElement("div"));
         this.element.classList.add("navigator-menu");
+        this.buttons = [];
     }
 
     // Add some buttons onto the navigator menu
     addButtons(...navigatorButtons) {
         for (let i = 0; i < navigatorButtons.length; i++) {
-            this.addComponent("button-" + Object.keys(this.components).length, navigatorButtons[i]);
+            this.buttons.push(this.addComponent(navigatorButtons[i]));
         }
     }
 
     // Makes all the buttons inactive
     deactivateAllButtons() {
-        for (const i in this.components) {
-            this.components[i].deactivate();
+        for (const i in this.children) {
+            this.children[i].deactivate();
         }
     }
 }
