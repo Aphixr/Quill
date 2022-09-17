@@ -10,7 +10,7 @@
 "use strict";
 
 // Import
-import Component from "../quartz.js"
+import { State, Component } from "../quartz.js"
 import quill from "../quill.js"
 import { Navigator, NavigatorButton, Button, TextField } from "./input.js"
 
@@ -19,26 +19,15 @@ import { Navigator, NavigatorButton, Button, TextField } from "./input.js"
 class EditorMenu extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.id = "editor-menu";
-        this.element.classList.add("flex");
+        this.element.classList.add("editor-menu", "flex");
 
         // Holds the buttons
         this.buttons = {};
-        
-        // Attach the home button
-        // Home button brings user to a page where they see all the notebooks
-        this.buttons.home = this.addComponent("home-button", new Button({
-            id: "home-button",
-            innerHTML: /* html */ `<img src="${quill.path.logo}">`,
-            onclick: (event) => {
-                location.hash = "#view:notebooks";
-            }
-        }));
 
         // Attach a notebook related <div> notebookPanel
         // This notebook panel will hold notebook related actions and buttons
         // including the notebook title and menu buttons
-        this.notebookPanel = this.addComponent("notebook-panel", new Component(
+        this.notebookPanel = this.addComponent(new Component(
             document.createElement("div")
         ));
         this.notebookPanel.element.classList.add("section");
@@ -47,7 +36,7 @@ class EditorMenu extends Component {
         {
             // Attach the title text field
             this.notebookPanel.notebookTitleTextField =
-                this.notebookPanel.addComponent("notebook-title-text-field", new TextField({
+                this.notebookPanel.addComponent(new TextField({
                     id: "notebook-title",
                     value: "Untitled notebook"
                 }));
@@ -102,7 +91,7 @@ class EditorMenu extends Component {
         }
 
         // Attach the settings button
-        this.buttons.settings = this.addComponent("settings-button", new Button({
+        this.buttons.settings = this.addComponent(new Button({
             id: "settings-button",
             innerHTML: /* html */ `<img src="img/settings.svg">`
         }));
@@ -115,7 +104,7 @@ class EditorMenu extends Component {
 class EditorControls extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.id = "editor-controls";
+        this.element.classList.add("editor-controls");
     }
 }
 
@@ -125,18 +114,15 @@ class EditorPanel extends Component {
     constructor() {
         // Initialize element
         super(document.createElement("div"));
-        this.element.id = "editor-panel";
+        this.element.classList.add("editor-panel");
 
         // Add some components
-        this.menu = this.addComponent("menu", new EditorMenu);
+        this.menu = this.addComponent(new EditorMenu);
         this.controlsNavigator = new Navigator();
-        this.controlsNavigatorMenu = this.menu.notebookPanel.addComponent("controls-navigator-menu", this.controlsNavigator.menu);
-        this.controls = this.addComponent("controls", new EditorControls);
+        this.controlsNavigatorMenu = this.menu.notebookPanel.addComponent(this.controlsNavigator.menu);
+        this.controls = this.addComponent(new EditorControls);
 
         this.controlsNavigator.menu.addButtons(
-            new NavigatorButton({
-                innerText: "Setup"
-            }),
             new NavigatorButton({
                 innerText: "Edit"
             }),
@@ -157,7 +143,7 @@ class EditorPanel extends Component {
         // The blue bar on the bottom that moves
         // when the user click on something
         this.menu.notebookPanel.activeIndicator =
-            this.menu.notebookPanel.addComponent("active-indicator", new Component(
+            this.menu.notebookPanel.addComponent(new Component(
                 document.createElement("div")
             ));
         this.menu.notebookPanel.activeIndicator.element.classList.add("active-indicator");
@@ -166,14 +152,14 @@ class EditorPanel extends Component {
         {
             // Temporary variable pointing to `this`
             let editorPanel = this;
-            for (const i in this.controlsNavigator.menu.components) {
-                this.controlsNavigator.menu.components[i].setClickListener(function(event) {
+            for (const i in this.controlsNavigator.menu.children) {
+                this.controlsNavigator.menu.children[i].setClickListener(function(event) {
                     // Constants
                     const activeIndicator = editorPanel.menu.notebookPanel.activeIndicator.element;
                     const boundingRect = this.element.getBoundingClientRect();
 
                     // Translate the active indicator
-                    activeIndicator.style.transform = `translateX(calc(${boundingRect.x}px - 60px))`;
+                    activeIndicator.style.transform = `translateX(calc(${boundingRect.x}px))`;
                     activeIndicator.style.width = `${boundingRect.width}px`;
 
                     // Auto unfocus the button
@@ -189,16 +175,7 @@ class EditorPanel extends Component {
 class EditorSideBar extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.id = "editor-side-bar";
-    }
-}
-
-// Editor activity bar
-// Shows tabs that can be switched between
-class EditorActivityBar extends Component {
-    constructor() {
-        super(document.createElement("div"));
-        this.element.id = "editor-activity-bar";
+        this.element.classList.add("editor-side-bar");
     }
 }
 
@@ -207,7 +184,7 @@ class EditorActivityBar extends Component {
 class EditorContent extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.id = "editor-content";
+        this.element.classList.add("editor-content");
     }
 }
 
@@ -217,13 +194,12 @@ class EditorView extends Component {
     constructor() {
         // Initialize this element
         super(document.createElement("div"));
-        this.element.id = "editor-view";
+        this.element.classList.add("editor-view");
         this.element.classList.add("flex");
 
         // Add components
-        this.activityBar = this.addComponent("activity-bar", new EditorActivityBar);
-        this.sideBar = this.addComponent("side-bar", new EditorSideBar);
-        this.content = this.addComponent("content", new EditorContent);
+        this.sideBar = this.addComponent(new EditorSideBar);
+        this.content = this.addComponent(new EditorContent);
         
         // Initialize the navigator
         this.activityNavigator = new Navigator();
@@ -231,16 +207,16 @@ class EditorView extends Component {
 }
 
 // Editor
-// The main part of the program is here
+// The main part of editing is here
 class Editor extends Component {
     constructor() {
         // Initialize element
         super(document.createElement("div"));
-        this.element.id = "editor";
+        this.element.classList.add("editor");
 
         // Add some components
-        this.addComponent("panel", new EditorPanel);
-        this.addComponent("view", new EditorView);
+        this.panel = this.addComponent(new EditorPanel);
+        this.view = this.addComponent(new EditorView);
     }
 }
 
