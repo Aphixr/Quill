@@ -128,7 +128,7 @@ class Component {
             throw new TypeError("`component` argument expected instance of Component");
         }
         component.parentComponent = this;
-        this.components.push(component);
+        this.children.push(component);
         this.element.appendChild(component.element);
         return component;
     }
