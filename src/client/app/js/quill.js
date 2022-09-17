@@ -90,8 +90,6 @@ const quill = {
     )
 };
 
-document.getElementById("version").innerText = quill._version;
-
 quill.milestoneTrack.done("initialize");
 
 export default quill
