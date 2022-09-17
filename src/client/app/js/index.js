@@ -11,7 +11,7 @@
 import dev from "./dev.js"
 import quill from "./quill.js"
 import {
-    Editor, HorizontalResizer
+    Editor, HorizontalResizer, Navigator
 } from "./components.js"
 
 
@@ -23,9 +23,10 @@ class App {
 
     // Components
     static editor = new Editor();
-    static editorPanelMenu = App.editor.getComponent("panel", "menu");
-    static editorViewSidebar = App.editor.getComponent("view", "side-bar");
-    static editorViewContent = App.editor.getComponent("view", "content");
+    static editorPanelMenu = App.editor.panel.menu;
+    static editorViewSidebar = App.editor.view.sideBar;
+    static editorViewContent = App.editor.view.content;
+    static navigator = new Navigator();
 
 
     /* =================== */
@@ -33,19 +34,18 @@ class App {
     /* =================== */
     static load() {
         // Add the horizontal resizer
-        App.editorViewSidebar.addComponent("horizontalResizer", new HorizontalResizer("right"));
+        App.editorViewSidebar.resizer = App.editorViewSidebar.addComponent(new HorizontalResizer("right"));
         
         // Add listeners
-        App.editorViewSidebar.getComponent("horizontalResizer").setMousedownListener();
-        App.editorViewSidebar.getComponent("horizontalResizer").setMouseupListener();
-        App.editorViewSidebar.getComponent("horizontalResizer")
-            // The extra +/-55 is for the activity bar
+        App.editorViewSidebar.resizer.setMousedownListener();
+        App.editorViewSidebar.resizer.setMouseupListener();
+        App.editorViewSidebar.resizer
             .setMousemoveListener(function(event) {
                 // Collapse the editor navigation completely
                 // if the cursor reaches a certain point
-                if (event.clientX < 100 + 55) {
+                if (event.clientX < 100) {
                     this.element.style.width = this.element.style.minWidth = "0px";
-                    App.editorViewContent.element.style.width = `${dev.getPageSize().width - 55}px`;
+                    App.editorViewContent.element.style.width = `${dev.getPageSize().width}px`;
                     return;
                 } else {
                     this.element.style.width = this.element.style.minWidth = "";
@@ -54,7 +54,7 @@ class App {
                 // Update width
                 const nav = this.element;
                 nav.style.minWidth = "";
-                nav.style.width = `${event.clientX - 55}px`;
+                nav.style.width = `${event.clientX}px`;
                 App.editorViewContent.element.style.width = `${dev.getPageSize().width - event.clientX}px`;
             });
         
@@ -68,12 +68,14 @@ class App {
     /* =================== */
     static display() {
         // Render
+        // App.editor.render(quill.app);
+        App.navigator.menu.render(quill.app);
         App.editor.render(quill.app);
         
         // Auto activate the Edit button
         // This must be done after the editor is rendered
         // Otherwise, the active indicator cannot use .getBoundingClientRect()
-        App.editor.getComponent("panel").controlsNavigator.menu.components["button-1"].activate();
+        App.editor.panel.controlsNavigator.menu.buttons[0].activate();
 
         // Display milestone (4/4)
         quill.milestoneTrack.done("display");
