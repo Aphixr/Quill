@@ -71,7 +71,7 @@
  *  Editor
  * ===================== */
 
-#editor {
+.editor {
     z-index: 0;
     height: 100%;
 }
@@ -80,7 +80,7 @@
  *  Editor panel
  * ===================== */
 
-#editor-panel {
+.editor-panel {
     background-color: white;
     z-index: 9999;
     box-shadow: 0px 0px 6px 3px #00000060;
@@ -90,23 +90,23 @@
  *  Editor menu
  * ===================== */
 
-#editor-menu {
+.editor-menu {
     height: 3.6rem;
     align-items: center;
     flex-basis: content;
 }
-#editor-menu > *:not(.section) {
+.editor-menu > *:not(.section) {
     flex-shrink: 0;
 }
-#editor-menu > #home-button {
+.editor-menu > #home-button {
     background: transparent;
     height: 60%;
     margin: calc(3.6rem * 0.2) 10px calc(3.6rem * 0.2) 15px;
 }
-#editor-menu > #home-button img {
+.editor-menu > #home-button img {
     height: 100%;
 }
-#editor-menu > #settings-button {
+.editor-menu > #settings-button {
     background: transparent;
     width: 2rem;
     height: 2rem;
@@ -115,37 +115,37 @@
     transition: 0.2s;
     opacity: 0.7;
 }
-#editor-menu > #settings-button:hover,
-#editor-menu > #settings-button:focus {
+.editor-menu > #settings-button:hover,
+.editor-menu > #settings-button:focus {
     opacity: 0.9;
     box-shadow: 0px 2px 5px #000000a0;
 }
-#editor-menu > #settings-button img {
+.editor-menu > #settings-button img {
     height: 70%;
     margin-top: 15%;
 }
-#editor-menu > .section {
+.editor-menu > .section {
     flex-grow: 1;
     overflow: hidden;
 }
-#editor-menu .navigator-menu {
+.editor-menu .navigator-menu {
     display: inline-block;
 }
-#editor-menu .navigator-menu > .navigator-button {
+.editor-menu .navigator-menu > .navigator-button {
     background-color: transparent;
     font-size: var(--fs-s);
     margin-top: 2px;
     padding: 4px 12px;
     transition: 0.1s;
 }
-#editor-menu .navigator-menu > .navigator-button:hover,
-#editor-menu .navigator-menu > .navigator-button:focus {
+.editor-menu .navigator-menu > .navigator-button:hover,
+.editor-menu .navigator-menu > .navigator-button:focus {
     background-color: #f2f2f2;
 }
-#editor-menu .navigator-menu > .navigator-button:active {
+.editor-menu .navigator-menu > .navigator-button:active {
     background-color: #e4d8ff;
 }
-#editor-menu input {
+.editor-menu input {
     background-color: transparent;
     font-size: 18px;
     display: block;
@@ -158,13 +158,13 @@
     transition: 0.2s;
     transition-property: border-bottom-color;
 }
-#editor-menu input:hover {
+.editor-menu input:hover {
     border-bottom-color: #f3f3f3;
 }
-#editor-menu input:focus {
+.editor-menu input:focus {
     border-bottom-color: #e0e0e0;
 }
-#editor-menu .active-indicator {
+.editor-menu .active-indicator {
     background-color: var(--clr-sub-2);
     width: 0px;
     height: 2px;
@@ -177,7 +177,7 @@
  *  Editor controls
  * ===================== */
 
-#editor-controls {
+.editor-controls {
     height: 32px;
     align-items: center;
     flex-basis: content;
@@ -188,7 +188,7 @@
  *  Editor view
  * ===================== */
 
-#editor-view {
+.editor-view {
     height: calc(100vh - 3.6rem - 32px);
 }
 
@@ -196,7 +196,7 @@
  *  Editor activity bar
  * ===================== */
 
-#editor-activity-bar {
+.editor-activity-bar {
     background-color: white;
     width: 55px;
     flex-shrink: 0;
@@ -209,7 +209,7 @@
  *  Editor side bar
  * ===================== */
 
-#editor-side-bar {
+.editor-side-bar {
     background-color: #fefefe;
     width: 22rem;
     flex-shrink: 0;
@@ -226,7 +226,7 @@
  *  Editor content
  * ===================== */
 
-#editor-content {
+.editor-content {
     position: relative;
     width: calc(100% - 22rem);
     flex-grow: 1;
