@@ -28,6 +28,15 @@ class Input extends Component {
         // Initialize element
         this.element.classList.add("input");
     }
+
+    // Add an event listener
+    addEventListener(type, listener, delegate=true, options) {
+        if (delegate) {
+            quill.eventDelegation.add(type, this.element, listener);
+        } else {
+            this.element.addEventListener(type, listener, options);
+        }
+    }
 }
 
 /* ===================== */
@@ -41,6 +50,11 @@ class Button extends Input {
         this.element.classList.add("button");
         this.setProperties(info);
     }
+
+    // Add a onclick event listener
+    addClickListener(listener, delegate=true, options) {
+        this.addEventListener("click", listener, delegate, options);
+    }
 }
 
 // Toggler
@@ -48,31 +62,64 @@ class Button extends Input {
 class Toggler extends Button {
     constructor(initialIsActive, info) {
         super(info);
-        this.isActive = !!initialIsActive;
-        this.onActive = this.onInactive = null;
         this.element.classList.add("toggler");
-    }
-    setClickListener() {
-        // Does addEventListener change `this`?
-        this.element.addEventListener("click", () => {
-            this.isActive = !this.isActive;
-            if (this.isActive) {
-                this.onActive();
+        this.isActive = !!initialIsActive;
+
+        // Listeners
+        this.onActive = null;
+        this.onInactive = null;
+
+        // Enable/disable refiring this.on(In)Active even if this.isActive is already true/false
+        this.allowRefiring = false;
+
+        // Automatically add event listener
+        // Changes between active and inactive when clicked on
+        this.addClickListener((event) => {
+            if (this.isActive = !this.isActive) {
+                this.element.classList.add("active");
+                if (dev.isType("function", this.onActive)) {
+                    this.onActive(event);
+                }
             } else {
-                this.onInactive();
+                this.element.classList.remove("active");
+                if (dev.isType("function", this.onInactive)) {
+                    this.onInactive(event);
+                }
             }
         });
     }
-    setActiveListener(callback) {
-        this.onActive = callback;
-        if (this.onInactive) {
-            this.setClickListener();
+
+    // Will call `listener` when button is activated
+    setActiveListener(listener) {
+        this.onActive = listener;
+    }
+
+    // Will call `listener` when button is deactivated
+    setInactiveListener(listener) {
+        this.onInactive = listener;
+    }
+
+    // Manual activate
+    activate(event=null) {
+        if (this.isActive && !this.allowRefiring) {
+            return;
+        }
+        this.isActive = true;
+        this.element.classList.add("active");
+        if (dev.isType("function", this.onActive)) {
+            this.onActive(event);
         }
     }
-    setInactiveListener(callback) {
-        this.onInactive = callback;
-        if (this.onActive) {
-            this.setClickListener();
+
+    // Manual deactivate
+    deactivate(event=null) {
+        if (!this.isActive && !this.allowRefiring) {
+            return;
+        }
+        this.isActive = false;
+        this.element.classList.remove("active");
+        if (dev.isType("function", this.onInactive)) {
+            this.onInactive(event);
         }
     }
 }
@@ -81,8 +128,8 @@ class Toggler extends Button {
 class TextField extends Input {
     constructor(info) {
         super(document.createElement("input"));
-        this.setProperties(info);
         this.element.classList.add("text-field");
+        this.setProperties(info);
     }
 }
 
@@ -94,108 +141,62 @@ class TextField extends Input {
 class Resizer extends Input {
     constructor(direction, info) {
         dev.class.abstract(Resizer);
-        if (!dev.isValid(direction, "horizontal", "vertical")) {
-            dev.throw({
-                Type: SyntaxError,
-                message: "'direction' argument must be 'horizontal' or 'vertical'"
-            });
+        if (!dev.isValid(direction.clean(), "horizontal", "vertical")) {
+            throw new SyntaxError("'direction' argument must be 'horizontal' or 'vertical'");
         }
         super(document.createElement("div"));
-        this.setProperties(info);
-        this.direction = direction; 
-        this.isMouseDown = false;
         this.element.classList.add("resizer");
-    }
+        this.setProperties(info);
 
-    // Set the mousedown listener
-    setMousedownListener(callback=function(){}) {
-        // Callback cannot be an arrow function!
-        // .call does not work with arrow functions
-        if (dev.isArrowFunction()) {
-            dev.throw({
-                Type: SyntaxError,
-                message: "'callback' cannot me an arrow function"
-            });
-        }
+        // Properties
+        dev.class.constant(this, "direction", direction.clean());
+        this.isMousedown = false;
 
-        // Add the event listener
-        this.element.addEventListener("mousedown", (event) => {
+        // Listeners
+        this.onMousemove = null;
+
+        // Add the mousedown listener
+        quill.eventDelegation.add("mousedown", this.element, (event) => {
             // Update info
-            this.isMouseDown = true;
+            this.isMousedown = true;
             this.element.classList.add("active");
-            this.element.classList.remove("inactive");
 
             // This makes sure the cursor stays the way it is
             // even if the cursor is not on this.element
             document.body.style.cursor =
-                this.direction === "horizontal"
-                    ? "ew-resize"
-                    : "ns-resize";
-
-            // Call the callback
-            callback.call(this.getParent(), event);
+                (this.direction === "horizontal" ? "ew-resize" : "ns-resize");
         });
-    }
 
-    // Set the mouseup listener
-    setMouseupListener(callback=function(){}) {
-        // Callback cannot be an arrow function!
-        // .call does not work with arrow functions
-        if (dev.isArrowFunction()) {
-            dev.throw({
-                Type: SyntaxError,
-                message: "'callback' cannot me an arrow function"
-            });
-        }
-
-        // Add event listener
-        // This must be on <body>
-        document.body.addEventListener("mouseup", (event) => {
+        // Add the mouseup listener
+        // This should be on <body>
+        quill.eventDelegation.add("mouseup", document.body, (event) => {
             // If mouse is not held down, just ignore it
-            if (!this.isMouseDown) {
+            if (!this.isMousedown) {
                 return;
             }
 
             // Update info
-            this.isMouseDown = false;
-            this.element.classList.add("inactive");
+            this.isMousedown = false;
             this.element.classList.remove("active");
 
             // Resets cursor
             document.body.style.cursor = "";
-
-            // Call the callback
-            callback.call(this.getParent(), event);
         });
     }
 
     // Set the mousemove listener
-    // Provide a simple default callback if they did not provide one
-    // Just sets the element's width property
-    setMousemoveListener(callback = function(event) {
-        const element = this.element;
-        element.style.width =
-            `${element.getBoundingClientRect().x + event.clientX}px`;
-    }) {
-        // Callback cannot be an arrow function!
-        // .call does not work with arrow functions
-        if (dev.isArrowFunction()) {
-            dev.throw({
-                Type: SyntaxError,
-                message: "'callback' cannot me an arrow function"
-            });
-        }
-
+    setMousemoveListener(listener) {
         // Add event listener
         // This must be on <body>
         document.body.addEventListener("mousemove", (event) => {
             // If mouse is not held down, just ignore it
-            if (!this.isMouseDown) {
+            if (!this.isMousedown) {
                 return;
             }
 
-            // Call the callback
-            callback.call(this.getParent(), event);
+            // Call the listener
+            // TODO: replace with `listener(event)`
+            listener.call(this.getParent(), event);
         });
     }
 }
@@ -208,13 +209,25 @@ class HorizontalResizer extends Resizer {
 
         // Set the position
         // Checks if `position` argument has a valid value
-        if (!dev.isValid(position, "left", "right")) {
-            dev.throw({
-                Type: SyntaxError,
-                message: "'position' argument must be 'left' or 'right'"
-            });
+        if (!dev.isValid(position.clean(), "left", "right")) {
+            throw new SyntaxError("'position' argument must be 'left' or 'right'");
         }
-        this.element.setAttribute("data-horizontal-resizer-position", position);
+        this.element.setAttribute("data-resizer-position", position.clean());
+    }
+}
+
+// Vertical resizer
+class VerticalResizer extends Resizer {
+    constructor(position, info) {
+        super("vertical", info);
+        this.element.classList.add("vertical-resizer");
+
+        // Set the position
+        // Checks if `position` argument has a valid value
+        if (!dev.isValid(position.clean(), "top", "bottom")) {
+            throw new SyntaxError("'position' argument must be 'top' or 'bottom'");
+        }
+        this.element.setAttribute("data-resizer-position", position.clean());
     }
 }
 
@@ -224,6 +237,7 @@ class HorizontalResizer extends Resizer {
 
 // Navigator button
 // A button in the menu the user can click on
+// TODO: extend the Toggler class instead
 class NavigatorButton extends Button {
     constructor(info) {
         super(info);
@@ -231,23 +245,39 @@ class NavigatorButton extends Button {
         this.isActive = false;
         this.onClick = null;
     }
-    activate() {
+
+    // Set the click listener
+    setClickListener(listener) {
+        // Set the onclick event
+        this.onClick = (event) => {
+            // Deactivate all the buttons in navigator menu
+            this.getParent().deactivateAllButtons();
+
+            // Update info
+            this.isActive = true;
+            this.element.classList.add("active");
+
+            // Call the listener
+            listener.call(this, event);
+        };
+
+        // Add the click listener
+        this.addClickListener(this.onClick);
+    }
+
+    // Manual activate
+    activate(event=null) {
         this.isActive = true;
         this.element.classList.add("active");
         if (dev.isType("function", this.onClick)) {
-            this.onClick.call(this, {});
+            this.onClick(event);
         }
     }
+
+    // Manual deactivate
     deactivate() {
         this.isActive = false;
         this.element.classList.remove("active");
-    }
-    setClickListener(callback) {
-        this.onClick = callback;
-        this.element.addEventListener("click", (event) => {
-            this.getParent().deactivateAllButtons();
-            this.activate();
-        });
     }
 }
 
@@ -279,12 +309,12 @@ class NavigatorMenu extends Component {
 // Navigator toggle button
 // Opens and closes the navigator
 // This class shouldn't be directly constructed (use new Navigator)
+// TODO: remove this useless class
 class NavigatorToggler extends Toggler {
     constructor(targetMenu, info) {
         // Call parent constructor
         const superArgument = {
             // Use Quill logo for the menu
-            // REV: add image paths to `quill` object?
             innerHTML: /* html */`
                 <img src="${quill.path.logo}">
             `
@@ -296,10 +326,7 @@ class NavigatorToggler extends Toggler {
         // when clicked on
         // Target menu must be a component, not the element
         if (!(targetMenu instanceof Component)) {
-            dev.throw({
-                Type: TypeError,
-                message: "Expected Component instance for argument 1"
-            });
+            throw new TypeError("Expected Component instance for argument 1");
         }
         this.targetMenu = targetMenu;
 
@@ -334,9 +361,8 @@ class Navigator {
 export {
     // Input
     Input,
-    Button, Toggler,
-    TextField,
-    HorizontalResizer,
+    Button, Toggler, TextField,
+    HorizontalResizer, VerticalResizer,
     // Navigator related
     Navigator, NavigatorButton
 }
