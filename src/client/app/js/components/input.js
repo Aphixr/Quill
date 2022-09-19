@@ -195,6 +195,7 @@ class Resizer extends Input {
             }
 
             // Call the listener
+            // REV: cancel todo below?
             // TODO: replace with `listener(event)`
             listener.call(this.getParent(), event);
         });
@@ -237,47 +238,13 @@ class VerticalResizer extends Resizer {
 
 // Navigator button
 // A button in the menu the user can click on
-// TODO: extend the Toggler class instead
-class NavigatorButton extends Button {
+class NavigatorButton extends Toggler {
     constructor(info) {
-        super(info);
+        super(false, info);
         this.element.classList.add("navigator-button");
-        this.isActive = false;
-        this.onClick = null;
-    }
-
-    // Set the click listener
-    setClickListener(listener) {
-        // Set the onclick event
-        this.onClick = (event) => {
-            // Deactivate all the buttons in navigator menu
+        this.addClickListener((event) => {
             this.getParent().deactivateAllButtons();
-
-            // Update info
-            this.isActive = true;
-            this.element.classList.add("active");
-
-            // Call the listener
-            listener.call(this, event);
-        };
-
-        // Add the click listener
-        this.addClickListener(this.onClick);
-    }
-
-    // Manual activate
-    activate(event=null) {
-        this.isActive = true;
-        this.element.classList.add("active");
-        if (dev.isType("function", this.onClick)) {
-            this.onClick(event);
-        }
-    }
-
-    // Manual deactivate
-    deactivate() {
-        this.isActive = false;
-        this.element.classList.remove("active");
+        });
     }
 }
 
@@ -306,45 +273,6 @@ class NavigatorMenu extends Component {
     }
 }
 
-// Navigator toggle button
-// Opens and closes the navigator
-// This class shouldn't be directly constructed (use new Navigator)
-// TODO: remove this useless class
-class NavigatorToggler extends Toggler {
-    constructor(targetMenu, info) {
-        // Call parent constructor
-        const superArgument = {
-            // Use Quill logo for the menu
-            innerHTML: /* html */`
-                <img src="${quill.path.logo}">
-            `
-        };
-        Object.assign(superArgument, info);
-        super(false, superArgument);
-
-        // Target menu is the element that will be opened/closed
-        // when clicked on
-        // Target menu must be a component, not the element
-        if (!(targetMenu instanceof Component)) {
-            throw new TypeError("Expected Component instance for argument 1");
-        }
-        this.targetMenu = targetMenu;
-
-        // Initialize element stuff
-        this.element.classList.add("navigator-toggler");
-
-        // Set on (in)active listeners
-        this.setActiveListener(() => {
-            this.targetMenu.element.classList.add("active");
-            this.targetMenu.element.classList.remove("inactive");
-        });
-        this.setInactiveListener(() => {
-            this.targetMenu.element.classList.add("inactive");
-            this.targetMenu.element.classList.remove("active");
-        });
-    }
-}
-
 // Navigator
 // Combines all the previous classes into one
 class Navigator {
@@ -352,8 +280,6 @@ class Navigator {
         // Properties
         // The menu; all buttons will be display here
         this.menu = new NavigatorMenu(menuElement);
-        // The toggler button
-        this.toggler = new NavigatorToggler(this.menu);
     }
 }
 
