@@ -153,17 +153,18 @@ class EditorPanel extends Component {
             // Temporary variable pointing to `this`
             let editorPanel = this;
             for (const i in this.controlsNavigator.menu.children) {
-                this.controlsNavigator.menu.children[i].setClickListener(function(event) {
+                const button = this.controlsNavigator.menu.children[i];
+                button.setActiveListener((event) => {
                     // Constants
                     const activeIndicator = editorPanel.menu.notebookPanel.activeIndicator.element;
-                    const boundingRect = this.element.getBoundingClientRect();
+                    const boundingRect = button.element.getBoundingClientRect();
 
                     // Translate the active indicator
                     activeIndicator.style.transform = `translateX(calc(${boundingRect.x}px))`;
                     activeIndicator.style.width = `${boundingRect.width}px`;
 
                     // Auto unfocus the button
-                    this.element.blur();
+                    button.element.blur();
                 });
             }
         }
