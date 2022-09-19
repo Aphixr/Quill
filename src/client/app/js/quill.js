@@ -87,7 +87,52 @@ const quill = {
                 }, 400 + 150 - 20);
             }
         }
-    )
+    ),
+
+    // Event delegation
+    // click, mousedown, mouseup, mouseover*, mouseout*, keydown, keyup, keypress
+    eventDelegation: {
+        // Listeners that will be combined
+        listeners: {},
+
+        // Good event types for event delegation
+        recommended: ["click", "mousedown", "mouseup", "mouseover", "mouseout", "keydown", "keyup", "keypress"],
+
+        // Add a listener
+        add: function(type, target, listener) {
+            if (!this.recommended.includes(type)) {
+                console.warn(`Unrecommended type for event delegation: '${type}'`);
+            }
+
+            // If the event type does not exist yet, create an array for it
+            if (!this.listeners[type]) {
+                this.listeners[type] = [];
+            }
+
+            // Add the listener to the array
+            listener.target = target;
+            this.listeners[type].push(listener);
+        },
+
+        // Combine into one event listener
+        merge: function(type, element=document) {
+            element.addEventListener(type, (event) => {
+                // Call each listener
+                for (const listener of this.listeners[type]) {
+                    if (event.composedPath().includes(listener.target)) {
+                        listener(event);
+                    }
+                }
+            });
+        },
+
+        // Combine all
+        mergeAll: function(element=document) {
+            for (const type in this.listeners) {
+                this.merge(type, element);
+            }
+        }
+    }
 };
 
 quill.milestoneTrack.done("initialize");
