@@ -37,8 +37,6 @@ class App {
         App.editorViewSidebar.resizer = App.editorViewSidebar.addComponent(new HorizontalResizer("right"));
         
         // Add listeners
-        App.editorViewSidebar.resizer.setMousedownListener();
-        App.editorViewSidebar.resizer.setMouseupListener();
         App.editorViewSidebar.resizer
             .setMousemoveListener(function(event) {
                 // Collapse the editor navigation completely
@@ -57,6 +55,9 @@ class App {
                 nav.style.width = `${event.clientX}px`;
                 App.editorViewContent.element.style.width = `${dev.getPageSize().width - event.clientX}px`;
             });
+        
+        // Event delegation
+        quill.eventDelegation.mergeAll();
         
         // Loading milestone (3/4)
         quill.milestoneTrack.done("loading");
