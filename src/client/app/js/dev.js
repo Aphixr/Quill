@@ -91,6 +91,7 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
     // Put these functions in the constructor
     class: {
         // Makes a class abstract
+        // REV: does this function even work?
         abstract: function(Class) {
             if (new.target === Class) {
                 throw new SyntaxError(`Cannot create instance of abstract class '${Class.name}'`);
@@ -100,6 +101,15 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
         // Makes a singleton without using objects
         singleton: function(Class) {
             throw new SyntaxError(`Cannot create instance of singleton class '${Class.name}'`);
+        },
+
+        // Makes a property of an object constant
+        constant: function(object, property, value) {
+            Object.defineProperty(object, property, {
+                configurable: false,
+                writable: false,
+                value: value
+            });
         }
     },
 
@@ -188,6 +198,11 @@ Element.prototype.highlight = function(style) {
     this.classList.add("highlight");
     Object.assign(this.style, style);
 };
+
+// Makes a string lowercase and trimmed
+String.prototype.clean = function() {
+    return this.valueOf().toLowerCase().trim();
+}
 
 // Export
 export default dev
