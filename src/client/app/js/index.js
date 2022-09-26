@@ -29,7 +29,7 @@ class App {
     static editorViewContent = App.editor.view.content;
     static navigator = new Navigator();
     static memory = new Proxy(
-        localStorage.getItem("memory") ? JSON.parse(localStorage.getItem("memory")) : {},
+        JSON.parse(localStorage.getItem("memory")) || {},
         {
             get(target, property) {
                 return target[property];
@@ -47,55 +47,61 @@ class App {
     /* =================== */
     static load() {
         // Navigator
-        {
+        (function navigator() {
             const createButton = (index, name) => {
                 const button = new NavigatorButton();
-                button.addComponent(new Icon("img/navigation-icons.svg", -27 * index, 0));
+                button.element.classList.add("opacity-60");
+                button.addComponent(new Icon("img/navigation-icons.svg", -26 * index, 0));
 
                 const label = document.createElement("span");
                 label.classList.add("label");
-                label.innerHTML = /* html */ `<br>${name}`;
+                label.innerHTML = /* html */ `${name}`;
                 button.addComponent(new Component(label));
                 return button;
             }
 
-            App.navigator.menu.addButtons(
-                createButton(0, "Home"),
-                createButton(1, "Notebooks"),
-                createButton(2, "Templates"),
-                createButton(3, "Trash"),
-                createButton(4, "Settings")
-            );
-        }
-        
-        // Add properties to all the buttons in the navigator
-        for (const button of App.navigator.menu.buttons) {
-            button.setActiveListener((event) => {
-
+            App.navigator.addPages({
+                button: createButton(0, "Home"),
+                view: null
+            }, {
+                button: createButton(1, "Notebooks"),
+                view: null
+            }, {
+                button: createButton(2, "Templates"),
+                view: null
+            }, {
+                button: createButton(3, "Trash"),
+                view: null
+            }, {
+                button: createButton(4, "Settings"),
+                view: null
             });
-        }
+        })();
 
-        // Add the horizontal resizer
-        App.editorViewSidebar.resizer = App.editorViewSidebar.addComponent(new HorizontalResizer("right"));
-        App.editorViewSidebar.element.style.width = App.memory.editorSideBarWidth || "";
-        
-        // Add listeners
-        App.editorViewSidebar.resizer
-            .setMousemoveListener(function({ clientX: mouseX }) {
-                const sideBar = this.element;
-                const toggler = App.editorPanelMenu.buttons.sideBar;
-                const appNavigatorWidth = +getComputedStyle(App.navigator.menu.element).width.replace(/px/, "");
+        // Editor view sidebar resizer
+        (function resizer() {
+            // Add the horizontal resizer
+            App.editorViewSidebar.resizer = App.editorViewSidebar.addComponent(new HorizontalResizer("right"));
+            App.editorViewSidebar.element.style.width = App.memory.editorSideBarWidth || "";
+            
+            // Add listeners
+            App.editorViewSidebar.resizer
+                .setMousemoveListener(function({ clientX: mouseX }) {
+                    const sideBar = this.element;
+                    const toggler = App.editorPanelMenu.buttons.sideBar;
+                    const appNavigatorWidth = +getComputedStyle(App.navigator.menu.element).width.replace(/px/, "");
 
-                if (mouseX < 100 + appNavigatorWidth) {
-                    toggler.deactivate();
-                    return;
-                }
+                    if (mouseX < 100 + appNavigatorWidth) {
+                        toggler.deactivate();
+                        return;
+                    }
 
-                toggler.activate();
-                // `sideBar.width` is for remembering the width
-                App.memory.editorSideBarWidth = sideBar.style.width = sideBar.width =
-                    mouseX - appNavigatorWidth + "px";
-            });
+                    toggler.activate();
+                    // `sideBar.width` is for remembering the width
+                    App.memory.editorSideBarWidth = sideBar.style.width = sideBar.width =
+                        mouseX - appNavigatorWidth + "px";
+                });
+        })();
         
         // Event delegation
         quill.eventDelegation.mergeAll();
@@ -112,11 +118,11 @@ class App {
         // Render
         // App.editor.render(quill.app);
         App.navigator.menu.render(quill.app);
-        App.editor.render(quill.app);
+        App.navigator.view.render(quill.app);
+        App.editor.render(App.navigator.view.element);
         
         // Auto activate the Edit button
         // This must be done after the editor is rendered
-        // Otherwise, the active indicator cannot use .getBoundingClientRect()
         App.editor.panel.controlsNavigator.menu.buttons[0].activate();
 
         // Display milestone (4/4)

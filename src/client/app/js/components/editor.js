@@ -26,13 +26,14 @@ class EditorMenu extends Component {
 
         // Attach the menu button
         // This button toggles the EditorSideBar
-        {
+        (function menuToggler() {
             // Create the menu toggler
             const toggler = new Toggler(true, {
                 innerHTML: /* html */ `<span>&#9776;</span>`
             });
             
-            toggler.element.classList.add("menu");
+            // Initialize classes and listeners
+            toggler.element.classList.add("menu", "opacity-70");
             toggler.setActiveListener(() => {
                 const sideBar = this.getParent().getParent().view.sideBar.element;
                 sideBar.style.width = sideBar.width || "";
@@ -45,7 +46,7 @@ class EditorMenu extends Component {
 
             // Attach component
             this.buttons.sideBar = this.addComponent(toggler);
-        }
+        }).call(this);
 
         // Attach a notebook related <div> notebookPanel
         // This notebook panel will hold notebook related actions and buttons
@@ -53,19 +54,21 @@ class EditorMenu extends Component {
         this.notebookPanel = this.addComponent(new Component(
             document.createElement("div")
         ));
-        this.notebookPanel.element.classList.add("section");
+        this.notebookPanel.element.classList.add("main", "grow");
 
         // Notebook title text field
-        {
+        (function notebookTitleTextField() {
             // Attach the title text field
             this.notebookPanel.notebookTitleTextField =
                 this.notebookPanel.addComponent(new TextField({
-                    id: "notebook-title",
-                    value: "Untitled notebook"
+                    value: "New notebook"
                 }));
             
-            // Constants
+            // Constant
             const notebookTitleInput = this.notebookPanel.notebookTitleTextField;
+
+            notebookTitleInput.element.classList.add("title");
+
             // Automatically resize input element
             notebookTitleInput.element.resizeWidth = () => {
                 // Create an element
@@ -100,7 +103,7 @@ class EditorMenu extends Component {
             notebookTitleInput.element.addEventListener(
                 "blur", (event) => {
                     if (notebookTitleInput.element.value.trim() === "") {
-                        notebookTitleInput.element.value = "Untitled notebook";
+                        notebookTitleInput.element.value = "New notebook";
                         notebookTitleInput.element.resizeWidth();
                     }
                 }
@@ -111,13 +114,16 @@ class EditorMenu extends Component {
                     notebookTitleInput.element.resizeWidth();
                 }
             );
-        }
+        }).call(this);
 
-        // Attach the settings button
-        this.buttons.settings = this.addComponent(new Button({
-            innerHTML: /* html */ `<img src="img/settings.svg">`
-        }));
-        this.buttons.settings.element.classList.add("settings");
+        // Settings button on the right
+        (function settingsButton() {
+            // Attach the settings button
+            this.buttons.settings = this.addComponent(new Button({
+                innerHTML: /* html */ `<img src="img/settings.svg">`
+            }));
+            this.buttons.settings.element.classList.add("settings", "opacity-70");
+        }).call(this);
     }
 }
 
@@ -171,23 +177,18 @@ class EditorPanel extends Component {
             ));
         this.menu.notebookPanel.activeIndicator.element.classList.add("active-indicator");
 
-        // Set click listeners
-        {
-            for (const i in this.controlsNavigator.menu.buttons) {
-                const button = this.controlsNavigator.menu.buttons[i];
-                button.setActiveListener(() => {
-                    // Constants
-                    const activeIndicator = this.menu.notebookPanel.activeIndicator.element;
+        // Set click listeners for the menu buttons
+        this.controlsNavigator.menu.setSharedActiveListener((button) => {
+            // Constants
+            const activeIndicator = this.menu.notebookPanel.activeIndicator.element;
 
-                    // Translate the active indicator
-                    activeIndicator.style.transform = `translateX(${button.element.offsetLeft - 70 - 53}px)`;
-                    activeIndicator.style.width = `${button.element.clientWidth}px`;
+            // Translate the active indicator
+            activeIndicator.style.transform = `translateX(${button.element.offsetLeft - 70 - 53}px)`;
+            activeIndicator.style.width = `${button.element.clientWidth}px`;
 
-                    // Auto unfocus the button
-                    button.element.blur();
-                });
-            }
-        }
+            // Auto unfocus the button
+            button.element.blur();
+        });
     }
 }
 

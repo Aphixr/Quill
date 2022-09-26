@@ -50,7 +50,7 @@
     border-radius: 9px;
 }
 #loading .progress .progress-bar {
-    background-color: var(--clr-sub-2);
+    background-color: var(--clr-theme-1);
     width: 0px;
     height: inherit;
     border-radius: inherit;
@@ -75,16 +75,15 @@
     background-color: white;
     width: 70px;
     z-index: 9999;
-    padding-top: 6px;
     border-right: 1px solid #e0e0e0;
 }
 #app > .navigator-menu button {
     background: transparent;
-    color: var(--clr-sub-2);
+    color: var(--clr-theme-1);
     width: 100%;
     height: 70px;
     opacity: 0.55;
-    transition: 0.1s;
+    transition: 0.2s;
 }
 #app > .navigator-menu button:hover {
     opacity: 1;
@@ -94,12 +93,20 @@
 }
 #app > .navigator-menu button .icon {
     background-size: cover;
-    display: inline-block;
-    width: 27px;
-    height: 27px;
+    display: block;
+    width: 26px;
+    height: 26px;
+    margin: auto;
 }
 #app > .navigator-menu button .label {
     font-size: 12px;
+}
+
+/* =====================
+ *  App view
+ * ===================== */
+#app > .navigator-view {
+    flex-grow: 1;
 }
 
 /* =====================
@@ -109,7 +116,6 @@
 .editor {
     z-index: 0;
     height: 100%;
-    flex-grow: 1;
 }
 
 /* =====================
@@ -131,20 +137,12 @@
     align-items: center;
     flex-basis: content;
 }
-.editor-menu > *:not(.section) {
-    flex-shrink: 0;
-}
 .editor-menu > button.menu {
     background: transparent;
     font-size: 22px;
     width: 50px;
     height: 50px;
     margin-left: 3px;
-    opacity: 0.8;
-}
-.editor-menu > button.menu:hover,
-.editor-menu > button.menu:focus {
-    opacity: 1;
 }
 .editor-menu > button.settings {
     background: transparent;
@@ -153,24 +151,15 @@
     margin: calc(3.6rem * 0.2) 20px calc(3.6rem * 0.2) 15px;
     border-radius: 50%;
     transition: 0.2s;
-    opacity: 0.7;
-}
-.editor-menu > button.settings:hover,
-.editor-menu > button.settings:focus {
-    opacity: 0.9;
 }
 .editor-menu > button.settings img {
     height: 50%;
     margin-top: 15%;
 }
-.editor-menu > .section {
-    flex-grow: 1;
+.editor-menu > .main {
     overflow: hidden;
 }
-.editor-menu .navigator-menu {
-    display: inline-block;
-}
-.editor-menu .navigator-menu > .navigator-button {
+.editor-menu > .main .navigator-menu > .navigator-button {
     background-color: transparent;
     font-size: var(--fs-s);
     margin-top: 2px;
@@ -178,33 +167,34 @@
     border-radius: 5px 5px 0px 0px;
     transition: 0.1s;
 }
-.editor-menu .navigator-menu > .navigator-button:hover,
-.editor-menu .navigator-menu > .navigator-button:focus {
+.editor-menu > .main .navigator-menu > .navigator-button:hover,
+.editor-menu > .main .navigator-menu > .navigator-button:focus {
     background-color: #f2f2f2;
 }
-.editor-menu .navigator-menu > .navigator-button:active {
+.editor-menu > .main .navigator-menu > .navigator-button:active {
     background-color: #e4d8ff;
 }
-.editor-menu input {
+.editor-menu > .main .text-field.title {
     background-color: transparent;
     font-size: 18px;
     display: block;
-    width: 161px;
+    width: 140px;
     max-width: 100%;
     margin: 9px 0px 0px;
     padding: 0px 6px 0px 12px;
     border-bottom: 2px solid transparent;
     border-radius: 2px;
-    transition: 0.2s;
+    transition: 0.12s;
+    transition-property: border-bottom-color;
 }
-.editor-menu input:hover {
+.editor-menu > .main .text-field.title:hover {
     border-bottom-color: #f3f3f3;
 }
-.editor-menu input:focus {
+.editor-menu > .main .text-field.title:focus {
     border-bottom-color: #e0e0e0;
 }
-.editor-menu .active-indicator {
-    background-color: var(--clr-sub-2);
+.editor-menu > .main .active-indicator {
+    background-color: var(--clr-theme-1);
     width: 0px;
     height: 2px;
     position: relative;
