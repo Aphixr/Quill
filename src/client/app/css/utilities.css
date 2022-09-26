@@ -32,6 +32,10 @@
     width: 0px;
     height: 0px;
 }
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
 
 /* Opacity */
 .opacity-60 {
@@ -45,8 +49,7 @@
 }
 
 /* Button related */
-button.opacity-60:hover, button.opacity-70:hover, button.opacity-80:hover,
-button.opacity-60:focus, button.opacity-70:focus, button.opacity-80:focus {
+button[class*='opacity-']:hover, button[class*='opacity-']:focus {
     opacity: 1;
 }
 
