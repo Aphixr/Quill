@@ -127,7 +127,7 @@ class Component {
         if (!(component instanceof Component)) {
             throw new TypeError("`component` argument expected instance of Component");
         }
-        component.parentComponent = this;
+        component.parent = this;
         this.children.push(component);
         this.element.appendChild(component.element);
         return component;
@@ -152,7 +152,7 @@ class Component {
      * @returns {(Component|void)} The parent component or `null` if has no parent
      */
     getParent() {
-        return this.parentComponent;
+        return this.parent;
     }
 
     /**
