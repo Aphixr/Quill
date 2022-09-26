@@ -68,6 +68,8 @@ class Toggler extends Button {
         // Listeners
         this.onActive = null;
         this.onInactive = null;
+        this.onBeforeChange = null;
+        this.onChange = null;
 
         // Enable/disable refiring this.on(In)Active even if this.isActive is already true/false
         this.allowRefiring = false;
@@ -75,7 +77,11 @@ class Toggler extends Button {
         // Automatically add event listener
         // Changes between active and inactive when clicked on
         this.addClickListener((event) => {
-            if (this.isActive = !this.isActive) {
+            if (dev.isType("function", this.onBeforeChange)) {
+                this.onBeforeChange(event);
+            }
+            this.isActive = !this.isActive;
+            if (this.isActive) {
                 this.element.classList.add("active");
                 if (dev.isType("function", this.onActive)) {
                     this.onActive(event);
@@ -86,7 +92,21 @@ class Toggler extends Button {
                     this.onInactive(event);
                 }
             }
+            if (dev.isType("function", this.onChange)) {
+                this.onChange(event);
+            }
         });
+    }
+
+    // Fire `listener` before any information is updated
+    setBeforeChangeListener(listener) {
+        this.onBeforeChange = listener;
+    }
+
+    // Fire `listener` after information is updated
+    // This is fired after (in)active listener
+    setChangeListener(listener) {
+        this.onChange = listener;
     }
 
     // Will call `listener` when button is activated
@@ -242,7 +262,7 @@ class NavigatorButton extends Toggler {
     constructor(info) {
         super(false, info);
         this.element.classList.add("navigator-button");
-        this.addClickListener((event) => {
+        this.setBeforeChangeListener((event) => {
             this.getParent().deactivateAllButtons();
         });
     }
@@ -258,17 +278,44 @@ class NavigatorMenu extends Component {
         this.buttons = [];
     }
 
+    // Add one button onto the navigator menu
+    addButton(navigatorButton) {
+        this.buttons.push(this.addComponent(navigatorButton));
+    }
+
     // Add some buttons onto the navigator menu
     addButtons(...navigatorButtons) {
-        for (let i = 0; i < navigatorButtons.length; i++) {
-            this.buttons.push(this.addComponent(navigatorButtons[i]));
+        for (const navigatorButton of navigatorButtons) {
+            this.addButton(navigatorButton);
         }
     }
 
     // Makes all the buttons inactive
     deactivateAllButtons() {
-        for (const i in this.children) {
-            this.children[i].deactivate();
+        for (const button of this.buttons) {
+            button.deactivate();
+        }
+    }
+}
+
+// Navigator view
+// Shows the content of a tab
+class NavigatorView extends Component {
+    constructor(element) {
+        super(element || document.createElement("div"));
+        this.element.classList.add("navigator-view");
+        this.views = [];
+    }
+
+    // Add one view onto the navigator view
+    addView(navigatorView) {
+        this.views.push(this.addComponent(navigatorView));
+    }
+
+    // Add some views onto the navigator view
+    addViews(...navigatorViews) {
+        for (const navigatorView of navigatorViews) {
+            this.addView(navigatorView);
         }
     }
 }
@@ -276,10 +323,28 @@ class NavigatorMenu extends Component {
 // Navigator
 // Combines all the previous classes into one
 class Navigator {
-    constructor(menuElement) {
+    constructor(menuElement, viewElement) {
         // Properties
-        // The menu; all buttons will be display here
+        // The menu; all buttons will be displayed here
         this.menu = new NavigatorMenu(menuElement);
+
+        // The view; tab content will be displayed here
+        this.view = new NavigatorView(viewElement);
+    }
+
+    // Add one page onto the navigator
+    // Calls NavigatorMenu.addButton() and NavigatorView.addView()
+    addPage({ button, view }) {
+        this.menu.addButton(button);
+        this.view.addView(view);
+    }
+
+    // Add some pages onto the navigator
+    // Calls NavigatorMenu.addButton() and NavigatorView.addView()
+    addPages(...pages) {
+        for (const page of pages) {
+            this.addPage(page);
+        }
     }
 }
 
