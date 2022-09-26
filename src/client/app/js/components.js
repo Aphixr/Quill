@@ -11,6 +11,7 @@
 import quill from "./quill.js"
 
 export * from "./components/editor.js"
+export * from "./components/graphics.js"
 export * from "./components/input.js"
 
 quill.milestoneTrack.done("components");
