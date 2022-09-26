@@ -1,5 +1,5 @@
 /**
- * js/editor/editor.js
+ * js/components/editor.js
  * 
  * The main part of the app. Includes the editor panel on
  * the top, with controls and menus, and the editor content,
@@ -12,7 +12,7 @@
 // Import
 import { State, Component } from "../quartz.js"
 import quill from "../quill.js"
-import { Navigator, NavigatorButton, Button, TextField } from "./input.js"
+import { Navigator, NavigatorButton, Button, Toggler, TextField } from "./input.js"
 
 // Editor menu bar
 // Has tabs that you can click on and edit notebook title
@@ -23,6 +23,29 @@ class EditorMenu extends Component {
 
         // Holds the buttons
         this.buttons = {};
+
+        // Attach the menu button
+        // This button toggles the EditorSideBar
+        {
+            // Create the menu toggler
+            const toggler = new Toggler(true, {
+                innerHTML: /* html */ `<span>&#9776;</span>`
+            });
+            
+            toggler.element.classList.add("menu");
+            toggler.setActiveListener(() => {
+                const sideBar = this.getParent().getParent().view.sideBar.element;
+                sideBar.style.width = sideBar.width || "";
+                sideBar.style.minWidth = "";
+            });
+            toggler.setInactiveListener(() => {
+                const sideBar = this.getParent().getParent().view.sideBar.element;
+                sideBar.style.width = sideBar.style.minWidth = "0px";
+            });
+
+            // Attach component
+            this.buttons.sideBar = this.addComponent(toggler);
+        }
 
         // Attach a notebook related <div> notebookPanel
         // This notebook panel will hold notebook related actions and buttons
@@ -92,9 +115,9 @@ class EditorMenu extends Component {
 
         // Attach the settings button
         this.buttons.settings = this.addComponent(new Button({
-            id: "settings-button",
             innerHTML: /* html */ `<img src="img/settings.svg">`
         }));
+        this.buttons.settings.element.classList.add("settings");
     }
 }
 
@@ -150,18 +173,15 @@ class EditorPanel extends Component {
 
         // Set click listeners
         {
-            // Temporary variable pointing to `this`
-            let editorPanel = this;
-            for (const i in this.controlsNavigator.menu.children) {
-                const button = this.controlsNavigator.menu.children[i];
-                button.setActiveListener((event) => {
+            for (const i in this.controlsNavigator.menu.buttons) {
+                const button = this.controlsNavigator.menu.buttons[i];
+                button.setActiveListener(() => {
                     // Constants
-                    const activeIndicator = editorPanel.menu.notebookPanel.activeIndicator.element;
-                    const boundingRect = button.element.getBoundingClientRect();
+                    const activeIndicator = this.menu.notebookPanel.activeIndicator.element;
 
                     // Translate the active indicator
-                    activeIndicator.style.transform = `translateX(calc(${boundingRect.x}px))`;
-                    activeIndicator.style.width = `${boundingRect.width}px`;
+                    activeIndicator.style.transform = `translateX(${button.element.offsetLeft - 70 - 53}px)`;
+                    activeIndicator.style.width = `${button.element.clientWidth}px`;
 
                     // Auto unfocus the button
                     button.element.blur();
