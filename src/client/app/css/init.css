@@ -29,9 +29,9 @@ button {
 
 :root {
     /* Colors */
-    --clr-main: #fafafa;
-    --clr-sub-1: #2e323b;
-    --clr-sub-2: #5a42f7;
+    --clr-light: #fafafa;
+    --clr-theme-1: #5a42f7;
+    --clr-theme-2: #2e323b;
     --clr-text: #121212;
 
     /* Font sizes */
@@ -70,7 +70,11 @@ button {
 }
 
 /* Selection */
-::selection, ::-moz-selection {
+::selection {
+    background-color: #b1b6fb;
+    color: unset;
+}
+::-moz-selection {
     background-color: #b1b6fb;
     color: unset;
 }
