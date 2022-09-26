@@ -5,6 +5,9 @@
 .flex {
     display: flex;
 }
+.flex > .grow {
+    flex-grow: 1;
+}
 .grid {
     display: grid;
 }
@@ -29,6 +32,25 @@
     width: 0px;
     height: 0px;
 }
+
+/* Opacity */
+.opacity-60 {
+    opacity: 0.6;
+}
+.opacity-70 {
+    opacity: 0.7;
+}
+.opacity-80 {
+    opacity: 0.8;
+}
+
+/* Button related */
+button.opacity-60:hover, button.opacity-70:hover, button.opacity-80:hover,
+button.opacity-60:focus, button.opacity-70:focus, button.opacity-80:focus {
+    opacity: 1;
+}
+
+/* Highlight */
 .highlight {
     background-color: #f0e0ff;
     outline: 5px dashed #8060ffaa;
@@ -43,6 +65,8 @@
     box-shadow: 0px 0px 6px 5px #6040ff;
     z-index: 999999;
 }
+
+/* Resizer */
 .resizer {
     background-color: #a2bdffe0;
     opacity: 0;
