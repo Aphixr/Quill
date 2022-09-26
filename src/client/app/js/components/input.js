@@ -59,6 +59,8 @@ class Button extends Input {
 
 // Toggler
 // A button that toggles something on or off
+// Order fired when clicked on:
+//  onBeforeChange(), onActive()/onInactive(), onChange()
 class Toggler extends Button {
     constructor(initialIsActive, info) {
         super(info);
@@ -258,13 +260,37 @@ class VerticalResizer extends Resizer {
 
 // Navigator button
 // A button in the menu the user can click on
+// Order fired when clicked on:
+//  onBeforeChange(), sharedOnActive(), onActive()/onInactive(), onChange()
 class NavigatorButton extends Toggler {
     constructor(info) {
         super(false, info);
         this.element.classList.add("navigator-button");
         this.setBeforeChangeListener((event) => {
-            this.getParent().deactivateAllButtons();
+            const menu = this.getParent();
+            menu.deactivateAllButtons();
+            if (dev.isType("function", menu.sharedOnActive)) {
+                menu.sharedOnActive.call(this, this, event);
+            }
         });
+    }
+
+    // Manual activate
+    // Override Toggler.activate() to include sharedOnActive()
+    activate(event=null) {
+        if (this.isActive && !this.allowRefiring) {
+            return;
+        }
+        this.isActive = true;
+        this.element.classList.add("active");
+
+        const sharedOnActive = this.getParent().sharedOnActive;
+        if (dev.isType("function", sharedOnActive)) {
+            sharedOnActive.call(this, this, event);
+        }
+        if (dev.isType("function", this.onActive)) {
+            this.onActive(event);
+        }
     }
 }
 
@@ -275,6 +301,7 @@ class NavigatorMenu extends Component {
     constructor(element) {
         super(element || document.createElement("div"));
         this.element.classList.add("navigator-menu");
+        this.sharedOnActive = null;
         this.buttons = [];
     }
 
@@ -288,6 +315,11 @@ class NavigatorMenu extends Component {
         for (const navigatorButton of navigatorButtons) {
             this.addButton(navigatorButton);
         }
+    }
+
+    // Set all buttons with the same active
+    setSharedActiveListener(listener) {
+        this.sharedOnActive = listener;
     }
 
     // Makes all the buttons inactive
@@ -335,8 +367,12 @@ class Navigator {
     // Add one page onto the navigator
     // Calls NavigatorMenu.addButton() and NavigatorView.addView()
     addPage({ button, view }) {
-        this.menu.addButton(button);
-        this.view.addView(view);
+        if (button instanceof Button) {
+            this.menu.addButton(button);
+        }
+        if (view instanceof Component) {
+            this.view.addView(view);
+        }
     }
 
     // Add some pages onto the navigator
