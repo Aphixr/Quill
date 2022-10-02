@@ -66,7 +66,7 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
 
     // Other checking functions
     isIterable: function(value) {
-        return typeof value[Symbol.isIterable] === "function";
+        return typeof value[Symbol.iterator] === "function";
     },
     isElement: function(value) {
         return value instanceof Element;
@@ -88,7 +88,7 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
     },
 
     // Class functions
-    // Put these functions in the constructor
+    // Functions related to classes and objects
     class: {
         // Makes a class abstract
         // REV: does this function even work?
@@ -110,6 +110,19 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
                 writable: false,
                 value: value
             });
+        },
+
+        // Makes an object iterable
+        iterable: function(object, condition) {
+            object[Symbol.iterator] = function* () {
+                for (const property in object) {
+                    const value = object[property];
+                    if (typeof condition === "function" && !condition(value)) {
+                        continue;
+                    }
+                    yield value;
+                }
+            }
         }
     },
 
