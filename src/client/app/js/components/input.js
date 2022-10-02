@@ -76,27 +76,17 @@ class Toggler extends Button {
         // Enable/disable refiring this.on(In)Active even if this.isActive is already true/false
         this.allowRefiring = false;
 
+        // If it was activated by clicking (true)
+        // or activated by code (false)
+        // Make sure to reset to false after everything in the click listener is done
+        this.isClicked = false;
+
         // Automatically add event listener
         // Changes between active and inactive when clicked on
         this.addClickListener((event) => {
-            if (dev.isType("function", this.onBeforeChange)) {
-                this.onBeforeChange(event);
-            }
-            this.isActive = !this.isActive;
-            if (this.isActive) {
-                this.element.classList.add("active");
-                if (dev.isType("function", this.onActive)) {
-                    this.onActive(event);
-                }
-            } else {
-                this.element.classList.remove("active");
-                if (dev.isType("function", this.onInactive)) {
-                    this.onInactive(event);
-                }
-            }
-            if (dev.isType("function", this.onChange)) {
-                this.onChange(event);
-            }
+            this.isClicked = true;
+            this.toggle.call(this, event);
+            this.isClicked = false;
         });
     }
 
@@ -121,28 +111,62 @@ class Toggler extends Button {
         this.onInactive = listener;
     }
 
-    // Manual activate
-    activate(event=null) {
-        if (this.isActive && !this.allowRefiring) {
+    // Toggle button
+    toggle(event=null) {
+        if (this.isActive) {
+            this.deactivate(event);
+        } else {
+            this.activate(event);
+        }
+        return this.isActive;
+    }
+    
+    // Toggle to a active state
+    // For less repetitive code and easier for extended classes to override
+    toggleTo(active, event=null) {
+        // Check if it allows refiring before continuing
+        if (!this.allowRefiring && !!this.isActive === !!active) {
             return;
         }
-        this.isActive = true;
-        this.element.classList.add("active");
-        if (dev.isType("function", this.onActive)) {
-            this.onActive(event);
+
+        // Fire onBeforeChange
+        if (dev.isType("function", this.onBeforeChange)) {
+            this.onBeforeChange(event);
         }
+
+        // Update info
+        this.isActive = !!active;
+        if (active) {
+            this.element.classList.add("active");
+        } else {
+            this.element.classList.remove("active");
+        }
+
+        // Fire onActive/onInactive
+        if (active) {
+            if (dev.isType("function", this.onActive)) {
+                this.onActive(event);
+            }
+        } else {
+            if (dev.isType("function", this.onInactive)) {
+                this.onInactive(event);
+            }
+        }
+
+        // Fire onChange
+        if (dev.isType("function", this.onChange)) {
+            this.onChange(event);
+        }
+    }
+
+    // Manual activate
+    activate(event=null) {
+        this.toggleTo(true, event);
     }
 
     // Manual deactivate
     deactivate(event=null) {
-        if (!this.isActive && !this.allowRefiring) {
-            return;
-        }
-        this.isActive = false;
-        this.element.classList.remove("active");
-        if (dev.isType("function", this.onInactive)) {
-            this.onInactive(event);
-        }
+        this.toggleTo(false, event);
     }
 }
 
@@ -263,34 +287,109 @@ class VerticalResizer extends Resizer {
 // Order fired when clicked on:
 //  onBeforeChange(), sharedOnActive(), onActive()/onInactive(), onChange()
 class NavigatorButton extends Toggler {
-    constructor(info) {
+    constructor(name, info) {
         super(false, info);
         this.element.classList.add("navigator-button");
-        this.setBeforeChangeListener((event) => {
-            const menu = this.getParent();
-            menu.deactivateAllButtons();
-            if (dev.isType("function", menu.sharedOnActive)) {
-                menu.sharedOnActive.call(this, this, event);
-            }
-        });
+
+        // Access owner components
+        // These properties will be set by the owners when added to owner
+        this.menu = null;
+        this.viewer = null;
+        this.navigator = null;
+
+        // Name of this button
+        // Used to decided which View to open
+        this.name = String(name || "");
+
+        // The view this button is supposed to show
+        this.targetView = null;
     }
 
-    // Manual activate
-    // Override Toggler.activate() to include sharedOnActive()
-    activate(event=null) {
-        if (this.isActive && !this.allowRefiring) {
+    toggleTo(active, event=null) {
+        // Check if it allows refiring before continuing
+        if (!this.allowRefiring && !!this.isActive === !!active) {
             return;
         }
-        this.isActive = true;
-        this.element.classList.add("active");
 
-        const sharedOnActive = this.getParent().sharedOnActive;
-        if (dev.isType("function", sharedOnActive)) {
-            sharedOnActive.call(this, this, event);
+        // Should not be able to deactivate itself
+        // A different button must be clicked on to be deactivated
+        if (this.menu.activeButton === this && this.isActive && this.isClicked) {
+            return;
         }
-        if (dev.isType("function", this.onActive)) {
-            this.onActive(event);
+
+        // Fire onBeforeChange
+        if (dev.isType("function", this.onBeforeChange)) {
+            this.onBeforeChange(event);
         }
+
+        // Deactivate the old activeButton
+        if (active) {
+            this.menu.deactivateActiveButton(event);
+        }
+
+        // Call the shared on active listener if there is one
+        if (dev.isType("function", this.menu.sharedOnActive)) {
+            this.menu.sharedOnActive.call(this, this, event);
+        }
+
+        // If targetView is null, retrieve the targetView
+        if (!this.targetView && this.viewer.views[this.name]) {
+            this.targetView = this.viewer.views[this.name];
+            this.targetView.activator = this;
+        }
+
+        // If the view is still found, throw an error
+        if (!this.targetView) {
+            throw new SyntaxError("Unable to get target view");
+        }
+
+        // Display the view
+        this.targetView.element.style.display = "block";
+
+        // Update info
+        this.isActive = !!active;
+        if (active) {
+            this.element.classList.add("active");
+        } else {
+            this.element.classList.remove("active");
+        }
+
+        // Fire onActive/onInactive
+        if (active) {
+            if (dev.isType("function", this.onActive)) {
+                this.onActive(event);
+            }
+        } else {
+            if (dev.isType("function", this.onInactive)) {
+                this.onInactive(event);
+            }
+        }
+        
+        // If this button is set to active
+        // Set activeButton to this
+        if (active) {
+            this.menu.activeButton = this;
+        }
+
+        // Fire onChange
+        if (dev.isType("function", this.onChange)) {
+            this.onChange(event);
+        }
+    }
+
+    // Set the name of this button
+    setName(name) {
+        this.name = String(name);
+    }
+
+    // Set which view the button is supposed to open
+    for(view) {
+        if (!(view instanceof View)) {
+            throw new TypeError(`'view' argument expected instance of View`);
+        }
+        this.name = String(view.name);
+        this.targetView = view;
+        this.targetView.activator = this;
     }
 }
 
@@ -301,13 +400,34 @@ class NavigatorMenu extends Component {
     constructor(element) {
         super(element || document.createElement("div"));
         this.element.classList.add("navigator-menu");
+
+        // Access owner components
+        // These properties will be set by the owners when added to owner
+        this.viewer = null;
+        this.navigator = null;
+
+        // Properties
         this.sharedOnActive = null;
-        this.buttons = [];
+        this.activeButton = null;
+        this.buttons = {};
+        dev.class.iterable(this.buttons, (button) => button instanceof NavigatorButton);
     }
 
     // Add one button onto the navigator menu
-    addButton(navigatorButton) {
-        this.buttons.push(this.addComponent(navigatorButton));
+    addButton(button) {
+        Object.assign(button, {
+            menu: this,
+            viewer: this.viewer,
+            navigator: this.navigator
+        });
+
+        // Sets the target view if the view exists yet
+        if (!(button.targetView instanceof View) && this.viewer.views[button.name]) {
+            button.setName(button.name);
+        }
+
+        // Add button
+        this.buttons[button.name] = this.addComponent(button);
     }
 
     // Add some buttons onto the navigator menu
@@ -322,32 +442,77 @@ class NavigatorMenu extends Component {
         this.sharedOnActive = listener;
     }
 
-    // Makes all the buttons inactive
-    deactivateAllButtons() {
-        for (const button of this.buttons) {
-            button.deactivate();
+    // Deactivate the current active button
+    deactivateActiveButton(event=null) {
+        if (this.activeButton instanceof NavigatorButton) {
+            this.activeButton.deactivate(event);
+            this.activeButton = null;
         }
     }
 }
 
-// Navigator view
-// Shows the content of a tab
-class NavigatorView extends Component {
+// View class
+class View extends Component {
+    constructor(name, info) {
+        super(document.createElement("div"));
+        this.setProperties(info);
+
+        // Access owner components
+        // These properties will be set by the owners when added to owner
+        this.menu = null;
+        this.viewer = null;
+        this.navigator = null;
+
+        // Name of this button
+        // Used to decided which View to open
+        this.name = String(name);
+
+        this.element.classList.add("view", "view-" + this.name);
+    }
+
+    // Show the view
+    show() {
+        this.element.style.display = "";
+    }
+
+    // Hide the view
+    hide() {
+        this.element.style.display = "none";
+    }
+}
+
+// Navigator viewer
+// Shows the content of a tab, using View class
+class NavigatorViewer extends Component {
     constructor(element) {
         super(element || document.createElement("div"));
-        this.element.classList.add("navigator-view");
-        this.views = [];
+        this.element.classList.add("navigator-viewer");
+
+        // Access owner components
+        // These properties will be set by the owners when added to owner
+        this.menu = null;
+        this.navigator = null;
+
+        // Properties
+        this.activeView = null;
+        this.views = {};
+        dev.class.iterable(this.views, (view) => view instanceof View);
     }
 
     // Add one view onto the navigator view
-    addView(navigatorView) {
-        this.views.push(this.addComponent(navigatorView));
+    addView(view) {
+        Object.assign(view, {
+            menu: this.menu,
+            viewer: this,
+            navigator: this.navigator
+        });
+        this.views[view.name] = this.addComponent(view);
     }
 
     // Add some views onto the navigator view
-    addViews(...navigatorViews) {
-        for (const navigatorView of navigatorViews) {
-            this.addView(navigatorView);
+    addViews(...views) {
+        for (const view of views) {
+            this.addView(view);
         }
     }
 }
@@ -356,27 +521,43 @@ class NavigatorView extends Component {
 // Combines all the previous classes into one
 class Navigator {
     constructor(menuElement, viewElement) {
-        // Properties
         // The menu; all buttons will be displayed here
         this.menu = new NavigatorMenu(menuElement);
 
-        // The view; tab content will be displayed here
-        this.view = new NavigatorView(viewElement);
+        // The viewer; tab content will be displayed here
+        this.viewer = new NavigatorViewer(viewElement);
+        
+        // Assign properties to menu and viewer
+        Object.assign(this.menu, {
+            navigator: this,
+            viewer: this.viewer
+        });
+        Object.assign(this.viewer, {
+            navigator: this,
+            menu: this.menu
+        });
+
+        // Pages
+        this.pages = {};
     }
 
     // Add one page onto the navigator
-    // Calls NavigatorMenu.addButton() and NavigatorView.addView()
-    addPage({ button, view }) {
+    // Calls NavigatorMenu.addButton() and NavigatorViewer.addView()
+    addPage(pageInfo) {
+        const { button, view } = pageInfo;
+        this.pages[button.name || view.name] = pageInfo;
+
+        // Add buttons and views if there are any
         if (button instanceof Button) {
             this.menu.addButton(button);
         }
-        if (view instanceof Component) {
-            this.view.addView(view);
+        if (view instanceof View) {
+            this.viewer.addView(view);
         }
     }
 
     // Add some pages onto the navigator
-    // Calls NavigatorMenu.addButton() and NavigatorView.addView()
+    // Calls NavigatorMenu.addButton() and NavigatorViewer.addView()
     addPages(...pages) {
         for (const page of pages) {
             this.addPage(page);
@@ -391,7 +572,7 @@ export {
     Button, Toggler, TextField,
     HorizontalResizer, VerticalResizer,
     // Navigator related
-    Navigator, NavigatorButton
+    Navigator, NavigatorButton, View
 }
 
 
