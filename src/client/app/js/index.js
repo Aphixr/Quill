@@ -10,10 +10,15 @@
 
 import dev from "./dev.js"
 import quill from "./quill.js"
-import {
-    Editor, HorizontalResizer, Navigator, NavigatorButton, Icon
-} from "./components.js"
+import { Editor, HorizontalResizer, Navigator, NavigatorButton, Icon } from "./components.js"
 import { Component } from "./quartz.js";
+
+// Import views
+import home from "./views/home.js"
+import notebooks from "./views/notebooks.js"
+import templates from "./views/templates.js"
+import trash from "./views/trash.js"
+import settings from "./views/settings.js"
 
 
 // App (singleton)
@@ -52,6 +57,7 @@ class App {
                 const button = new NavigatorButton();
                 button.element.classList.add("opacity-60");
                 button.addComponent(new Icon("img/navigation-icons.svg", -26 * index, 0));
+                button.setName(name.toLowerCase());
 
                 const label = document.createElement("span");
                 label.classList.add("label");
@@ -62,19 +68,19 @@ class App {
 
             App.navigator.addPages({
                 button: createButton(0, "Home"),
-                view: null
+                view: home
             }, {
                 button: createButton(1, "Notebooks"),
-                view: null
+                view: notebooks
             }, {
                 button: createButton(2, "Templates"),
-                view: null
+                view: templates
             }, {
                 button: createButton(3, "Trash"),
-                view: null
+                view: trash
             }, {
                 button: createButton(4, "Settings"),
-                view: null
+                view: settings
             });
         })();
 
@@ -91,6 +97,7 @@ class App {
                     const toggler = App.editorPanelMenu.buttons.sideBar;
                     const appNavigatorWidth = +getComputedStyle(App.navigator.menu.element).width.replace(/px/, "");
 
+                    // Deactivate side bar if mouse is in an area
                     if (mouseX < 100 + appNavigatorWidth) {
                         toggler.deactivate();
                         return;
@@ -118,12 +125,13 @@ class App {
         // Render
         // App.editor.render(quill.app);
         App.navigator.menu.render(quill.app);
-        App.navigator.view.render(quill.app);
-        App.editor.render(App.navigator.view.element);
+        App.navigator.viewer.render(quill.app);
+        App.editor.render(App.navigator.viewer.element);
         
-        // Auto activate the Edit button
+        // Auto activate some buttons
         // This must be done after the editor is rendered
-        App.editor.panel.controlsNavigator.menu.buttons[0].activate();
+        App.navigator.menu.buttons.home.activate();
+        App.editor.panel.controlsNavigator.menu.buttons.edit.activate();
 
         // Display milestone (4/4)
         quill.milestoneTrack.done("display");
