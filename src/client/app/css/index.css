@@ -79,16 +79,18 @@
 }
 #app > .navigator-menu button {
     background: transparent;
-    color: var(--clr-theme-1);
+    color: #555555;
     width: 100%;
     height: 70px;
     opacity: 0.55;
-    transition: 0.2s;
+    transition: 0.1s;
+    border-right: 2px solid transparent;
 }
 #app > .navigator-menu button:hover {
-    opacity: 1;
+    opacity: 0.8;
 }
 #app > .navigator-menu button.active {
+    color: var(--clr-theme-1);
     opacity: 1;
 }
 #app > .navigator-menu button .icon {
@@ -103,9 +105,9 @@
 }
 
 /* =====================
- *  App view
+ *  App viewer
  * ===================== */
-#app > .navigator-view {
+#app > .navigator-viewer {
     flex-grow: 1;
 }
 
