@@ -10,9 +10,8 @@
 "use strict";
 
 // Import
-import { State, Component } from "../quartz.js"
-import quill from "../quill.js"
-import { Navigator, NavigatorButton, Button, Toggler, TextField } from "./input.js"
+import { Component } from "../quartz.js"
+import { Navigator, NavigatorButton, Button, Toggler, TextField, View } from "./input.js"
 
 // Editor menu bar
 // Has tabs that you can click on and edit notebook title
@@ -151,22 +150,27 @@ class EditorPanel extends Component {
         this.controlsNavigatorMenu = this.menu.notebookPanel.addComponent(this.controlsNavigator.menu);
         this.controls = this.addComponent(new EditorControls);
 
-        this.controlsNavigator.menu.addButtons(
-            new NavigatorButton({
-                innerText: "Edit"
-            }),
-            new NavigatorButton({
-                innerText: "Insert"
-            }),
-            new NavigatorButton({
-                innerText: "Draw"
-            }),
-            new NavigatorButton({
-                innerText: "Interactive"
-            }),
-            new NavigatorButton({
-                innerText: "View"
-            }),
+        this.controlsNavigator.addPages(
+            {
+                button: new NavigatorButton("edit", { innerText: "Edit" }),
+                view: new View("edit")
+            },
+            {
+                button: new NavigatorButton("insert", { innerText: "Insert" }),
+                view: new View("insert")
+            },
+            {
+                button: new NavigatorButton("draw", { innerText: "Draw" }),
+                view: new View("draw")
+            },
+            {
+                button: new NavigatorButton("interaction", { innerText: "Interaction" }),
+                view: new View("interaction")
+            },
+            {
+                button: new NavigatorButton("view", { innerText: "View" }),
+                view: new View("view")
+            },
         );
 
         // The blue bar on the bottom that moves
