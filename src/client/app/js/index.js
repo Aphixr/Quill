@@ -15,7 +15,7 @@ import { Component } from "./quartz.js";
 
 // Import views
 import home from "./views/home.js"
-import notebooks from "./views/notebooks.js"
+import notebook from "./views/notebook.js"
 import templates from "./views/templates.js"
 import trash from "./views/trash.js"
 import settings from "./views/settings.js"
@@ -55,8 +55,8 @@ class App {
                 button: createButton(0, "Home"),
                 view: home
             }, {
-                button: createButton(1, "Notebooks"),
-                view: notebooks
+                button: createButton(1, "Notebook"),
+                view: notebook
             }, {
                 button: createButton(2, "Templates"),
                 view: templates

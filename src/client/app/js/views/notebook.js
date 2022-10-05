@@ -1,5 +1,5 @@
 /**
- * js/views/notebooks.js
+ * js/views/notebook.js
  * 
  * Edit notebooks and notebook pages.
  */
@@ -10,7 +10,7 @@
 import memory from "../storage.js"
 import { Editor, View, HorizontalResizer } from "../components.js"
 
-const notebooks = new View("notebooks");
+const notebook = new View("notebook");
 
 (() => {
     
@@ -46,17 +46,17 @@ const notebooks = new View("notebooks");
         });
     })();
 
-    // Add editor to the notebooks view
-    notebooks.editor = notebooks.addComponent(editor);
+    // Add editor to the notebook view
+    notebook.editor = notebook.addComponent(editor);
 
     // On show
-    notebooks.setShowListener(() => {
+    notebook.setShowListener(() => {
         // Activate edit button
-        notebooks.editor.panel.controlsNavigator.menu.buttons.edit.activate();
+        notebook.editor.panel.controlsNavigator.menu.buttons.edit.activate();
     });
 
 })();
 
-export default notebooks
+export default notebook
 
 
