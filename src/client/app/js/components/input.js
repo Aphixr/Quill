@@ -12,7 +12,7 @@
 
 import dev from "../dev.js"
 import quill from "../quill.js"
-import { State, Component } from "../quartz.js"
+import { Component } from "../quartz.js"
 
 // Input class (abstract)
 // Anything the user can input any form of information
@@ -202,7 +202,7 @@ class Resizer extends Input {
         this.onMousemove = null;
 
         // Add the mousedown listener
-        quill.eventDelegation.add("mousedown", this.element, (event) => {
+        this.addEventListener("mousedown", (event) => {
             // Update info
             this.isMousedown = true;
             this.element.classList.add("active");
@@ -228,11 +228,8 @@ class Resizer extends Input {
             // Resets cursor
             document.body.style.cursor = "";
         });
-    }
-
-    // Set the mousemove listener
-    setMousemoveListener(listener) {
-        // Add event listener
+        
+        // Add mouse move event listener
         // This must be on <body>
         document.body.addEventListener("mousemove", (event) => {
             // If mouse is not held down, just ignore it
@@ -241,10 +238,15 @@ class Resizer extends Input {
             }
 
             // Call the listener
-            // REV: cancel todo below?
-            // TODO: replace with `listener(event)`
-            listener.call(this.getParent(), event);
+            if (dev.isType("function", this.onMousemove)) {
+                this.onMousemove.call(this.getParent(), event);
+            }
         });
+    }
+
+    // Set the mousemove listener
+    setMousemoveListener(listener) {
+        this.onMousemove = listener;
     }
 }
 
@@ -328,7 +330,7 @@ class NavigatorButton extends Toggler {
         }
 
         // Call the shared on active listener if there is one
-        if (dev.isType("function", this.menu.sharedOnActive)) {
+        if (active && dev.isType("function", this.menu.sharedOnActive)) {
             this.menu.sharedOnActive.call(this, this, event);
         }
 
@@ -422,15 +424,19 @@ class NavigatorMenu extends Component {
 
     // Add one button onto the navigator menu
     addButton(button) {
+        if (!(button instanceof NavigatorButton)) {
+            return;
+        }
+
         Object.assign(button, {
             menu: this,
             viewer: this.viewer,
             navigator: this.navigator
         });
 
-        // Sets the target view if the view exists yet
+        // Sets the button's targetView if the view exists NavigatorView
         if (!(button.targetView instanceof View) && this.viewer.views[button.name]) {
-            button.setName(button.name);
+            button.targetView = this.viewer.views[button.name];
         }
 
         // Add button
@@ -462,7 +468,7 @@ class NavigatorMenu extends Component {
 class View extends Component {
     constructor(name, info) {
         super(document.createElement("div"));
-        this.element.classList.add("view", "view-" + this.name, "hidden");
+        this.element.classList.add("view", "view-" + name, "hidden");
         this.setProperties(info);
 
         // Access owner components
@@ -483,6 +489,9 @@ class View extends Component {
     show(event=null) {
         // Unhide the view
         this.element.classList.remove("hidden");
+
+        // Update active view
+        this.viewer.activeView = this;
 
         // Fire shared onShow
         if (dev.isType("function", this.viewer.sharedOnShow)) {
@@ -532,12 +541,10 @@ class NavigatorViewer extends Component {
         this.navigator = null;
 
         // Properties
+        this.sharedOnShow = null;
         this.activeView = null;
         this.views = {};
         dev.class.iterable(this.views, (view) => view instanceof View);
-
-        // Shared on show listener
-        this.sharedOnShow = null;
     }
 
     // Add one view onto the navigator view
