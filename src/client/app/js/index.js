@@ -10,7 +10,7 @@
 
 import dev from "./dev.js"
 import quill from "./quill.js"
-import { Editor, HorizontalResizer, Navigator, NavigatorButton, Icon } from "./components.js"
+import { Navigator, NavigatorButton, Icon } from "./components.js"
 import { Component } from "./quartz.js";
 
 // Import views
@@ -20,7 +20,6 @@ import templates from "./views/templates.js"
 import trash from "./views/trash.js"
 import settings from "./views/settings.js"
 
-
 // App (singleton)
 class App {
     constructor() {
@@ -28,24 +27,7 @@ class App {
     }
 
     // Components
-    static editor = new Editor();
-    static editorPanelMenu = App.editor.panel.menu;
-    static editorViewSidebar = App.editor.view.sideBar;
-    static editorViewContent = App.editor.view.content;
     static navigator = new Navigator();
-    static memory = new Proxy(
-        JSON.parse(localStorage.getItem("memory")) || {},
-        {
-            get(target, property) {
-                return target[property];
-            },
-            set(target, property, value) {
-                target[property] = value;
-                localStorage.setItem("memory", JSON.stringify(target));
-                return true;
-            }
-        }
-    );
 
     /* =================== */
     /* Load                */
@@ -53,6 +35,8 @@ class App {
     static load() {
         // Navigator
         (function navigator() {
+            // Create a button for the navigator
+            // Returns a NavigatorButton
             const createButton = (index, name) => {
                 const button = new NavigatorButton();
                 button.element.classList.add("opacity-60");
@@ -66,6 +50,7 @@ class App {
                 return button;
             }
 
+            // Add pages
             App.navigator.addPages({
                 button: createButton(0, "Home"),
                 view: home
@@ -83,32 +68,6 @@ class App {
                 view: settings
             });
         })();
-
-        // Editor view sidebar resizer
-        (function resizer() {
-            // Add the horizontal resizer
-            App.editorViewSidebar.resizer = App.editorViewSidebar.addComponent(new HorizontalResizer("right"));
-            App.editorViewSidebar.element.style.width = App.memory.editorSideBarWidth || "";
-            
-            // Add listeners
-            App.editorViewSidebar.resizer
-                .setMousemoveListener(function({ clientX: mouseX }) {
-                    const sideBar = this.element;
-                    const toggler = App.editorPanelMenu.buttons.sideBar;
-                    const appNavigatorWidth = +getComputedStyle(App.navigator.menu.element).width.replace(/px/, "");
-
-                    // Deactivate side bar if mouse is in an area
-                    if (mouseX < 100 + appNavigatorWidth) {
-                        toggler.deactivate();
-                        return;
-                    }
-
-                    toggler.activate();
-                    // `sideBar.width` is for remembering the width
-                    App.memory.editorSideBarWidth = sideBar.style.width = sideBar.width =
-                        mouseX - appNavigatorWidth + "px";
-                });
-        })();
         
         // Event delegation
         quill.eventDelegation.mergeAll();
@@ -117,21 +76,23 @@ class App {
         quill.milestoneTrack.done("loading");
     }
 
-
     /* =================== */
     /* Display             */
     /* =================== */
     static display() {
-        // Render
-        // App.editor.render(quill.app);
+        // Render navigator
         App.navigator.menu.render(quill.app);
         App.navigator.viewer.render(quill.app);
-        App.editor.render(App.navigator.viewer.element);
         
-        // Auto activate some buttons
-        // This must be done after the editor is rendered
-        App.navigator.menu.buttons.home.activate();
-        App.editor.panel.controlsNavigator.menu.buttons.edit.activate();
+        // Auto activate a tab
+        // Based on hash if there is one
+        const hash = location.hash.substring(1);
+        App.navigator.menu.buttons[
+            hash in App.navigator.pages ? location.hash.substring(1) : "home"
+        ].activate();
+
+        // Remove location hash
+        location.hash = "";
 
         // Display milestone (4/4)
         quill.milestoneTrack.done("display");
