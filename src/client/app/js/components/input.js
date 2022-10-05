@@ -343,8 +343,15 @@ class NavigatorButton extends Toggler {
             throw new SyntaxError("Unable to get target view");
         }
 
-        // Display the view
-        this.targetView.element.style.display = "block";
+        // Hide view
+        if (!active) {
+            this.targetView.hide(event);
+        }
+
+        // Display view
+        if (active) {
+            this.targetView.show(event);
+        }
 
         // Update info
         this.isActive = !!active;
@@ -437,7 +444,7 @@ class NavigatorMenu extends Component {
         }
     }
 
-    // Set all buttons with the same active
+    // Set all buttons with a same active listener
     setSharedActiveListener(listener) {
         this.sharedOnActive = listener;
     }
@@ -455,6 +462,7 @@ class NavigatorMenu extends Component {
 class View extends Component {
     constructor(name, info) {
         super(document.createElement("div"));
+        this.element.classList.add("view", "view-" + this.name, "hidden");
         this.setProperties(info);
 
         // Access owner components
@@ -463,21 +471,51 @@ class View extends Component {
         this.viewer = null;
         this.navigator = null;
 
-        // Name of this button
-        // Used to decided which View to open
+        // Name of this view
         this.name = String(name);
 
-        this.element.classList.add("view", "view-" + this.name);
+        // Listeners
+        this.onShow = null;
+        this.onHide = null;
     }
 
     // Show the view
-    show() {
-        this.element.style.display = "";
+    show(event=null) {
+        // Unhide the view
+        this.element.classList.remove("hidden");
+
+        // Fire shared onShow
+        if (dev.isType("function", this.viewer.sharedOnShow)) {
+            this.viewer.sharedOnShow.call(this, this, event);
+        }
+
+        // Fire onShow
+        if (dev.isType("function", this.onShow)) {
+            this.onShow(event);
+        }
     }
 
     // Hide the view
-    hide() {
-        this.element.style.display = "none";
+    hide(event=null) {
+        // Hide the view
+        this.element.classList.add("hidden");
+
+        // Fire onHide
+        if (dev.isType("function", this.onHide)) {
+            this.onHide(event);
+        }
+    }
+
+    // Set the on show listener
+    // Fired when View is displayed
+    setShowListener(listener) {
+        this.onShow = listener;
+    }
+
+    // Set the on show listener
+    // Fired when View is hidden
+    setHideListener(listener) {
+        this.onHide = listener;
     }
 }
 
@@ -497,6 +535,9 @@ class NavigatorViewer extends Component {
         this.activeView = null;
         this.views = {};
         dev.class.iterable(this.views, (view) => view instanceof View);
+
+        // Shared on show listener
+        this.sharedOnShow = null;
     }
 
     // Add one view onto the navigator view
@@ -514,6 +555,11 @@ class NavigatorViewer extends Component {
         for (const view of views) {
             this.addView(view);
         }
+    }
+
+    // Set all views with a same show listener
+    setSharedShowListener(listener) {
+        this.sharedOnShow = listener;
     }
 }
 
@@ -567,8 +613,7 @@ class Navigator {
 
 // Export
 export {
-    // Input
-    Input,
+    // Inputs
     Button, Toggler, TextField,
     HorizontalResizer, VerticalResizer,
     // Navigator related
