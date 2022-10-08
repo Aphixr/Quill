@@ -4,6 +4,10 @@
 
 *, *::before, *::after {
     font: inherit;
+    font-size: 1em;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: none;
     margin: 0px;
     padding: 0px;
     border: none;
@@ -13,13 +17,26 @@
 html, body {
     min-height: 100vh;
 }
-h1, h2, h3, h4, h5, h6, p {
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+}
+h1, h2, h3, h4, h5, h6, p, li {
     overflow-wrap: break-word;
+}
+b, strong {
+    font-weight: bold;
+}
+i, em {
+    font-style: italic;
+}
+a {
+    color: inherit;
 }
 img {
     max-width: 100%;
 }
-button {
+button, input[type='button'], input[type='submit'] {
+    background: transparent;
     cursor: pointer;
 }
 
@@ -87,18 +104,19 @@ button {
     font-family: 'calibri', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6, b, strong { font-weight: bold }
 h1 { font-size: var(--fs-xl) }
 h2 { font-size: var(--fs-l) }
 h3 { font-size: var(--fs-m) }
 h4 { font-size: var(--fs-s) }
 h5 { font-size: var(--fs-xs) }
 h6 { font-size: var(--fs-xxs) }
+small { font-size: var(--fs-xs) }
+img { pointer-events: none }
 
 :focus-visible {
     opacity: 1;
     outline: 2px solid #5540ffac;
-    outline-offset: -2.5px;
+    outline-offset: -2px;
 }
 
 
