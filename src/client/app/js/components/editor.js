@@ -189,9 +189,6 @@ class EditorPanel extends Component {
             // Translate the active indicator
             activeIndicator.style.transform = `translateX(${button.element.offsetLeft - 70 - 53}px)`;
             activeIndicator.style.width = `${button.element.clientWidth}px`;
-
-            // Auto unfocus the button
-            button.element.blur();
         });
     }
 }
