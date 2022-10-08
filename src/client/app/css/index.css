@@ -84,9 +84,11 @@
     height: 70px;
     opacity: 0.55;
     transition: 0.1s;
+    transition-property: opacity;
     border-right: 2px solid transparent;
 }
-#app > .navigator-menu button:hover {
+#app > .navigator-menu button:hover,
+#app > .navigator-menu button:focus-visible {
     opacity: 0.8;
 }
 #app > .navigator-menu button.active {
@@ -169,8 +171,7 @@
     border-radius: 5px 5px 0px 0px;
     transition: 0.1s;
 }
-.editor-menu > .main .navigator-menu > .navigator-button:hover,
-.editor-menu > .main .navigator-menu > .navigator-button:focus {
+.editor-menu > .main .navigator-menu > .navigator-button:hover {
     background-color: #f2f2f2;
 }
 .editor-menu > .main .navigator-menu > .navigator-button:active {
