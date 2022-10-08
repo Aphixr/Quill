@@ -49,6 +49,14 @@ class Button extends Input {
         super(document.createElement("button"));
         this.element.classList.add("button");
         this.setProperties(info);
+
+        // Auto unfocus on click
+        this.blurOnClick = false;
+        this.addEventListener("click", () => {
+            if (this.blurOnClick) {
+                this.element.blur();
+            }
+        });
     }
 
     // Add a onclick event listener
@@ -305,6 +313,9 @@ class NavigatorButton extends Toggler {
 
         // The view this button is supposed to show
         this.targetView = null;
+
+        // Change blur on click to true
+        this.blurOnClick = true;
     }
 
     toggleTo(active, event=null) {
