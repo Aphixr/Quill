@@ -22,7 +22,7 @@ const notebook = new View("notebook");
     (function resizer() {
         // Add the horizontal resizer
         editorViewSidebar.resizer = editorViewSidebar.addComponent(new HorizontalResizer("right"));
-        editorViewSidebar.element.style.width = memory["editor.sideBar.width"] || "";
+        editorViewSidebar.style.width = memory["editor.sideBar.width"] || "";
         
         // Add listeners
         editorViewSidebar.resizer.setMousemoveListener(function({ clientX: mouseX }) {

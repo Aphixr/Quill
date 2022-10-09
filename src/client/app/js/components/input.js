@@ -26,7 +26,7 @@ class Input extends Component {
         super(element);
 
         // Initialize element
-        this.element.classList.add("input");
+        this.classes.add("input");
     }
 
     // Add an event listener
@@ -47,7 +47,7 @@ class Input extends Component {
 class Button extends Input {
     constructor(info) {
         super(document.createElement("button"));
-        this.element.classList.add("button");
+        this.classes.add("button");
         this.setProperties(info);
 
         // Auto unfocus on click
@@ -72,7 +72,7 @@ class Button extends Input {
 class Toggler extends Button {
     constructor(initialIsActive, info) {
         super(info);
-        this.element.classList.add("toggler");
+        this.classes.add("toggler");
         this.isActive = !!initialIsActive;
 
         // Listeners
@@ -145,9 +145,9 @@ class Toggler extends Button {
         // Update info
         this.isActive = !!active;
         if (active) {
-            this.element.classList.add("active");
+            this.classes.add("active");
         } else {
-            this.element.classList.remove("active");
+            this.classes.remove("active");
         }
 
         // Fire onActive/onInactive
@@ -182,7 +182,7 @@ class Toggler extends Button {
 class TextField extends Input {
     constructor(info) {
         super(document.createElement("input"));
-        this.element.classList.add("text-field");
+        this.classes.add("text-field");
         this.setProperties(info);
     }
 }
@@ -199,7 +199,7 @@ class Resizer extends Input {
             throw new SyntaxError("'direction' argument must be 'horizontal' or 'vertical'");
         }
         super(document.createElement("div"));
-        this.element.classList.add("resizer");
+        this.classes.add("resizer");
         this.setProperties(info);
 
         // Properties
@@ -213,7 +213,7 @@ class Resizer extends Input {
         this.addEventListener("mousedown", (event) => {
             // Update info
             this.isMousedown = true;
-            this.element.classList.add("active");
+            this.classes.add("active");
 
             // This makes sure the cursor stays the way it is
             // even if the cursor is not on this.element
@@ -231,7 +231,7 @@ class Resizer extends Input {
 
             // Update info
             this.isMousedown = false;
-            this.element.classList.remove("active");
+            this.classes.remove("active");
 
             // Resets cursor
             document.body.style.cursor = "";
@@ -262,14 +262,14 @@ class Resizer extends Input {
 class HorizontalResizer extends Resizer {
     constructor(position, info) {
         super("horizontal", info);
-        this.element.classList.add("horizontal-resizer");
+        this.classes.add("horizontal-resizer");
 
         // Set the position
         // Checks if `position` argument has a valid value
         if (!dev.isValid(position.clean(), "left", "right")) {
             throw new SyntaxError("'position' argument must be 'left' or 'right'");
         }
-        this.element.setAttribute("data-resizer-position", position.clean());
+        this.setAttribute("data-resizer-position", position.clean());
     }
 }
 
@@ -277,14 +277,14 @@ class HorizontalResizer extends Resizer {
 class VerticalResizer extends Resizer {
     constructor(position, info) {
         super("vertical", info);
-        this.element.classList.add("vertical-resizer");
+        this.classes.add("vertical-resizer");
 
         // Set the position
         // Checks if `position` argument has a valid value
         if (!dev.isValid(position.clean(), "top", "bottom")) {
             throw new SyntaxError("'position' argument must be 'top' or 'bottom'");
         }
-        this.element.setAttribute("data-resizer-position", position.clean());
+        this.setAttribute("data-resizer-position", position.clean());
     }
 }
 
@@ -299,7 +299,7 @@ class VerticalResizer extends Resizer {
 class NavigatorButton extends Toggler {
     constructor(name, info) {
         super(false, info);
-        this.element.classList.add("navigator-button");
+        this.classes.add("navigator-button");
 
         // Access owner components
         // These properties will be set by the owners when added to owner
@@ -369,9 +369,9 @@ class NavigatorButton extends Toggler {
         // Update info
         this.isActive = !!active;
         if (active) {
-            this.element.classList.add("active");
+            this.classes.add("active");
         } else {
-            this.element.classList.remove("active");
+            this.classes.remove("active");
         }
 
         // Fire onActive/onInactive
@@ -419,7 +419,7 @@ class NavigatorButton extends Toggler {
 class NavigatorMenu extends Component {
     constructor(element) {
         super(element || document.createElement("div"));
-        this.element.classList.add("navigator-menu");
+        this.classes.add("navigator-menu");
 
         // Access owner components
         // These properties will be set by the owners when added to owner
@@ -479,7 +479,7 @@ class NavigatorMenu extends Component {
 class View extends Component {
     constructor(name, info) {
         super(document.createElement("div"));
-        this.element.classList.add("view", "view-" + name, "hidden");
+        this.classes.add("view", "view-" + name, "hidden");
         this.setProperties(info);
 
         // Access owner components
@@ -499,7 +499,7 @@ class View extends Component {
     // Show the view
     show(event=null) {
         // Unhide the view
-        this.element.classList.remove("hidden");
+        this.classes.remove("hidden");
 
         // Update active view
         this.viewer.activeView = this;
@@ -518,7 +518,7 @@ class View extends Component {
     // Hide the view
     hide(event=null) {
         // Hide the view
-        this.element.classList.add("hidden");
+        this.classes.add("hidden");
 
         // Fire onHide
         if (dev.isType("function", this.onHide)) {
@@ -544,7 +544,7 @@ class View extends Component {
 class NavigatorViewer extends Component {
     constructor(element) {
         super(element || document.createElement("div"));
-        this.element.classList.add("navigator-viewer");
+        this.classes.add("navigator-viewer");
 
         // Access owner components
         // These properties will be set by the owners when added to owner

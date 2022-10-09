@@ -16,7 +16,7 @@ class Section extends Component {
     // Constructor
     constructor(name, info, element) {
         super(element || document.createElement("div"));
-        this.element.classList.add("section");
+        this.classes.add("section");
         this.setProperties(info);
 
         // Properties
@@ -26,7 +26,7 @@ class Section extends Component {
         this.sections = {};
         dev.class.iterable(this.sections, (value) => value instanceof Section);
 
-        this.element.setAttribute("data-name", this.name);
+        this.setAttribute("data-name", this.name);
     }
 
     // Set CSS display property
@@ -61,7 +61,7 @@ class Main extends Section {
     // Constructor
     constructor(name="main", info) {
         super(name, info);
-        this.element.classList.add("main");
+        this.classes.add("main");
     }
 }
 
@@ -70,7 +70,7 @@ class Header extends Section {
     // Constructor
     constructor(name="header", info) {
         super(name, info);
-        this.element.classList.add("header");
+        this.classes.add("header");
     }
 }
 
@@ -79,7 +79,7 @@ class Footer extends Section {
     // Constructor
     constructor(name="footer", info) {
         super(name, info);
-        this.element.classList.add("footer");
+        this.classes.add("footer");
     }
 }
 
@@ -88,7 +88,7 @@ class SideBar extends Section {
     // Constructor
     constructor(name="side-bar", info) {
         super(name, info);
-        this.element.classList.add("side-bar");
+        this.classes.add("side-bar");
     }
 }
 

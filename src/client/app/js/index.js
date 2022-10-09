@@ -39,7 +39,7 @@ class App {
             // Returns a NavigatorButton
             const createButton = (index, name) => {
                 const button = new NavigatorButton();
-                button.element.classList.add("opacity-60");
+                button.classes.add("opacity-60");
                 button.addComponent(new Icon("img/navigation-icons.svg", -26 * index, 0));
                 button.setName(name.toLowerCase());
 
@@ -81,8 +81,8 @@ class App {
     /* =================== */
     static display() {
         // Render navigator
-        App.navigator.menu.render(quill.app);
-        App.navigator.viewer.render(quill.app);
+        App.navigator.menu.renderAt(quill.app);
+        App.navigator.viewer.renderAt(quill.app);
         
         // Auto activate a tab
         // Based on hash if there is one

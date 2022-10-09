@@ -26,15 +26,15 @@ class SpriteSheet {
 class Icon extends Component {
     constructor(source, x, y) {
         super(document.createElement("span"));
-        this.element.classList.add("icon");
+        this.classes.add("icon");
 
         // Set the background
-        this.element.style.backgroundImage = `url('${source}')`;
+        this.style.backgroundImage = `url('${source}')`;
         if (x) {
-            this.element.style.backgroundPositionX = x + "px";
+            this.style.backgroundPositionX = x + "px";
         }
         if (y) {
-            this.element.style.backgroundPositionY = y + "px";
+            this.style.backgroundPositionY = y + "px";
         }
     }
 }

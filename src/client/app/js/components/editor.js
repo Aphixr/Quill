@@ -18,7 +18,7 @@ import { Navigator, NavigatorButton, Button, Toggler, TextField, View } from "./
 class EditorMenu extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.classList.add("editor-menu", "flex");
+        this.classes.add("editor-menu", "flex");
 
         // Holds the buttons
         this.buttons = {};
@@ -32,14 +32,14 @@ class EditorMenu extends Component {
             });
             
             // Initialize classes and listeners
-            toggler.element.classList.add("menu", "opacity-70");
+            toggler.classes.add("menu", "opacity-70");
             toggler.setActiveListener(() => {
-                const sideBar = this.getParent().getParent().view.sideBar.element;
+                const sideBar = this.getParent().getParent().view.sideBar;
                 sideBar.style.width = sideBar.width || "";
                 sideBar.style.minWidth = "";
             });
             toggler.setInactiveListener(() => {
-                const sideBar = this.getParent().getParent().view.sideBar.element;
+                const sideBar = this.getParent().getParent().view.sideBar;
                 sideBar.style.width = sideBar.style.minWidth = "0px";
             });
 
@@ -53,7 +53,7 @@ class EditorMenu extends Component {
         this.notebookPanel = this.addComponent(new Component(
             document.createElement("div")
         ));
-        this.notebookPanel.element.classList.add("main", "grow");
+        this.notebookPanel.classes.add("main", "grow");
 
         // Notebook title text field
         (function notebookTitleTextField() {
@@ -66,10 +66,10 @@ class EditorMenu extends Component {
             // Constant
             const notebookTitleInput = this.notebookPanel.notebookTitleTextField;
 
-            notebookTitleInput.element.classList.add("title");
+            notebookTitleInput.classes.add("title");
 
             // Automatically resize input element
-            notebookTitleInput.element.resizeWidth = () => {
+            notebookTitleInput.resizeWidth = () => {
                 // Create an element
                 let valueElement = this.element.querySelector("#notebook-title-text-field-value");
                 if (!valueElement) {
@@ -84,35 +84,30 @@ class EditorMenu extends Component {
                     this.element.appendChild(valueElement);
                 }
                 valueElement.innerText = notebookTitleInput.element.value;
-                notebookTitleInput.element.style.width =
+                notebookTitleInput.style.width =
                     (valueElement.clientWidth + 27) + "px";
             };
 
             // Maximum length
-            notebookTitleInput.element.setAttribute(
-                "maxlength", 64
-            );
+            notebookTitleInput.setAttribute("maxlength", 64);
+
             // Auto select all the text when focused on
-            notebookTitleInput.element.addEventListener(
-                "focus", (event) => {
-                    notebookTitleInput.element.select();
-                }
-            );
+            notebookTitleInput.addEventListener("focus", (event) => {
+                notebookTitleInput.element.select();
+            }, false);
+
             // On unfocus (blur)
-            notebookTitleInput.element.addEventListener(
-                "blur", (event) => {
-                    if (notebookTitleInput.element.value.trim() === "") {
-                        notebookTitleInput.element.value = "New notebook";
-                        notebookTitleInput.element.resizeWidth();
-                    }
+            notebookTitleInput.addEventListener("blur", (event) => {
+                if (notebookTitleInput.element.value.trim() === "") {
+                    notebookTitleInput.element.value = "New notebook";
+                    notebookTitleInput.resizeWidth();
                 }
-            );
+            }, false);
+
             // When the user types something
-            notebookTitleInput.element.addEventListener(
-                "input", (event) => {
-                    notebookTitleInput.element.resizeWidth();
-                }
-            );
+            notebookTitleInput.addEventListener("input", (event) => {
+                notebookTitleInput.resizeWidth();
+            }, false);
         }).call(this);
 
         // Settings button on the right
@@ -121,7 +116,7 @@ class EditorMenu extends Component {
             this.buttons.settings = this.addComponent(new Button({
                 innerHTML: /* html */ `<img src="img/settings.svg">`
             }));
-            this.buttons.settings.element.classList.add("settings", "opacity-70");
+            this.buttons.settings.classes.add("settings", "opacity-70");
         }).call(this);
     }
 }
@@ -132,7 +127,7 @@ class EditorMenu extends Component {
 class EditorControls extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.classList.add("editor-controls");
+        this.classes.add("editor-controls");
     }
 }
 
@@ -142,7 +137,7 @@ class EditorPanel extends Component {
     constructor() {
         // Initialize element
         super(document.createElement("div"));
-        this.element.classList.add("editor-panel");
+        this.classes.add("editor-panel");
 
         // Add some components
         this.menu = this.addComponent(new EditorMenu);
@@ -179,7 +174,7 @@ class EditorPanel extends Component {
             this.menu.notebookPanel.addComponent(new Component(
                 document.createElement("div")
             ));
-        this.menu.notebookPanel.activeIndicator.element.classList.add("active-indicator");
+        this.menu.notebookPanel.activeIndicator.classes.add("active-indicator");
 
         // Set click listeners for the menu buttons
         this.controlsNavigator.menu.setSharedActiveListener((button) => {
@@ -198,7 +193,7 @@ class EditorPanel extends Component {
 class EditorSideBar extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.classList.add("editor-side-bar");
+        this.classes.add("editor-side-bar");
     }
 }
 
@@ -207,7 +202,7 @@ class EditorSideBar extends Component {
 class EditorContent extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.element.classList.add("editor-content");
+        this.classes.add("editor-content");
     }
 }
 
@@ -217,8 +212,8 @@ class EditorView extends Component {
     constructor() {
         // Initialize this element
         super(document.createElement("div"));
-        this.element.classList.add("editor-view");
-        this.element.classList.add("flex");
+        this.classes.add("editor-view");
+        this.classes.add("flex");
 
         // Add components
         this.sideBar = this.addComponent(new EditorSideBar);
@@ -235,7 +230,7 @@ class Editor extends Component {
     constructor() {
         // Initialize element
         super(document.createElement("div"));
-        this.element.classList.add("editor");
+        this.classes.add("editor");
 
         // Add some components
         this.panel = this.addComponent(new EditorPanel);

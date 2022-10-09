@@ -33,7 +33,7 @@ const home = new View("home");
 
     // Header
     (function() {
-        header.element.classList.add("flex");
+        header.classes.add("flex");
 
         // Create the components
         const logoDiv = new Component(document.createElement("div"));
@@ -43,17 +43,17 @@ const home = new View("home");
         const create = createDiv.addComponent(new Button());
 
         // Logo
-        logoDiv.element.classList.add("logo");
+        logoDiv.classes.add("logo");
         logoDiv.element.innerHTML = /* html */ `
             <img src="${quill.path.logo}">
         `;
 
         // Search bar
-        searchDiv.element.classList.add("search", "grow");
-        search.element.setAttribute("placeholder", "Search");
+        searchDiv.classes.add("search", "grow");
+        search.setAttribute("placeholder", "Search");
 
         // New notebook button
-        createDiv.element.classList.add("new");
+        createDiv.classes.add("new");
         create.element.innerText = "+";
 
         // Add components to the header
