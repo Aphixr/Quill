@@ -60,6 +60,7 @@ const quill = {
         add: function(type, target, listener) {
             if (!this.recommended.includes(type)) {
                 console.warn(`Unrecommended type for event delegation: '${type}'`);
+                console.trace();
             }
 
             // If the event type does not exist yet, create an array for it
