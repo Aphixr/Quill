@@ -118,6 +118,8 @@ class Component {
         this.states = [];
     }
 
+    /* === Add/Remove === */
+
     /**
      * Adds a component to this component
      * @param {Component} component A component instance
@@ -131,6 +133,18 @@ class Component {
         this.children.push(component);
         this.element.appendChild(component.element);
         return component;
+    }
+    
+    /**
+     * Add multiple components to this component
+     * @param {...Component} components Components to attach
+     * @returns {Component[]} Array of components passed in
+     */
+    addComponents(...components) {
+        for (const component of components) {
+            this.addComponent(component);
+        }
+        return components;
     }
 
     /**
@@ -148,28 +162,112 @@ class Component {
     }
 
     /**
+     * Add multiple states to this component
+     * @param {...State} states States to attach
+     * @returns {State[]} Array of states passed in
+     */
+    addStates(...states) {
+        for (const state of states) {
+            this.addState(state);
+        }
+        return states;
+    }
+    
+    /**
+     * Add an event listener to the component
+     * @param {String} type Type of event
+     * @param {function(): any} listener Function to call
+     * @param {(boolean|*)?} options Options for the event listener
+     */
+    addEventListener(type, listener, options) {
+        this.element.addEventListener(type, listener, options);
+    }
+
+    /**
+     * Remove an event listener to the component
+     * @param {String} type Type of event
+     * @param {function(): any} listener Function to remove
+     * @param {(boolean|*)?} options Options for the event listener
+     */
+    removeEventListener(type, listener, options) {
+        this.element.removeEventListener(type, listener, options);
+    }
+
+    /* === Getters === */
+
+    /**
      * Get the parent component of this component
-     * @returns {(Component|void)} The parent component or `null` if has no parent
+     * @returns {(Component|null)} The parent component or `null` if has no parent
      */
     getParent() {
         return this.parent;
     }
 
     /**
+     * Get the attribute of the element
+     * @param {String} name Name of the attribute to get
+     * @returns {(String|null)} Attribute's value or `null` if it has no value
+     */
+    getAttribute(name) {
+        return this.element.getAttribute(name);
+    }
+
+    /**
+     * Get the id of the element
+     */
+    get id() {
+        return this.element.id;
+    }
+
+    /**
+     * Returns the `classList` of the element
+     */
+    get classes() {
+        return this.element.classList;
+    }
+
+    /**
+     * Returns the `style` of the element
+     */
+    get style() {
+        return this.element.style;
+    }
+
+    /* === Setters === */
+
+    /**
      * Set properties to the element
      * @param {...*} objects The objects that will be copied to the element
-     * @returns {void} `undefined`
      */
     setProperties(...objects) {
         Object.assign(this.element, ...objects);
     }
 
     /**
+     * Set an attribute on the element
+     * @param {String} name The name of the attribute to set
+     * @param {String} value The new value of the attribute
+     * @returns {String} The new value passed in
+     */
+    setAttribute(name, value) {
+        this.element.setAttribute(name, value);
+        return String(value);
+    }
+
+    /**
+     * Set the id of the element
+     */
+    set id(value) {
+        return this.element.id = value;
+    }
+
+    /* === Render === */
+
+    /**
      * Renders the component at a place
      * @param {Element} where Where to render the component
-     * @returns {void} `undefined`
      */
-    render(where) {
+    renderAt(where) {
         if (!(where instanceof Element)) {
             throw new TypeError("`where` argument expected instance of Element");
         }
@@ -180,7 +278,6 @@ class Component {
      * Attach components to an element
      * @param {Element} where The element the components should be rendered in
      * @param {...any} components Components to render
-     * @returns {void} `undefined`
      */
     static render(where, ...components) {
         for (const component of components) {
