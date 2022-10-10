@@ -31,7 +31,7 @@ class Section extends Component {
 
     // Set CSS display property
     setDisplay(display) {
-        this.display = String(display);
+        return this.style.display = this.display = String(display);
     }
 
     // Add a section
@@ -46,6 +46,9 @@ class Section extends Component {
         // Add the component to this group
         this.sections[section.name || Object.keys(this.sections).length]
             = this.addComponent(section);
+        
+        // Return the section
+        return section;
     }
 
     // Add sections
@@ -70,7 +73,7 @@ class Header extends Section {
     // Constructor
     constructor(name="header", info) {
         super(name, info);
-        this.classes.add("header");
+        this.classes.add("header", name);
     }
 }
 
@@ -79,7 +82,7 @@ class Footer extends Section {
     // Constructor
     constructor(name="footer", info) {
         super(name, info);
-        this.classes.add("footer");
+        this.classes.add("footer", name);
     }
 }
 
@@ -88,7 +91,7 @@ class SideBar extends Section {
     // Constructor
     constructor(name="side-bar", info) {
         super(name, info);
-        this.classes.add("side-bar");
+        this.classes.add("side-bar", name);
     }
 }
 
