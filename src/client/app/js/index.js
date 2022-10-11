@@ -70,6 +70,7 @@ class App {
         })();
         
         // Event delegation
+        quill.eventDelegation.merge("resize", window);
         quill.eventDelegation.mergeAll();
         
         // Loading milestone (3/4)
