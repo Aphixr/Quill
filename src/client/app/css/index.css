@@ -262,13 +262,12 @@
     height: 70px;
     padding: 15px 36px 15px 30px;
     border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0px 1px 5px #00000060;
+    align-items: stretch;
 }
 .view-home .header .logo {
     width: 40px;
     flex-shrink: 1;
-}
-.view-home .header .logo img {
-    height: 100%;
 }
 .view-home .header .search input {
     background-color: #fafafa;
@@ -284,17 +283,38 @@
     background-color: white;
     box-shadow: 0px 2px 5px #00000090;
 }
+.view-home .header .new .tooltip-builder {
+    height: 100%;
+}
 .view-home .header .new button {
     background-color: white;
     font-size: var(--fs-l);
     width: 40px;
     height: 100%;
-    float: right;
     border-radius: 50%;
     box-shadow: 0px 2px 5px #00000060;
 }
 .view-home .header .new button:hover {
     box-shadow: 0px 2px 5px #00000090;
+}
+.view-home .main {
+    grid-template-columns: auto 300px;
+    grid-template-rows: 200px auto;
+    gap: 30px;
+    height: calc(100vh - 70px);
+    padding: 30px;
+}
+.view-home .main > div h3 {
+    font-weight: normal;
+    opacity: 0.3;
+    transition: 0.1s;
+}
+.view-home .main > div:hover h3 {
+    opacity: 0.6;
+}
+.view-home .special {
+    grid-row: 1 / 3;
+    grid-column: 2;
 }
 
 
