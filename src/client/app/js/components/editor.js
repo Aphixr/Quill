@@ -94,7 +94,7 @@ class EditorMenu extends Component {
             // Auto select all the text when focused on
             notebookTitleInput.addEventListener("focus", (event) => {
                 notebookTitleInput.element.select();
-            }, false);
+            }, undefined, false);
 
             // On unfocus (blur)
             notebookTitleInput.addEventListener("blur", (event) => {
@@ -102,12 +102,12 @@ class EditorMenu extends Component {
                     notebookTitleInput.element.value = "New notebook";
                     notebookTitleInput.resizeWidth();
                 }
-            }, false);
+            }, undefined, false);
 
             // When the user types something
             notebookTitleInput.addEventListener("input", (event) => {
                 notebookTitleInput.resizeWidth();
-            }, false);
+            }, undefined, false);
         }).call(this);
 
         // Settings button on the right
