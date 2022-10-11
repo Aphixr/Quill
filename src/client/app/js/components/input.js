@@ -30,7 +30,7 @@ class Input extends Component {
     }
 
     // Add an event listener
-    addEventListener(type, listener, delegate=true, options) {
+    addEventListener(type, listener, options, delegate=true) {
         if (delegate) {
             quill.eventDelegation.add(type, this.element, listener);
         } else {
@@ -60,8 +60,8 @@ class Button extends Input {
     }
 
     // Add a onclick event listener
-    addClickListener(listener, delegate=true, options) {
-        this.addEventListener("click", listener, delegate, options);
+    addClickListener(listener, options, delegate=true) {
+        this.addEventListener("click", listener, options, delegate);
     }
 }
 
@@ -629,13 +629,162 @@ class Navigator {
     }
 }
 
+/* ===================== */
+/* Navigator classes     */
+/* ===================== */
+
+// The actual tooltip
+class Tooltip extends Input {
+    // Constructor
+    // `delay` is in milliseconds
+    constructor(text, delay) {
+        super(document.createElement("div"));
+
+        // Set element info
+        this.element.innerText = String(text);
+
+        // Properties
+        this.text = String(text);
+        this.delay = Number(delay) || 500;
+        this.timeout = null;
+
+        // Used to access related objects
+        this.target = null;
+        this.builder = null;
+
+        // Set position on resize
+        quill.eventDelegation.add("resize", window, () => {
+            this.setPosition();
+        }, true);
+    }
+
+    // Display the tooltip (without delay)
+    show() {
+        this.classes.add("active");
+    }
+
+    // Hide the tooltip
+    hide() {
+        this.classes.remove("active");
+    }
+
+    // Set the position of the tooltip
+    setPosition() {
+        // Get bounding client rect of target and tooltip
+        const { x, y, width, height } = this.target.element.getBoundingClientRect();
+        const { width: thisWidth } = this.element.getBoundingClientRect();
+        switch (this.position) {
+            case "bottom":
+                this.style.left = `${x + width / 2 - thisWidth / 2}px`;
+                this.style.top = `${y + height + 12}px`;
+        }
+    }
+
+    // Set the timeout
+    setTimeout() {
+        // Set timeout
+        this.timeout = setTimeout(this.show.bind(this), this.delay);
+
+        // Move tooltip to correct location
+        this.setPosition();
+    }
+
+    // Clear the timeout
+    clearTimeout() {
+        clearTimeout(this.timeout);
+        this.timeout = null;
+    }
+}
+
+// Pointing tooltip
+// The tooltip has an arrow that points to the target
+class PointingTooltip extends Tooltip {
+    constructor(text, position, delay) {
+        super(text, delay);
+        this.classes.add("pointing-tooltip");
+
+        // Set the position and check if it's a valid value
+        if (!dev.isValid(position, "top", "bottom", "left", "right")) {
+            throw new SyntaxError("'position' argument must be 'top', 'bottom', 'left', or 'right'");
+        }
+        this.position = position;
+        this.setAttribute("data-tooltip-position", this.position);
+    }
+}
+
+// Mouse location tooltip
+// Tooltip appears at mouse position
+class MouseTooltip extends Tooltip {
+    constructor(text, delay) {
+        super(text, delay);
+        this.classes.add("mouse-tooltip");
+    }
+}
+
+// Tooltip handler (abstract)
+class TooltipBuilder extends Component {
+    constructor(target, tooltip) {
+        dev.class.abstract(Tooltip);
+        super(document.createElement("div"));
+        this.classes.add("tooltip-builder");
+
+        // Check if target is a component
+        if (!(target instanceof Component)) {
+            throw new TypeError("Expected instance of Element or Component for argument 'target'");
+        }
+
+        // Check if tooltip is a Tooltip
+        if (!(tooltip instanceof Tooltip)) {
+            throw new TypeError("Expected instance of Tooltip for argument 'tooltip'");
+        }
+
+        // Symbols used on target
+        this.symbolBuilder = Symbol("TooltipBuilder");
+        this.symbolTooltip = Symbol("Tooltip");
+
+        // Target
+        // The element that the user hovers over to display the tooltip
+        this.target = this.addComponent(target);
+        this.target.classes.add("tooltip-target");
+
+        // Tooltip
+        this.tooltip = this.addComponent(tooltip);
+        this.tooltip.classes.add("tooltip");
+        
+        // Set accessors
+        this.tooltip.builder = this;
+        this.tooltip.target = this.target;
+        this.target[this.symbolBuilder] = this;
+        this.target[this.symbolTooltip] = this.tooltip;
+        this.tooltip.setPosition();
+
+        // Listeners
+        const on = () => {
+            this.tooltip.setTimeout();
+        };
+        const off = () => {
+            this.tooltip.clearTimeout();
+            this.tooltip.hide();
+        };
+
+        // Add event listeners on the target
+        this.target.addEventListener("mouseenter", on, undefined, false);
+        this.target.addEventListener("focus", on, undefined, false);
+        this.target.addEventListener("mouseleave", off, undefined, false);
+        this.target.addEventListener("blur", off, undefined, false);
+    }
+}
+
 // Export
 export {
     // Inputs
     Button, Toggler, TextField,
+    // Resizer related
     HorizontalResizer, VerticalResizer,
     // Navigator related
-    Navigator, NavigatorButton, View
+    Navigator, NavigatorButton, View,
+    // Tooltip related
+    TooltipBuilder, Tooltip, PointingTooltip, MouseTooltip
 }
 
 
