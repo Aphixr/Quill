@@ -107,4 +107,40 @@ button[class*='opacity-']:hover, button[class*='opacity-']:focus {
     bottom: -3.5px;
 }
 
+/* Tooltip */
+.tooltip {
+    background-color: #101010c0;
+    color: #fafafa;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.2px;
+    position: absolute;
+    z-index: 99999;
+    padding: 5px 6px;
+    border-radius: 4px;
+    box-shadow: 0px 1px 4px #00000090;
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+}
+.tooltip.active {
+    opacity: 1;
+}
+.tooltip.pointing-tooltip::after {
+    content: "";
+    position: absolute;
+    border: 5px solid transparent;
+}
+.tooltip.pointing-tooltip[data-tooltip-position="top"]::after {
+    top: 32px;
+    left: calc(50% - 5px);
+    border-bottom: none;
+    border-top: 8px solid #101010c0;
+}
+.tooltip.pointing-tooltip[data-tooltip-position="bottom"]::after {
+    top: -8px;
+    left: calc(50% - 5px);
+    border-top: none;
+    border-bottom: 8px solid #101010c0;
+}
+
 
