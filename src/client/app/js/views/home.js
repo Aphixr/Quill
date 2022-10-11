@@ -9,7 +9,7 @@
 "use strict";
 
 import {
-    Button, TextField, View,
+    Button, TextField, View, TooltipBuilder, PointingTooltip,
     Section, Header, Main, SideBar
 } from "../components.js"
 import { Component } from "../quartz.js";
@@ -24,42 +24,61 @@ const home = new View("home");
     // Displays created notebooks
     const main = new Main();
 
-    // Add sections to main
-    main.addSections(
-        new Section("recent"),
-        new SideBar("special"),
-        new Section("notebooks")
-    );
-
     // Header
-    (function() {
+    (() => {
         header.classes.add("flex");
 
-        // Create the components
-        const logoDiv = new Component(document.createElement("div"));
-        const searchDiv = new Component(document.createElement("div"));
-        const createDiv = new Component(document.createElement("div"));
-        const search = searchDiv.addComponent(new TextField());
-        const create = createDiv.addComponent(new Button());
-
         // Logo
+        const logoDiv = header.addComponent(new Component(document.createElement("div")));
+
         logoDiv.classes.add("logo");
         logoDiv.element.innerHTML = /* html */ `
             <img src="${quill.path.logo}">
         `;
 
         // Search bar
+        const searchDiv = header.addComponent(new Component(document.createElement("div")));
+        const search = searchDiv.addComponent(new TextField());
+
         searchDiv.classes.add("search", "grow");
         search.setAttribute("placeholder", "Search");
 
         // New notebook button
+        const createDiv = header.addComponent(new Component(document.createElement("div")));
+        const create = createDiv.addComponent(new Button());
+        const createTooltip = createDiv.addComponent(new TooltipBuilder(
+            create,
+            new PointingTooltip("New notebook", "bottom")
+        ));
+
         createDiv.classes.add("new");
         create.element.innerText = "+";
+    })();
 
-        // Add components to the header
-        header.logo = header.addComponent(logoDiv);
-        header.search = header.addComponent(searchDiv);
-        header.create = header.addComponent(createDiv);
+    // Main
+    (() => {
+        main.classes.add("grid");
+
+        // Create the components
+        const recent = main.addSection(new Section("recent"));
+        const special = main.addSection(new SideBar("special"));
+        const all = main.addSection(new Section("all"));
+
+        recent.element.innerHTML = /* html */ `
+            <h3>Recent pages</h3>
+        `;
+
+        special.element.innerHTML = /* html */ `
+            <h3>Starred</h3>
+        `;
+
+        all.element.innerHTML = /* html */ `
+            <h3>All notebooks</h3>
+        `;
+
+        for (const name in main.sections) {
+            const section = main.sections[name];
+        }
     })();
 
     // Add sections
