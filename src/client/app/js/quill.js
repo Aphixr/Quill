@@ -57,8 +57,8 @@ const quill = {
         recommended: ["click", "mousedown", "mouseup", "mouseover", "mouseout", "keydown", "keyup", "keypress"],
 
         // Add a listener
-        add: function(type, target, listener) {
-            if (!this.recommended.includes(type)) {
+        add: function(type, target, listener, ignore=false) {
+            if (!this.recommended.includes(type) && !ignore) {
                 console.warn(`Unrecommended type for event delegation: '${type}'`);
                 console.trace();
             }
@@ -78,9 +78,10 @@ const quill = {
             element.addEventListener(type, (event) => {
                 // Call each listener
                 for (const listener of this.listeners[type]) {
-                    if (event.composedPath().includes(listener.target)) {
-                        listener(event);
+                    if (listener.target && !event.composedPath().includes(listener.target)) {
+                        continue;
                     }
+                    listener(event);
                 }
             });
         },
