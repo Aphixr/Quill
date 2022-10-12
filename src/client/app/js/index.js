@@ -8,9 +8,8 @@
 
 "use strict";
 
-import dev from "./dev.js"
 import quill from "./quill.js"
-import { Navigator, NavigatorButton, Icon } from "./components.js"
+import { Navigator, NavigatorButton, SpriteSheet } from "./components.js"
 import { Component } from "./quartz.js";
 
 // Import views
@@ -23,51 +22,68 @@ import settings from "./views/settings.js"
 // App (singleton)
 class App {
     constructor() {
-        dev.class.singleton();
-    }
+        this.element = document.getElementById("app");
 
-    // Components
-    static navigator = new Navigator();
+        // Components
+        this.navigator = new Navigator();
+
+        // Pages of navigator
+        this.pages = {};
+
+        // Initialize
+        this._init = {
+            // Navigator
+            navigator: () => {
+                const navigationIcons = new SpriteSheet("img/navigation-icons.svg", 26, 26);
+
+                // Create a button for the navigator
+                // Returns a NavigatorButton
+                const createButton = (index, name) => {
+                    // Navigator button
+                    const button = new NavigatorButton(name.toLowerCase());
+                    button.classes.add("opacity-60");
+
+                    // Label
+                    const label = new Component(document.createElement("span"));
+                    label.classes.add("label");
+                    label.element.innerText = name;
+
+                    // Attach icon and label
+                    button.addComponent(navigationIcons.getIcon(index));
+                    button.addComponent(label);
+
+                    return button;
+                }
+
+                // Add pages
+                this.navigator.addPages({
+                    button: createButton(0, "Home"),
+                    view: home
+                }, {
+                    button: createButton(1, "Notebook"),
+                    view: notebook
+                }, {
+                    button: createButton(2, "Templates"),
+                    view: templates
+                }, {
+                    button: createButton(3, "Trash"),
+                    view: trash
+                }, {
+                    button: createButton(4, "Settings"),
+                    view: settings
+                });
+
+                this.pages = this.navigator.pages;
+            }
+        };
+    }
 
     /* =================== */
     /* Load                */
     /* =================== */
-    static load() {
-        // Navigator
-        (function navigator() {
-            // Create a button for the navigator
-            // Returns a NavigatorButton
-            const createButton = (index, name) => {
-                const button = new NavigatorButton();
-                button.classes.add("opacity-60");
-                button.addComponent(new Icon("img/navigation-icons.svg", -26 * index, 0));
-                button.setName(name.toLowerCase());
-
-                const label = document.createElement("span");
-                label.classList.add("label");
-                label.innerHTML = /* html */ `${name}`;
-                button.addComponent(new Component(label));
-                return button;
-            }
-
-            // Add pages
-            App.navigator.addPages({
-                button: createButton(0, "Home"),
-                view: home
-            }, {
-                button: createButton(1, "Notebook"),
-                view: notebook
-            }, {
-                button: createButton(2, "Templates"),
-                view: templates
-            }, {
-                button: createButton(3, "Trash"),
-                view: trash
-            }, {
-                button: createButton(4, "Settings"),
-                view: settings
-            });
-        })();
+    load() {
+        // Initialize navigator
+        this._init.navigator();
         
         // Event delegation
         quill.eventDelegation.merge("resize", window);
@@ -80,28 +96,32 @@ class App {
     /* =================== */
     /* Display             */
     /* =================== */
-    static display() {
+    display() {
         // Render navigator
-        App.navigator.menu.renderAt(quill.app);
-        App.navigator.viewer.renderAt(quill.app);
+        this.navigator.menu.renderAt(quill.app);
+        this.navigator.viewer.renderAt(quill.app);
         
         // Auto activate a tab
         // Based on hash if there is one
         const hash = location.hash.substring(1);
-        App.navigator.menu.buttons[
-            hash in App.navigator.pages ? location.hash.substring(1) : "home"
+        this.navigator.menu.buttons[
+            hash in this.pages ? hash : "home"
         ].activate();
 
         // Remove location hash
-        location.hash = "";
+        // Added if statement to prevent Firefox from adding an empty #
+        // if # is not set to anything on load
+        if (location.hash) {
+            location.hash = "";
+        }
 
         // Display milestone (4/4)
         quill.milestoneTrack.done("display");
     }
 }
 
-App.load();
-
-App.display();
+const app = new App;
+app.load();
+app.display();
 
 
