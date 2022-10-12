@@ -8,7 +8,8 @@
 "use strict";
 
 import storage from "../storage.js"
-import { Editor, View, HorizontalResizer } from "../components.js"
+import { Editor } from "../notebook/editor.js"
+import { View, HorizontalResizer } from "../components.js"
 
 const notebook = new View("notebook");
 
