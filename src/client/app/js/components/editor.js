@@ -11,7 +11,12 @@
 
 // Import
 import { Component } from "../quartz.js"
-import { Navigator, NavigatorButton, Button, Toggler, TextField, View } from "./input.js"
+import {
+    Navigator, NavigatorButton, View,
+    Button, Toggler, TextField,
+    TooltipBuilder, PointingTooltip,
+    Container
+} from "../components.js"
 
 // Editor menu bar
 // Has tabs that you can click on and edit notebook title
@@ -29,10 +34,22 @@ class EditorMenu extends Component {
             // Attach the menu button
             // This button toggles the EditorSideBar
             menuToggler: () => {
+                // Container for the menu button
+                const container = this.addComponent(new Container(
+                    "menu-toggler",
+                    document.createElement("div")
+                ));
+
                 // Create the menu toggler
-                const toggler = this.toggleSideBar = this.addComponent(new Toggler(true, {
+                const toggler = this.toggleSideBar = container.addComponent(new Toggler(true, {
                     innerHTML: /* html */ `<span>&#9776;</span>`
                 }));
+
+                // Tooltip builder
+                container.addComponent(new TooltipBuilder(
+                    toggler,
+                    new PointingTooltip("Sidebar", "bottom")
+                ));
                 
                 // Initialize classes and listeners
                 toggler.classes.add("menu", "opacity-70");
@@ -98,7 +115,7 @@ class EditorMenu extends Component {
                     // The input width will resize to the width of the value element
                     valueElement.innerText = titleInput.element.value;
                     titleInput.style.width =
-                        (valueElement.clientWidth + 27) + "px";
+                        (valueElement.clientWidth + 25) + "px";
                 };
 
                 // Auto select all the text when focused on
@@ -125,11 +142,23 @@ class EditorMenu extends Component {
 
             // Settings button on the right, opens the notebook's settings
             settingsButton: () => {
+                // Container for the settings button
+                const container = this.addComponent(new Container(
+                    "settings-button",
+                    document.createElement("div")
+                ));
+
                 // Attach the settings button
-                this.buttons.settings = this.addComponent(new Button({
+                const button = this.buttons.settings = container.addComponent(new Button({
                     innerHTML: /* html */ `<img src="img/settings.svg">`
                 }));
                 this.buttons.settings.classes.add("settings", "opacity-70");
+
+                // Tooltip builder
+                container.addComponent(new TooltipBuilder(
+                    button,
+                    new PointingTooltip("Settings", "bottom")
+                ));
             }
         };
 
