@@ -98,8 +98,6 @@
 #app > .navigator-menu button .icon {
     background-size: cover;
     display: block;
-    width: 26px;
-    height: 26px;
     margin: auto;
 }
 #app > .navigator-menu button .label {
