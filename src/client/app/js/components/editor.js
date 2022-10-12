@@ -147,7 +147,22 @@ class EditorMenu extends Component {
 class EditorControls extends Component {
     constructor() {
         super(document.createElement("div"));
-        this.classes.add("editor-controls");
+        this.classes.add("editor-controls", "flex");
+
+        // Initialize
+        this._init = {
+            // Fixed controls
+            // These controls will be always be on the editor controls,
+            // even after switching editor panel tabs
+            fixed: () => {
+                // Create the component
+                const fixed = this.fixed = this.addComponent(new Component(
+                    document.createElement("div")
+                ));
+
+                fixed.classes.add("fixed");
+            }
+        };
     }
 }
 
@@ -170,6 +185,9 @@ class EditorPanel extends Component {
                 // Navigator
                 this.navigator = new Navigator();
                 this.navigatorMenu = this.menu.main.addComponent(this.navigator.menu);
+                this.navigatorViewer = this.controls.addComponent(this.navigator.viewer);
+
+                this.navigatorViewer.classes.add("grow");
 
                 // Add the pages
                 this.navigatorPages = {};
@@ -208,6 +226,7 @@ class EditorPanel extends Component {
 
         // Initialize
         this._init.navigator();
+        this.controls._init.fixed();
     }
 }
 
