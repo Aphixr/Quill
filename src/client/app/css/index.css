@@ -127,7 +127,7 @@
 .editor-panel {
     background-color: white;
     z-index: 9999;
-    box-shadow: 0px 0px 6px 3px #00000060;
+    box-shadow: 0px 1px 5px #00000060;
 }
 
 /* =====================
@@ -139,23 +139,25 @@
     align-items: center;
     flex-basis: content;
 }
-.editor-menu > button.menu {
+.editor-menu > .container button {
     background: transparent;
-    font-size: 22px;
-    width: 50px;
-    height: 50px;
-    margin-left: 3px;
-}
-.editor-menu > button.settings {
-    background: transparent;
-    width: 3rem;
-    height: 3rem;
-    margin: calc(3.6rem * 0.2) 20px calc(3.6rem * 0.2) 15px;
+    width: 40px;
+    height: 40px;
+    margin: 0px 5px 0px 8px;
     border-radius: 50%;
-    transition: 0.2s;
+    transition: 0.1s;
 }
-.editor-menu > button.settings img {
-    height: 50%;
+.editor-menu > .container button:hover {
+    background-color: #fafafa;
+}
+.editor-menu button.menu {
+    font-size: 22px;
+}
+.editor-menu button.settings {
+    margin: calc(3.6rem * 0.2) 20px calc(3.6rem * 0.2) 15px;
+}
+.editor-menu button.settings img {
+    height: 60%;
     margin-top: 15%;
 }
 .editor-menu > .main {
@@ -179,10 +181,10 @@
     background-color: transparent;
     font-size: 18px;
     display: block;
-    width: 140px;
-    max-width: 100%;
+    width: 133px;
+    max-width: 50vw;
     margin: 9px 0px 0px;
-    padding: 0px 6px 0px 12px;
+    padding: 0px 12px;
     border-bottom: 2px solid transparent;
     border-radius: 2px;
     transition: 0.12s;
@@ -238,7 +240,7 @@
     left: 0px;
     z-index: 998;
     border-top: 1px solid #e0e0e0;
-    box-shadow: 6px 3px 6px -2px #00000048;
+    box-shadow: 2px 3px 5px #00000048;
     transition: 0.1s;
     transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
 }
@@ -262,7 +264,7 @@
     height: 70px;
     padding: 15px 36px 15px 30px;
     border-bottom: 1px solid #e0e0e0;
-    box-shadow: 0px 1px 5px #00000060;
+    box-shadow: 0px 1px 5px #00000048;
     align-items: stretch;
 }
 .view-home .header .logo {
