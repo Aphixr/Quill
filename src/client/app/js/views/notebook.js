@@ -7,7 +7,7 @@
 
 "use strict";
 
-import memory from "../storage.js"
+import storage from "../storage.js"
 import { Editor, View, HorizontalResizer } from "../components.js"
 
 const notebook = new View("notebook");
@@ -22,7 +22,7 @@ const notebook = new View("notebook");
     (function resizer() {
         // Add the horizontal resizer
         editorViewSideBar.resizer = editorViewSideBar.addComponent(new HorizontalResizer("right"));
-        editorViewSideBar.style.width = memory["editor.sideBar.width"] || "";
+        editorViewSideBar.style.width = storage.memory["editor.sideBar.width"] || "";
         
         // Add listeners
         // (this === editorViewSide)
@@ -41,7 +41,7 @@ const notebook = new View("notebook");
 
             toggler.activate();
             // `sideBar.width` is for remembering the width
-            memory["editor.sideBar.width"] = this.style.width = this.width =
+            storage.memory["editor.sideBar.width"] = this.style.width = this.width =
                 mouseX - appNavigatorWidth + "px";
         });
     })();
