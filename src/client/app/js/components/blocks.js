@@ -95,6 +95,15 @@ class SideBar extends Section {
     }
 }
 
-export { Section, Main, Header, Footer, SideBar }
+// Container section class
+class Container extends Section {
+    // Constructor
+    constructor(name="container", info) {
+        super(name, info);
+        this.classes.add("container", name);
+    }
+}
+
+export { Section, Main, Header, Footer, SideBar, Container }
 
 
