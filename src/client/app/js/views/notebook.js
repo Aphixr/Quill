@@ -16,19 +16,19 @@ const notebook = new View("notebook");
     
     // Editor constants
     const editor = new Editor();
-    const editorViewSidebar = editor.view.sideBar;
+    const editorViewSideBar = editor.view.sideBar;
 
     // Editor view sidebar resizer
     (function resizer() {
         // Add the horizontal resizer
-        editorViewSidebar.resizer = editorViewSidebar.addComponent(new HorizontalResizer("right"));
-        editorViewSidebar.style.width = memory["editor.sideBar.width"] || "";
+        editorViewSideBar.resizer = editorViewSideBar.addComponent(new HorizontalResizer("right"));
+        editorViewSideBar.style.width = memory["editor.sideBar.width"] || "";
         
         // Add listeners
-        editorViewSidebar.resizer.setMousemoveListener(function({ clientX: mouseX }) {
+        // (this === editorViewSide)
+        editorViewSideBar.resizer.setMousemoveListener(function({ clientX: mouseX }) {
             // Constants
-            const sideBar = this.element;
-            const toggler = editor.panel.menu.buttons.sideBar;
+            const toggler = editor.panel.menu.toggleSideBar;
             const appNavigatorWidth = 
                 +getComputedStyle(document.querySelector("#app > .navigator-menu"))
                 .width.replace(/px/, "");
@@ -41,7 +41,7 @@ const notebook = new View("notebook");
 
             toggler.activate();
             // `sideBar.width` is for remembering the width
-            memory["editor.sideBar.width"] = sideBar.style.width = sideBar.width =
+            memory["editor.sideBar.width"] = this.style.width = this.width =
                 mouseX - appNavigatorWidth + "px";
         });
     })();
@@ -52,7 +52,7 @@ const notebook = new View("notebook");
     // On show
     notebook.setShowListener(() => {
         // Activate edit button
-        notebook.editor.panel.controlsNavigator.menu.buttons.edit.activate();
+        notebook.editor.panel.navigator.menu.buttons.edit.activate();
     });
 
 })();
