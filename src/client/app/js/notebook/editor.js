@@ -1,5 +1,5 @@
 /**
- * js/components/editor.js
+ * js/notebook/editor.js
  * 
  * The main part of the app. Includes the editor panel on
  * the top, with controls and menus, and the editor content,
@@ -85,13 +85,11 @@ class EditorMenu extends Component {
             // Title text field
             titleTextField: () => {
                 // Attach the title text field
-                this.main.titleTextField = this.main.addComponent(new TextField({
+                const titleInput = this.main.titleTextField = this.main.addComponent(new TextField({
                     value: "New notebook"
                 }));
-                
-                // Constant
-                const titleInput = this.main.titleTextField;
 
+                // Set the input properties
                 titleInput.classes.add("title");
                 titleInput.setAttribute("maxlength", 64);
 
@@ -154,7 +152,7 @@ class EditorMenu extends Component {
                 }));
                 this.buttons.settings.classes.add("settings", "opacity-70");
 
-                // Tooltip builder
+                // Tooltip builder for the settings button
                 container.addComponent(new TooltipBuilder(
                     button,
                     new PointingTooltip("Settings", "bottom")
@@ -183,6 +181,7 @@ class EditorControls extends Component {
             // Fixed controls
             // These controls will be always be on the editor controls,
             // even after switching editor panel tabs
+            // Initialized in EditorPanel..constructor
             fixed: () => {
                 // Create the component
                 const fixed = this.fixed = this.addComponent(new Component(
@@ -207,6 +206,11 @@ class EditorPanel extends Component {
         this.menu = this.addComponent(new EditorMenu);
         // The controls is the navigator viewer
         this.controls = this.addComponent(new EditorControls);
+
+        // Forward
+        this.navigator = undefined;
+        this.navigatorMenu = undefined;
+        this.navigatorViewer = undefined;
         
         // Initialize
         this._init = {
@@ -286,11 +290,11 @@ class EditorView extends Component {
         this.classes.add("editor-view");
         this.classes.add("flex");
 
-        // Add components
+        // Add the side bar for notebook navigation and content
         this.sideBar = this.addComponent(new EditorSideBar);
         this.content = this.addComponent(new EditorContent);
         
-        // Initialize the navigator
+        // Initialize the notebook navigator
         this.activityNavigator = new Navigator();
     }
 }
@@ -303,7 +307,7 @@ class Editor extends Component {
         super(document.createElement("div"));
         this.classes.add("editor");
 
-        // Add some components
+        // Add the editor panel and view
         this.panel = this.addComponent(new EditorPanel);
         this.view = this.addComponent(new EditorView);
     }
