@@ -104,7 +104,7 @@ class EditorMenu extends Component {
                         valueElement.classList.add("visually-hidden");
                         Object.assign(valueElement.style, {
                             fontSize: "18px",
-                            whiteSpace: "auto",
+                            whiteSpace: "pre",
                             width: "auto"
                         });
                         this.element.appendChild(valueElement);
