@@ -118,6 +118,61 @@
 .editor {
     z-index: 0;
     height: 100%;
+    flex-direction: column;
+}
+.editor .main {
+    flex-grow: 1;
+}
+
+/* =====================
+ *  Editor top bar
+ * ===================== */
+
+.editor-top-bar {
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+    padding-inline: 4px;
+    align-items: center;
+    flex-basis: 3.2rem;
+}
+.editor-top-bar > .container button {
+    background: transparent;
+    width: 40px;
+    height: 40px;
+    margin-inline: 6px;
+    border-radius: 50%;
+    transition: 0.1s;
+}
+.editor-top-bar > .container button:hover {
+    background-color: #fafafa;
+}
+.editor-top-bar button.menu {
+    font-size: 22px;
+}
+.editor-top-bar button.settings img {
+    height: 55%;
+    margin-top: 15%;
+}
+.editor-top-bar > .main {
+    overflow: hidden;
+}
+.editor-top-bar > .main .text-field.title {
+    background-color: transparent;
+    font-size: 18px;
+    display: block;
+    width: 133px;
+    max-width: 50vw;
+    padding: 4px 12px 2px;
+    border-bottom: 2px solid transparent;
+    border-radius: 2px;
+    transition: 0.12s;
+    transition-property: border-bottom-color;
+}
+.editor-top-bar > .main .text-field.title:hover {
+    border-bottom-color: #f3f3f3;
+}
+.editor-top-bar > .main .text-field.title:focus {
+    border-bottom-color: #e0e0e0;
 }
 
 /* =====================
@@ -127,7 +182,7 @@
 .editor-panel {
     background-color: white;
     z-index: 9999;
-    box-shadow: 0px 1px 5px #00000060;
+    box-shadow: 0px 1.5px 5px -1px #00000060;
 }
 
 /* =====================
@@ -135,40 +190,18 @@
  * ===================== */
 
 .editor-menu {
-    height: 3.6rem;
-    align-items: center;
-    flex-basis: content;
+    height: 2rem;
 }
-.editor-menu > .container button {
-    background: transparent;
-    width: 40px;
-    height: 40px;
-    margin: 0px 5px 0px 8px;
-    border-radius: 50%;
-    transition: 0.1s;
-}
-.editor-menu > .container button:hover {
-    background-color: #fafafa;
-}
-.editor-menu button.menu {
-    font-size: 22px;
-}
-.editor-menu button.settings {
-    margin: calc(3.6rem * 0.2) 20px calc(3.6rem * 0.2) 15px;
-}
-.editor-menu button.settings img {
-    height: 60%;
-    margin-top: 15%;
-}
-.editor-menu > .main {
-    overflow: hidden;
+.editor-menu > .main .navigator-menu {
+    align-items: flex-end;
+    padding-inline: 6px;
+    height: 100%;
 }
 .editor-menu > .main .navigator-menu > .navigator-button {
     background-color: transparent;
     font-size: var(--fs-s);
-    margin-top: 2px;
+    display: block;
     padding: 4px 12px;
-    border-radius: 5px 5px 0px 0px;
     transition: 0.1s;
 }
 .editor-menu > .main .navigator-menu > .navigator-button:hover {
@@ -176,25 +209,6 @@
 }
 .editor-menu > .main .navigator-menu > .navigator-button:active {
     background-color: #e4d8ff;
-}
-.editor-menu > .main .text-field.title {
-    background-color: transparent;
-    font-size: 18px;
-    display: block;
-    width: 133px;
-    max-width: 50vw;
-    margin: 9px 0px 0px;
-    padding: 0px 12px;
-    border-bottom: 2px solid transparent;
-    border-radius: 2px;
-    transition: 0.12s;
-    transition-property: border-bottom-color;
-}
-.editor-menu > .main .text-field.title:hover {
-    border-bottom-color: #f3f3f3;
-}
-.editor-menu > .main .text-field.title:focus {
-    border-bottom-color: #e0e0e0;
 }
 .editor-menu > .main .active-indicator {
     background-color: var(--clr-theme-1);
@@ -231,16 +245,15 @@
  * ===================== */
 
 .editor-side-bar {
-    background-color: #fefefe;
+    background-color: white;
     width: 22rem;
     flex-shrink: 0;
     min-width: 14rem;
-    max-width: calc(100vw - 450px);
+    max-width: calc(100vw - 500px);
     position: relative;
     left: 0px;
     z-index: 998;
-    border-top: 1px solid #e0e0e0;
-    box-shadow: 2px 3px 5px #00000048;
+    border-right: 1px solid #e0e0e0;
     transition: 0.1s;
     transition-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
 }
@@ -252,7 +265,6 @@
 .editor-content {
     position: relative;
     width: calc(100% - 22rem);
-    flex-grow: 1;
 }
 
 /* =====================

@@ -3,7 +3,7 @@
  * 
  * The main part of the app. Includes the editor panel on
  * the top, with controls and menus, and the editor content,
- * which displays the notebook sections and pages
+ * which displays the notebook sections and pages.
  */
 
 
@@ -15,21 +15,20 @@ import {
     Navigator, NavigatorButton, View,
     Button, Toggler, TextField,
     TooltipBuilder, PointingTooltip,
-    Container
+    Container, Main, Header, SideBar
 } from "../components.js"
 
-// Editor menu bar
-// Has tabs that you can click on and edit notebook title
-class EditorMenu extends Component {
+// Editor top bar
+// The bar on the very top of the editor
+class EditorTopBar extends Header {
     constructor() {
-        super(document.createElement("div"));
-        this.classes.add("editor-menu", "flex");
+        super();
+        this.classes.add("editor-top-bar", "flex");
 
         // Holds the buttons
         this.buttons = {};
 
-        // Initialize components
-        // Make sure methods should be arrow functions
+        // Initialize coomponents
         this._init = {
             // Attach the menu button
             // This button toggles the EditorSideBar
@@ -41,9 +40,12 @@ class EditorMenu extends Component {
                 ));
 
                 // Create the menu toggler
-                const toggler = this.toggleSideBar = container.addComponent(new Toggler(true, {
+                const toggler = this.buttons.sideBar = container.addComponent(new Toggler(true, {
                     innerHTML: /* html */ `<span>&#9776;</span>`
                 }));
+
+                // Side bar that the toggler opens/closes
+                const sideBar = this.getParent().sideBar.element;
 
                 // Tooltip builder
                 container.addComponent(new TooltipBuilder(
@@ -51,12 +53,11 @@ class EditorMenu extends Component {
                     new PointingTooltip("Sidebar", "bottom")
                 ));
                 
-                // Initialize classes and listeners
+                // Initialize classes
                 toggler.classes.add("menu", "opacity-70");
     
                 // Opens the menu
                 toggler.setActiveListener(() => {
-                    const sideBar = this.getParent().getParent().view.sideBar;
                     // Open side bar to previous position before closed
                     sideBar.style.width = sideBar.width || "";
                     // Set min-width to default
@@ -65,13 +66,11 @@ class EditorMenu extends Component {
     
                 // Closes the menu
                 toggler.setInactiveListener(() => {
-                    const sideBar = this.getParent().getParent().view.sideBar;
                     // Side bar has a min-width by default,
                     // so it needs to be removed to be closed
                     sideBar.style.width = sideBar.style.minWidth = "0px";
                 });
             },
-
             // Attach the main part of the editor menu (grows)
             // This notebook panel will hold notebook related actions and buttons
             // including the notebook title and menu buttons
@@ -79,7 +78,7 @@ class EditorMenu extends Component {
                 this.main = this.addComponent(new Component(
                     document.createElement("div")
                 ));
-                this.main.classes.add("main", "grow");
+                this.main.classes.add("main", "flex", "grow");
             },
 
             // Title text field
@@ -159,12 +158,34 @@ class EditorMenu extends Component {
                 ));
             }
         };
+    }
+}
+
+// Editor menu bar
+// Has tabs that you can click on
+class EditorMenu extends Component {
+    constructor() {
+        super(document.createElement("div"));
+        this.classes.add("editor-menu", "flex");
+
+        // Holds the buttons
+        this.buttons = {};
+
+        // Initialize components
+        // Make sure methods should be arrow functions
+        this._init = {
+            // Attach the main part of the editor menu (grows)
+            // NavigatorMenu will go in here
+            main: () => {
+                this.main = this.addComponent(new Component(
+                    document.createElement("div")
+                ));
+                this.main.classes.add("main", "grow");
+            },
+        };
 
         // Initialize
-        this._init.menuToggler();
         this._init.main();
-        this._init.titleTextField();
-        this._init.settingsButton();
     }
 }
 
@@ -220,6 +241,7 @@ class EditorPanel extends Component {
                 this.navigatorMenu = this.menu.main.addComponent(this.navigator.menu);
                 this.navigatorViewer = this.controls.addComponent(this.navigator.viewer);
 
+                this.navigatorMenu.classes.add("flex");
                 this.navigatorViewer.classes.add("grow");
 
                 // Add the pages
@@ -251,7 +273,9 @@ class EditorPanel extends Component {
                     const activeIndicator = this.menu.main.activeIndicator.element;
 
                     // Translate the active indicator
-                    activeIndicator.style.transform = `translateX(${button.element.offsetLeft - 70 - 53}px)`;
+                    activeIndicator.style.transform = `translateX(${
+                        button.element.offsetLeft - button.getParent().element.offsetLeft
+                    }px)`;
                     activeIndicator.style.width = `${button.element.clientWidth}px`;
                 });
             }
@@ -265,9 +289,9 @@ class EditorPanel extends Component {
 
 // Editor sidebar
 // Displays content of whatever tab user clicked on in EditorActivity
-class EditorSideBar extends Component {
+class EditorSideBar extends SideBar {
     constructor() {
-        super(document.createElement("div"));
+        super();
         this.classes.add("editor-side-bar");
     }
 }
@@ -281,35 +305,32 @@ class EditorContent extends Component {
     }
 }
 
-// Editor view
-// Shows the contents of the notebook and notebook page
-class EditorView extends Component {
-    constructor() {
-        // Initialize this element
-        super(document.createElement("div"));
-        this.classes.add("editor-view");
-        this.classes.add("flex");
-
-        // Add the side bar for notebook navigation and content
-        this.sideBar = this.addComponent(new EditorSideBar);
-        this.content = this.addComponent(new EditorContent);
-        
-        // Initialize the notebook navigator
-        this.activityNavigator = new Navigator();
-    }
-}
-
 // Editor
 // The main part of editing is here
 class Editor extends Component {
     constructor() {
         // Initialize element
         super(document.createElement("div"));
-        this.classes.add("editor");
+        this.classes.add("editor", "flex");
 
-        // Add the editor panel and view
-        this.panel = this.addComponent(new EditorPanel);
-        this.view = this.addComponent(new EditorView);
+        // Add the top bar
+        this.topBar = this.addComponent(new EditorTopBar);
+
+        // Add the main section
+        this.main = this.addComponent(new Main());
+        this.main.classes.add("flex");
+        // Left
+        this.sideBar = this.main.left = this.main.addComponent(new EditorSideBar);
+        // Right
+        this.mainMain = this.main.right = this.main.addComponent(new Main());
+        this.panel = this.mainMain.addComponent(new EditorPanel);
+        this.content = this.mainMain.addComponent(new EditorContent);
+
+        // Initailize top bar stuff
+        this.topBar._init.menuToggler();
+        this.topBar._init.main();
+        this.topBar._init.titleTextField();
+        this.topBar._init.settingsButton();
     }
 }
 
@@ -317,8 +338,10 @@ class Editor extends Component {
 export default Editor
 export {
     Editor,
+    EditorTopBar,
+    EditorSideBar,
     EditorMenu, EditorControls, EditorPanel,
-    EditorSideBar, EditorContent, EditorView
+    EditorContent
 }
 
 

@@ -17,19 +17,19 @@ const notebook = new View("notebook");
     
     // Editor constants
     const editor = new Editor();
-    const editorViewSideBar = editor.view.sideBar;
+    const editorSideBar = editor.sideBar;
 
     // Editor view sidebar resizer
     (function resizer() {
         // Add the horizontal resizer
-        editorViewSideBar.resizer = editorViewSideBar.addComponent(new HorizontalResizer("right"));
-        editorViewSideBar.style.width = storage.memory["editor.sideBar.width"] || "";
+        editorSideBar.resizer = editorSideBar.addComponent(new HorizontalResizer("right"));
+        editorSideBar.style.width = storage.memory["editor.sideBar.width"] || "";
         
         // Add listeners
         // (this === editorViewSide)
-        editorViewSideBar.resizer.setMousemoveListener(function({ clientX: mouseX }) {
+        editorSideBar.resizer.setMousemoveListener(function({ clientX: mouseX }) {
             // Constants
-            const toggler = editor.panel.menu.toggleSideBar;
+            const toggler = editor.topBar.buttons.sideBar;
             const appNavigatorWidth = 
                 +getComputedStyle(document.querySelector("#app > .navigator-menu"))
                 .width.replace(/px/, "");
