@@ -10,7 +10,7 @@
 
 import {
     Button, TextField, View, TooltipBuilder, PointingTooltip,
-    Section, Header, Main, SideBar
+    Section, Header, Main, SideBar, Icon
 } from "../components.js"
 import { Component } from "../quartz.js";
 import quill from "../quill.js"
@@ -50,9 +50,10 @@ const home = new View("home");
             create,
             new PointingTooltip("New notebook", "bottom")
         ));
+        const createIcon = create.addComponent(new Icon("./img/new.svg", 0, 0, 12, 12));
 
+        createIcon.classes.add("opacity-80");
         createDiv.classes.add("new");
-        create.element.innerText = "+";
     })();
 
     // Main
