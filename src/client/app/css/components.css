@@ -14,6 +14,13 @@
     z-index: 999999;
 }
 
+/* Icon */
+.icon {
+    background-size: cover;
+    display: block;
+    margin: auto;
+}
+
 /* Navigator */
 .navigator-viewer > .view {
     height: 100%;
