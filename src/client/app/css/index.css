@@ -95,11 +95,6 @@
     color: var(--clr-theme-1);
     opacity: 1;
 }
-#app > .navigator-menu button .icon {
-    background-size: cover;
-    display: block;
-    margin: auto;
-}
 #app > .navigator-menu button .label {
     font-size: 12px;
 }
