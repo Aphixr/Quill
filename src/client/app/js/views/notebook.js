@@ -22,7 +22,7 @@ const notebook = new View("notebook");
     // Editor view sidebar resizer
     (function resizer() {
         // Add the horizontal resizer
-        editorSideBar.resizer = editorSideBar.addComponent(new HorizontalResizer("right"));
+        editorSideBar.resizer = editorSideBar.main.addComponent(new HorizontalResizer("right"));
         editorSideBar.style.width = storage.memory["editor.sideBar.width"] || "";
         
         // Add listeners
@@ -42,7 +42,7 @@ const notebook = new View("notebook");
 
             toggler.activate();
             // `sideBar.width` is for remembering the width
-            storage.memory["editor.sideBar.width"] = this.style.width = this.width =
+            storage.memory["editor.sideBar.width"] = this.parent.style.width = this.width =
                 mouseX - appNavigatorWidth + "px";
         });
     })();
