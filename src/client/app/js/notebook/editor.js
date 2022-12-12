@@ -14,8 +14,9 @@ import { Component } from "../quartz.js"
 import {
     Navigator, NavigatorButton, View,
     Button, Toggler, TextField,
+    DropdownFacade, DropdownToggler, Dropdown, DropdownRow,
     TooltipBuilder, PointingTooltip,
-    Container, Main, Header, SideBar
+    Section, Container, Main, Header, SideBar, Icon
 } from "../components.js"
 
 // Editor top bar
@@ -293,6 +294,42 @@ class EditorSideBar extends SideBar {
     constructor() {
         super();
         this.classes.add("editor-side-bar");
+
+        // Header
+        this.main = this.addComponent(new Main());
+        this.header = this.main.addComponent(new Header());
+
+        this._init = {
+            header: () => {
+                const header = this.header;
+                const location = header.addComponent(new Section("location", ""));
+                const dropdown = new Dropdown({
+                    alignment: "right",
+                    width: 120,
+                    rowHeight: 24
+                });
+                const add = new DropdownToggler(dropdown);
+                const dropdownFacade = header.addComponent(new DropdownFacade(add, dropdown));
+
+                header.classes.add("flex");
+
+                location.classes.add("location", "grow");
+
+                dropdown.addRow(new DropdownRow());
+                dropdown.addRow(new DropdownRow());
+                
+                add.classes.add("new", "opacity-70");
+                add.addComponent(new Icon("./img/new.svg", 0, 0, 12, 12));
+
+                const addPage = dropdown.rows[0].addComponent(new Button());
+                const addSection = dropdown.rows[1].addComponent(new Button());
+                
+                addPage.element.innerText = "Add page";
+                addSection.element.innerText = "Add section";
+            }
+        };
+
+        this._init.header();
     }
 }
 
