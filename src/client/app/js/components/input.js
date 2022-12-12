@@ -178,6 +178,23 @@ class Toggler extends Button {
     }
 }
 
+// Hover toggler
+// Same as Toggler be can hover to activate
+class HoverToggler extends Toggler {
+    constructor(delay=0, initialIsActive, info) {
+        super(initialIsActive, info);
+
+        this.delay = delay;
+
+        this.addEventListener("mouseenter", (event) => {
+            this.toggle.call(this, event);
+        });
+        this.addEventListener("mouseleave", (event) => {
+            this.toggle.call(this, event);
+        });
+    }
+}
+
 // Input field
 class TextField extends Input {
     constructor(info) {
@@ -630,6 +647,144 @@ class Navigator {
 }
 
 /* ===================== */
+/* Dropdown classes      */
+/* ===================== */
+
+// DropdownToggler <- Toggler (<- Button <- Input)
+// DropdownRow (<- Component)
+// Dropdown has DropdownRows (<- Component)
+// SubDropdown has DropdownRows <- Dropdown
+
+// Button that toggles the dropdown
+class DropdownToggler extends Toggler {
+    constructor(target=null) {
+        super();
+        this.classes.add("dropdown-toggler");
+
+        this.target = target;
+        this.addEventListener("click", () => {
+            if (this.isActive) {
+                this.target.classes.add("open");
+            } else {
+                this.target.classes.remove("open");
+            }
+        });
+        this.addEventListener("blur", () => {
+            this.target.classes.remove("open");
+            this.deactivate();
+        }, undefined, false);
+    }
+
+    // Set the target Dropdown to toggle
+    setTarget(dropdown) {
+        if (!(dropdown instanceof Dropdown)) {
+            throw new TypeError("'dropdown' argument expected instance of Dropdown");
+        }
+
+        this.target = dropdown;
+    }
+}
+
+// A row in a dropdown
+// Can add things to the dropdown
+class DropdownRow extends Component {
+    constructor() {
+        super(document.createElement("div"));
+        this.classes.add("dropdown-row");
+
+        this.owner = null;
+        this.index = -1;
+        this.height = NaN;
+    }
+}
+
+// The actual dropdown menu
+class Dropdown extends Component {
+    constructor(info) {
+        super(document.createElement("div"));
+        this.classes.add("dropdown");
+
+        if (!dev.isValid(info.alignment, "left", "right")) {
+            throw new SyntaxError("'position' argument must be 'left' or 'right'");
+        }
+
+        this.alignment = info.alignment;
+        this.width = info.width || 320;
+        this.maxHeight = info.maxHeight;
+        this.rowHeight = info.rowHeight;
+
+        // Holds all the DropdownRows
+        this.rows = [];
+
+        // Initialize element
+        Object.assign(this.style, {
+            [this.alignment]: "0px",
+            width: this.width + "px",
+            maxHeight: this.maxHeight + "px" || ""
+        });
+    }
+
+    // Add a row to the dropdown
+    // Row is added to the end if no index is provided
+    addRow(row, index) {
+        if (!(row instanceof DropdownRow)) {
+            throw new TypeError("'row' argument expected instance of DropdownRow");
+        }
+
+        this.addComponent(row);
+
+        // Insert or append row to this.rows
+        // Set index
+        if (index) {
+            this.rows.splice(index, 0, row);
+            row.index = index;
+        } else if (row.index >= 0) {
+            this.rows.splice(row.index, 0, row);
+            // [no setting index]
+        } else {
+            this.rows.push(row);
+            row.index = this.rows.length - 1;
+        }
+
+        // Set height
+        row.element.style.height = this.rowHeight + "px";
+
+        row.height = this.rowHeight;
+        row.owner = this;
+
+        return row;
+    }
+}
+
+// Sub-dropdowns must be in a Dropdown or a SubDropdown
+class SubDropdown extends Dropdown {
+    constructor() {
+        super();
+        this.classes.add("sub-dropdown");
+    }
+}
+
+// Contains and combines dropdown classes into one
+class DropdownFacade extends Component {
+    constructor(toggler, dropdown) {
+        super(document.createElement("div"));
+        this.classes.add("dropdown-container");
+
+        // Check type
+        if (toggler && !(toggler instanceof DropdownToggler)) {
+            throw new TypeError("'toggler' argument expected instance of DropdownToggler");
+        }
+        if (dropdown && !(dropdown instanceof Dropdown)) {
+            throw new TypeError("'container' argument expected instance of Dropdown");
+        }
+
+        this.dropdown = dropdown || new Dropdown();
+        this.toggler = this.addComponent(toggler || new DropdownToggler(this.dropdown));
+        this.addComponent(dropdown);
+    }
+}
+
+/* ===================== */
 /* Navigator classes     */
 /* ===================== */
 
@@ -778,11 +933,13 @@ class TooltipBuilder extends Component {
 // Export
 export {
     // Inputs
-    Button, Toggler, TextField,
+    Button, Toggler, HoverToggler, TextField,
     // Resizer related
     HorizontalResizer, VerticalResizer,
     // Navigator related
     Navigator, NavigatorButton, View,
+    // Dropdown
+    DropdownToggler, DropdownRow, Dropdown, SubDropdown, DropdownFacade,
     // Tooltip related
     TooltipBuilder, Tooltip, PointingTooltip, MouseTooltip
 }
