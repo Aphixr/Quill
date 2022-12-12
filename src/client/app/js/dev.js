@@ -11,13 +11,13 @@
 // Dev object
 // Useful things for development
 const dev = {
-    print: function() {
+    print: () => {
         console.log(...arguments);
     },
-    assert: function(assertion, ...obj) {
+    assert: (assertion, ...obj) => {
         console.assert(assertion, ...obj);
     },
-    trace: function() {
+    trace: () => {
         console.trace(...arguments);
     },
     
@@ -26,7 +26,7 @@ minima vel reiciendis incidunt? Unde suscipit eveniet excepturi possimus delenit
 nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
 
     // Call this function to throw an error
-    throw: function({ Type, fatal, message, code }) {
+    throw: ({ Type, fatal, message, code }) => {
         // If the error is fatal, display the something went wrong text
         if (fatal) {
             const errorFatalElem = document.getElementById("error-fatal");
@@ -41,7 +41,7 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
     },
 
     // Check data type
-    isType: function(type, ...value) {
+    isType: (type, ...value) => {
         for (let i = 0, len = value.length; i < len; i++) {
             switch (type.toLowerCase().trim()) {
                 case "number":
@@ -65,22 +65,22 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
     },
 
     // Other checking functions
-    isIterable: function(value) {
+    isIterable: (value) => {
         return typeof value[Symbol.iterator] === "function";
     },
-    isElement: function(value) {
+    isElement: (value) => {
         return value instanceof Element;
     },
-    isValid: function(value, ...validValues) {
+    isValid: (value, ...validValues) => {
         return validValues.flat().includes(value);
     },
-    isArrowFunction: function(func) {
+    isArrowFunction: (func) => {
         return typeof func === "function"
             && func.toString().match(/\)(\s|(\/\*(.|\s)*\*\/))*=>\s\{/);
     },
 
     // Other helper functions
-    getPageSize: function() {
+    getPageSize: () => {
         return {
             width: document.documentElement.clientWidth,
             height: document.documentElement.clientHeight
@@ -99,12 +99,12 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
         },
 
         // Makes a singleton without using objects
-        singleton: function(Class) {
+        singleton: (Class) => {
             throw new SyntaxError(`Cannot create instance of singleton class '${Class.name}'`);
         },
 
         // Makes a property of an object constant
-        constant: function(object, property, value) {
+        constant: (object, property, value) => {
             Object.defineProperty(object, property, {
                 configurable: false,
                 writable: false,
@@ -113,7 +113,7 @@ nostrum eaque illo voluptatem minima quos, aut atque numquam quam recusandae?",
         },
 
         // Makes an object iterable
-        iterable: function(object, condition) {
+        iterable: (object, condition) => {
             object[Symbol.iterator] = function* () {
                 for (const property in object) {
                     const value = object[property];
