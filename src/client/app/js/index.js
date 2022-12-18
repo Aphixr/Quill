@@ -18,11 +18,15 @@ import notebook from "./views/notebook.js"
 import templates from "./views/templates.js"
 import trash from "./views/trash.js"
 import settings from "./views/settings.js"
+import { NotebookHandler } from "./notebook/notebook.js";
 
 // App (singleton)
 class App {
     constructor() {
         this.element = document.getElementById("app");
+
+        // Contains all the notebooks
+        this.notebookHandler = new NotebookHandler();
 
         // Components
         this.navigator = new Navigator();
@@ -54,6 +58,9 @@ class App {
 
                     return button;
                 }
+
+                // Initialize pages
+                notebook.initialize(this.notebookHandler);
 
                 // Add pages
                 this.navigator.addPages({

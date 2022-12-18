@@ -13,10 +13,10 @@ import { View, HorizontalResizer } from "../components.js"
 
 const notebook = new View("notebook");
 
-notebook.setInit(View.InitOn.Manual, function() {
+notebook.setInit(View.InitOn.Manual, function(notebookHandler) {
     
     // Editor constants
-    const editor = new Editor();
+    const editor = new Editor(notebookHandler);
     const editorSideBar = editor.sideBar;
 
     // Editor view sidebar resizer

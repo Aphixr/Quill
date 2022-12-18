@@ -345,10 +345,13 @@ class EditorContent extends Component {
 // Editor
 // The main part of editing is here
 class Editor extends Component {
-    constructor() {
+    constructor(notebookHandler) {
         // Initialize element
         super(document.createElement("div"));
         this.classes.add("editor", "flex");
+
+        // Notebook handler
+        this.notebookHandler = notebookHandler;
 
         // Add the top bar
         this.topBar = this.addComponent(new EditorTopBar);
