@@ -42,7 +42,7 @@ class EditorTopBar extends Header {
 
                 // Create the menu toggler
                 const toggler = this.buttons.sideBar = container.addComponent(new Toggler(true, {
-                    innerHTML: /* html */ `<span>&#9776;</span>`
+                    innerHTML: /* html */ `<img src="./img/menu.svg">`
                 }));
 
                 // Side bar that the toggler opens/closes
@@ -103,7 +103,7 @@ class EditorTopBar extends Header {
                         valueElement.id = "editor-menu-title-text-field-value";
                         valueElement.classList.add("visually-hidden");
                         Object.assign(valueElement.style, {
-                            fontSize: "18px",
+                            fontSize: "17px",
                             whiteSpace: "pre",
                             width: "auto"
                         });
