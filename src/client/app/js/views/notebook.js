@@ -13,7 +13,7 @@ import { View, HorizontalResizer } from "../components.js"
 
 const notebook = new View("notebook");
 
-(() => {
+notebook.setInit(View.InitOn.Manual, function() {
     
     // Editor constants
     const editor = new Editor();
@@ -48,15 +48,15 @@ const notebook = new View("notebook");
     })();
 
     // Add editor to the notebook view
-    notebook.editor = notebook.addComponent(editor);
+    this.editor = this.addComponent(editor);
 
     // On show
-    notebook.setShowListener(() => {
+    this.setShowListener(() => {
         // Activate edit button
-        notebook.editor.panel.navigator.menu.buttons.edit.activate();
+        this.editor.panel.navigator.menu.buttons.edit.activate();
     });
 
-})();
+});
 
 export default notebook
 
