@@ -126,14 +126,14 @@
 .editor-top-bar {
     background-color: white;
     border-bottom: 1px solid #e0e0e0;
-    padding-inline: 4px;
+    padding-inline: 8px;
     align-items: center;
-    flex-basis: 3.2rem;
+    flex-basis: 46px;
 }
 .editor-top-bar > .container button {
     background: transparent;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     margin-inline: 6px;
     border-radius: 50%;
     transition: 0.1s;
@@ -141,10 +141,7 @@
 .editor-top-bar > .container button:hover {
     background-color: #fafafa;
 }
-.editor-top-bar button.menu {
-    font-size: 22px;
-}
-.editor-top-bar button.settings img {
+.editor-top-bar button img {
     height: 55%;
     margin-top: 15%;
 }
@@ -153,21 +150,26 @@
 }
 .editor-top-bar > .main .text-field.title {
     background-color: transparent;
-    font-size: 18px;
+    font-size: 17px;
     display: block;
-    width: 133px;
+    width: 128px;
     max-width: 50vw;
+    margin-left: 6px;
     padding: 4px 12px 2px;
     border-bottom: 2px solid transparent;
-    border-radius: 2px;
+    border-radius: 6px 6px 2px 2px;
     transition: 0.12s;
-    transition-property: border-bottom-color;
+    transition-property: border-bottom-color, background-color;
+}
+.editor-top-bar > .main .text-field.title:focus-within {
+    background-color: #00000006;
+    outline: none;
 }
 .editor-top-bar > .main .text-field.title:hover {
     border-bottom-color: #f3f3f3;
 }
 .editor-top-bar > .main .text-field.title:focus {
-    border-bottom-color: #e0e0e0;
+    border-bottom-color: #d6d6d6;
 }
 
 /* =====================
