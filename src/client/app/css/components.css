@@ -50,8 +50,12 @@
 .dropdown-container > .dropdown > .dropdown-row:hover {
     background-color: #f0f0f0;
 }
+.dropdown-container > .dropdown > .dropdown-row > *:only-child {
+    width: 100%;
+}
 .dropdown-container > .dropdown > .dropdown-row > button {
     font-size: calc(var(--fs-s) - 1px);
+    text-align: left;
     height: 100%;
     padding-inline: 9px;
     cursor: default;
