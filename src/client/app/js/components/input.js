@@ -494,6 +494,12 @@ class NavigatorMenu extends Component {
 
 // View class
 class View extends Component {
+    static InitOn = {
+        Set: Symbol(),    // view.setInit() & manual
+        Add: Symbol(),    // navigatorView.addView() & manual
+        Manual: Symbol()  // view.initialize()
+    };
+
     constructor(name, info) {
         super(document.createElement("div"));
         this.classes.add("view", "view-" + name, "hidden");
@@ -511,6 +517,10 @@ class View extends Component {
         // Listeners
         this.onShow = null;
         this.onHide = null;
+
+        // Initialize
+        this.init = null;
+        this.initOn = null;
     }
 
     // Show the view
@@ -554,6 +564,20 @@ class View extends Component {
     setHideListener(listener) {
         this.onHide = listener;
     }
+
+    // Set the initializing code
+    setInit(initOn, callback, ...args) {
+        this.init = callback.bind(this);
+        this.initOn = initOn;
+        if (initOn == View.InitOn.Set) {
+            this.initialize(...args);
+        }
+    }
+
+    // Initialize by calling this.init
+    initialize(...args) {
+        return this.init(...args);
+    }
 }
 
 // Navigator viewer
@@ -576,13 +600,18 @@ class NavigatorViewer extends Component {
     }
 
     // Add one view onto the navigator view
-    addView(view) {
+    addView(view, ...args) {
         Object.assign(view, {
             menu: this.menu,
             viewer: this,
             navigator: this.navigator
         });
         this.views[view.name] = this.addComponent(view);
+
+        // Checks the view's initOn
+        if (view.initOn == View.InitOn.Add) {
+            view.initialize(...args);
+        }
     }
 
     // Add some views onto the navigator view
