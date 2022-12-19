@@ -11,9 +11,9 @@ import { View } from "../components.js"
 
 const trash = new View("trash");
 
-(() => {
+trash.setInit(View.InitOn.Manual, function() {
 
-})();
+});
 
 export default trash
 

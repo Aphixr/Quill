@@ -59,8 +59,12 @@ class App {
                     return button;
                 }
 
-                // Initialize pages
+                // Initialize all pages
+                home.initialize();
                 notebook.initialize(this.notebookHandler);
+                templates.initialize();
+                trash.initialize();
+                settings.initialize();
 
                 // Add pages
                 this.navigator.addPages({

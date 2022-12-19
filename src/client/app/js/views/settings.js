@@ -11,9 +11,9 @@ import { View } from "../components.js"
 
 const settings = new View("settings");
 
-(() => {
+settings.setInit(View.InitOn.Manual, function() {
 
-})();
+});
 
 export default settings
 

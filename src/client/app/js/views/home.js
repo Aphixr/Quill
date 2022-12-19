@@ -17,7 +17,7 @@ import quill from "../quill.js"
 
 const home = new View("home");
 
-(() => {
+home.setInit(View.InitOn.Manual, function(notebookHandler) {
 
     // Search, and buttons to create new notebook
     const header = new Header();
@@ -86,7 +86,7 @@ const home = new View("home");
     home.header = home.addComponent(header);
     home.main = home.addComponent(main);
 
-})();
+});
 
 export default home
 
