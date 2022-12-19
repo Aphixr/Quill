@@ -202,6 +202,16 @@ class TextField extends Input {
         this.classes.add("text-field");
         this.setProperties(info);
     }
+
+    // Set value
+    setValue(value) {
+        return this.element.value = value;
+    }
+
+    // Get value
+    getValue() {
+        return this.element.value;
+    }
 }
 
 /* ===================== */
@@ -658,7 +668,7 @@ class Navigator {
         this.pages[button.name || view.name] = pageInfo;
 
         // Add buttons and views if there are any
-        if (button instanceof Button) {
+        if (button instanceof NavigatorButton) {
             this.menu.addButton(button);
         }
         if (view instanceof View) {
@@ -672,6 +682,11 @@ class Navigator {
         for (const page of pages) {
             this.addPage(page);
         }
+    }
+
+    // Open a page
+    open(name) {
+        this.pages[name].button.activate();
     }
 }
 
