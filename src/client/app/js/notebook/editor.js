@@ -85,9 +85,7 @@ class EditorTopBar extends Header {
             // Title text field
             titleTextField: () => {
                 // Attach the title text field
-                const titleInput = this.main.titleTextField = this.main.addComponent(new TextField({
-                    value: "New notebook"
-                }));
+                const titleInput = this.main.titleTextField = this.main.addComponent(new TextField());
 
                 // Set the input properties
                 titleInput.classes.add("title");
@@ -371,6 +369,9 @@ class Editor extends Component {
         this.topBar._init.main();
         this.topBar._init.titleTextField();
         this.topBar._init.settingsButton();
+    }
+    get notebookOpen() {
+        return this.notebookHandler.active;
     }
 }
 
