@@ -204,12 +204,12 @@ class TextField extends Input {
     }
 
     // Set value
-    setValue(value) {
+    set value(value) {
         return this.element.value = value;
     }
 
     // Get value
-    getValue() {
+    get value() {
         return this.element.value;
     }
 }
