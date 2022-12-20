@@ -12,12 +12,13 @@ import {
     Button, TextField, View, TooltipBuilder, PointingTooltip,
     Section, Header, Main, SideBar, Icon
 } from "../components.js"
+import { Notebook } from "../notebook/notebook.js";
 import { Component } from "../quartz.js";
 import quill from "../quill.js"
 
 const home = new View("home");
 
-home.setInit(View.InitOn.Manual, function(notebookHandler) {
+home.setInit(View.InitOn.Manual, function(app) {
 
     // Search, and buttons to create new notebook
     const header = new Header();
@@ -54,6 +55,15 @@ home.setInit(View.InitOn.Manual, function(notebookHandler) {
 
         createIcon.classes.add("opacity-80");
         createDiv.classes.add("new");
+
+        create.addClickListener(() => {
+            const notebook = new Notebook()
+            app.notebookHandler.setEditor(app.pages.notebook.view.editor);
+            app.notebookHandler.create(notebook);
+            app.notebookHandler.open(notebook.symbol);
+            app.notebookHandler.display();
+            app.navigator.open("notebook");
+        });
     })();
 
     // Main

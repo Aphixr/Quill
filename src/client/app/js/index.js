@@ -60,7 +60,7 @@ class App {
                 }
 
                 // Initialize all pages
-                home.initialize();
+                home.initialize(this);
                 notebook.initialize(this.notebookHandler);
                 templates.initialize();
                 trash.initialize();
