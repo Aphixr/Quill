@@ -832,29 +832,48 @@ class DropdownFacade extends Component {
 /* Navigator classes     */
 /* ===================== */
 
-// The actual tooltip
+// Tooltip class (abstract)
+// A single element that goes to an target's position when a it is hovered on
 class Tooltip extends Input {
     // Constructor
     // `delay` is in milliseconds
-    constructor(text, delay) {
+    constructor(delay) {
         super(document.createElement("div"));
-
-        // Set element info
-        this.element.innerText = String(text);
+        this.classes.add("tooltip");
 
         // Properties
-        this.text = String(text);
         this.delay = Number(delay) || 500;
         this.timeout = null;
 
-        // Used to access related objects
-        this.target = null;
-        this.builder = null;
+        // Components that will cause the tooltip to appear
+        this.targets = [];
+    }
 
-        // Set position on resize
-        quill.eventDelegation.add("resize", window, () => {
-            this.setPosition();
-        }, true);
+    // Add a target
+    addTarget(target, tooltipContent) {
+        this.targets.push(target);
+        target.setAttribute("data-tooltip", tooltipContent);
+        target.addEventListener("mouseenter", () => this.on(target), null, false);
+        target.addEventListener("focus", () => this.on(target), null, false);
+        target.addEventListener("mouseleave", () => this.off(), null, false);
+        target.addEventListener("blur", () => this.off(), null, false);
+    }
+
+    // Set the position of the tooltip
+    setPosition(target) { /* override */ }
+
+    // Activate
+    on(target) {
+        // Make sure text is set before position
+        this.text = target.getAttribute("data-tooltip");
+        this.setPosition(target);
+        this.setTimeout(target);
+    }
+
+    // Deactivate
+    off() {
+        this.clearTimeout();
+        this.hide();
     }
 
     // Display the tooltip (without delay)
@@ -867,25 +886,10 @@ class Tooltip extends Input {
         this.classes.remove("active");
     }
 
-    // Set the position of the tooltip
-    setPosition() {
-        // Get bounding client rect of target and tooltip
-        const { x, y, width, height } = this.target.element.getBoundingClientRect();
-        const { width: thisWidth } = this.element.getBoundingClientRect();
-        switch (this.position) {
-            case "bottom":
-                this.style.left = `${x + width / 2 - thisWidth / 2}px`;
-                this.style.top = `${y + height + 12}px`;
-        }
-    }
-
     // Set the timeout
-    setTimeout() {
+    setTimeout(target) {
         // Set timeout
         this.timeout = setTimeout(this.show.bind(this), this.delay);
-
-        // Move tooltip to correct location
-        this.setPosition();
     }
 
     // Clear the timeout
@@ -898,8 +902,8 @@ class Tooltip extends Input {
 // Pointing tooltip
 // The tooltip has an arrow that points to the target
 class PointingTooltip extends Tooltip {
-    constructor(text, position, delay) {
-        super(text, delay);
+    constructor(position, delay) {
+        super(delay);
         this.classes.add("pointing-tooltip");
 
         // Set the position and check if it's a valid value
@@ -909,6 +913,18 @@ class PointingTooltip extends Tooltip {
         this.position = position;
         this.setAttribute("data-tooltip-position", this.position);
     }
+
+    // Set the position of the tooltip
+    setPosition(target) {
+        // Get bounding client rect of target and tooltip
+        const { x, y, width, height } = target.element.getBoundingClientRect();
+        const { width: thisWidth } = this.element.getBoundingClientRect();
+        switch (this.position) {
+            case "bottom":
+                this.style.left = `${x + width / 2 - thisWidth / 2}px`;
+                this.style.top = `${y + height + 12}px`;
+        }
+    }
 }
 
 // Mouse location tooltip
@@ -917,60 +933,6 @@ class MouseTooltip extends Tooltip {
     constructor(text, delay) {
         super(text, delay);
         this.classes.add("mouse-tooltip");
-    }
-}
-
-// Tooltip handler (abstract)
-class TooltipBuilder extends Component {
-    constructor(target, tooltip) {
-        dev.class.abstract(Tooltip);
-        super(document.createElement("div"));
-        this.classes.add("tooltip-builder");
-
-        // Check if target is a component
-        if (!(target instanceof Component)) {
-            throw new TypeError("Expected instance of Element or Component for argument 'target'");
-        }
-
-        // Check if tooltip is a Tooltip
-        if (!(tooltip instanceof Tooltip)) {
-            throw new TypeError("Expected instance of Tooltip for argument 'tooltip'");
-        }
-
-        // Symbols used on target
-        this.symbolBuilder = Symbol("TooltipBuilder");
-        this.symbolTooltip = Symbol("Tooltip");
-
-        // Target
-        // The element that the user hovers over to display the tooltip
-        this.target = this.addComponent(target);
-        this.target.classes.add("tooltip-target");
-
-        // Tooltip
-        this.tooltip = this.addComponent(tooltip);
-        this.tooltip.classes.add("tooltip");
-        
-        // Set accessors
-        this.tooltip.builder = this;
-        this.tooltip.target = this.target;
-        this.target[this.symbolBuilder] = this;
-        this.target[this.symbolTooltip] = this.tooltip;
-        this.tooltip.setPosition();
-
-        // Listeners
-        const on = () => {
-            this.tooltip.setTimeout();
-        };
-        const off = () => {
-            this.tooltip.clearTimeout();
-            this.tooltip.hide();
-        };
-
-        // Add event listeners on the target
-        this.target.addEventListener("mouseenter", on, undefined, false);
-        this.target.addEventListener("focus", on, undefined, false);
-        this.target.addEventListener("mouseleave", off, undefined, false);
-        this.target.addEventListener("blur", off, undefined, false);
     }
 }
 
@@ -985,7 +947,7 @@ export {
     // Dropdown
     DropdownToggler, DropdownRow, Dropdown, SubDropdown, DropdownFacade,
     // Tooltip related
-    TooltipBuilder, Tooltip, PointingTooltip, MouseTooltip
+    Tooltip, PointingTooltip, MouseTooltip
 }
 
 
