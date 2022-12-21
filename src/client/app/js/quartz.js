@@ -233,6 +233,20 @@ class Component {
         return this.element.style;
     }
 
+    /**
+     * Returns the `innerHTML` of the element
+     */
+    get html() {
+        return this.element.innerHTML;
+    }
+
+    /**
+     * Returns the `innerText` of the element
+     */
+    get text() {
+        return this.element.innerText;
+    }
+
     /* === Setters === */
 
     /**
@@ -259,6 +273,20 @@ class Component {
      */
     set id(value) {
         return this.element.id = value;
+    }
+    
+    /**
+     * Set the `innerHTML` of the element
+     */
+    set html(value) {
+        return this.element.innerHTML = value;
+    }
+    
+    /**
+     * Set the `innerText` of the element
+     */
+    set text(value) {
+        return this.element.innerText = value;
     }
 
     /* === Render === */
