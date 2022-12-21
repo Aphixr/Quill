@@ -33,19 +33,22 @@
 }
 .dropdown-container > .dropdown {
     background-color: #fcfcfc;
-    pointer-events: none;
+    display: none;
     position: absolute;
     z-index: 99999;
     padding-block: 6px;
     border: 1px solid #00000010;
     border-radius: 10px;
-    box-shadow: 2px 2px 9px #00000030;
+    box-shadow: 2px 2px 8px #0000001a;
     opacity: 0;
-    transition: 0.12s;
+    pointer-events: none;
 }
-.dropdown-container:focus-within > .dropdown.open {
+.dropdown-container > .dropdown.open {
     pointer-events: initial;
-    opacity: 1;
+    animation: 0.12s fade-in ease-out forwards;
+}
+.dropdown-container > .dropdown:not(.open) {
+    animation: 0.12s fade-out ease-out forwards;
 }
 .dropdown-container > .dropdown > .dropdown-row:hover {
     background-color: #f0f0f0;

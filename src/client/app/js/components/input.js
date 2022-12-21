@@ -706,17 +706,39 @@ class DropdownToggler extends Toggler {
         this.classes.add("dropdown-toggler");
 
         this.target = target;
+
+        // Open/close the dropdown when clicked on
         this.addEventListener("click", () => {
             if (this.isActive) {
-                this.target.classes.add("open");
+                this.target.show();
             } else {
-                this.target.classes.remove("open");
+                this.target.hide();
             }
         });
-        this.addEventListener("blur", () => {
-            this.target.classes.remove("open");
-            this.deactivate();
-        }, undefined, false);
+
+        // Conditions that could cause the dropdown to close
+        const activeElementNotInDropdown = () => {
+            return this.isActive &&
+                   document.activeElement !== this.element &&
+                   !this.target.element.contains(document.activeElement);
+        };
+        const activeButtonInDropdown = () => {
+            return this.target.element.contains(document.activeElement) &&
+                   document.activeElement.tagName === "BUTTON";
+        };
+
+        quill.eventDelegation.add("focusin", document.body, () => {
+            if (activeElementNotInDropdown()) {
+                this.target.hide();
+                this.deactivate();
+            }
+        });
+        quill.eventDelegation.add("click", document.body, () => {
+            if (activeElementNotInDropdown() || activeButtonInDropdown()) {
+                this.target.hide();
+                this.deactivate();
+            }
+        });
     }
 
     // Set the target Dropdown to toggle
@@ -747,11 +769,13 @@ class Dropdown extends Component {
     constructor(info) {
         super(document.createElement("div"));
         this.classes.add("dropdown");
+        this.setAttribute("tabindex", "0");
 
         if (!dev.isValid(info.alignment, "left", "right")) {
             throw new SyntaxError("'position' argument must be 'left' or 'right'");
         }
 
+        this.isOpen = false;
         this.alignment = info.alignment;
         this.width = info.width || 320;
         this.maxHeight = info.maxHeight;
@@ -765,6 +789,13 @@ class Dropdown extends Component {
             [this.alignment]: "0px",
             width: this.width + "px",
             maxHeight: this.maxHeight + "px" || ""
+        });
+
+        // Hide dropdown after fade-out ends
+        this.addEventListener("animationend", () => {
+            if (!this.isOpen) {
+                this.style.display = "none";
+            }
         });
     }
 
@@ -797,6 +828,19 @@ class Dropdown extends Component {
         row.owner = this;
 
         return row;
+    }
+
+    // Display dropdown
+    show() {
+        this.style.display = "block";
+        this.classes.add("open");
+        this.isOpen = true;
+    }
+
+    // Hide dropdown
+    hide() {
+        this.classes.remove("open");
+        this.isOpen = false;
     }
 }
 
