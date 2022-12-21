@@ -9,7 +9,7 @@
 "use strict";
 
 import {
-    Button, TextField, View, TooltipBuilder, PointingTooltip,
+    Button, TextField, View,
     Section, Header, Main, SideBar, Icon
 } from "../components.js"
 import { Notebook } from "../notebook/notebook.js";
@@ -47,12 +47,9 @@ home.setInit(View.InitOn.Manual, function(app) {
         // New notebook button
         const createDiv = header.addComponent(new Component(document.createElement("div")));
         const create = createDiv.addComponent(new Button());
-        const createTooltip = createDiv.addComponent(new TooltipBuilder(
-            create,
-            new PointingTooltip("New notebook", "bottom")
-        ));
         const createIcon = create.addComponent(new Icon("./img/new.svg", 0, 0, 12, 12));
 
+        app.pointingTooltip.addTarget(create, "New notebook");
         createIcon.classes.add("opacity-80");
         createDiv.classes.add("new");
 
