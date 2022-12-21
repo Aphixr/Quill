@@ -13,10 +13,10 @@ import { View, HorizontalResizer } from "../components.js"
 
 const notebook = new View("notebook");
 
-notebook.setInit(View.InitOn.Manual, function(notebookHandler) {
+notebook.setInit(View.InitOn.Manual, function(app) {
     
     // Editor constants
-    const editor = new Editor(notebookHandler);
+    const editor = new Editor(app);
     const editorSideBar = editor.sideBar;
 
     // Editor view sidebar resizer
@@ -29,7 +29,7 @@ notebook.setInit(View.InitOn.Manual, function(notebookHandler) {
         // (this === editorViewSide)
         editorSideBar.resizer.setMousemoveListener(function({ clientX: mouseX }) {
             // Constants
-            const toggler = editor.topBar.buttons.sideBar;
+            const toggler = editor.topBar.toggleMenu;
             const appNavigatorWidth = 
                 +getComputedStyle(document.querySelector("#app > .navigator-menu"))
                 .width.replace(/px/, "");

@@ -177,7 +177,7 @@ class NotebookHandler {
     display() {
         if (this.editor instanceof Editor && this.active instanceof Notebook) {
             const notebook = this.active;
-            this.editor.topBar.main.titleTextField.setValue(notebook.title);
+            this.editor.topBar.textFieldTitle.value = notebook.title;
         }
     }
 

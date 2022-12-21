@@ -130,7 +130,7 @@
     align-items: center;
     flex-basis: 46px;
 }
-.editor-top-bar > .container button {
+.editor-top-bar button {
     background: transparent;
     width: 35px;
     height: 35px;
@@ -138,7 +138,7 @@
     border-radius: 50%;
     transition: 0.1s;
 }
-.editor-top-bar > .container button:hover {
+.editor-top-bar button:hover {
     background-color: #fafafa;
 }
 .editor-top-bar button img {

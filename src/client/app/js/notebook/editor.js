@@ -15,8 +15,7 @@ import {
     Navigator, NavigatorButton, View,
     Button, Toggler, TextField,
     DropdownFacade, DropdownToggler, Dropdown, DropdownRow,
-    TooltipBuilder, PointingTooltip,
-    Section, Container, Main, Header, SideBar, Icon
+    Section, Main, Header, SideBar, Icon
 } from "../components.js"
 
 // Editor top bar
@@ -28,135 +27,84 @@ class EditorTopBar extends Header {
 
         // Holds the buttons
         this.buttons = {};
+    }
 
-        // Initialize coomponents
-        this._init = {
-            // Attach the menu button
-            // This button toggles the EditorSideBar
-            menuToggler: () => {
-                // Container for the menu button
-                const container = this.addComponent(new Container(
-                    "menu-toggler",
-                    document.createElement("div")
-                ));
+    initView() {
+        this.toggleMenu = this.addComponent(new Toggler(true));
+        this.main = this.addComponent(new Main());
+        this.textFieldTitle = this.main.addComponent(new TextField());
+        this.buttonSettings = this.addComponent(new Button());
 
-                // Create the menu toggler
-                const toggler = this.buttons.sideBar = container.addComponent(new Toggler(true, {
-                    innerHTML: /* html */ `<img src="./img/menu.svg">`
-                }));
+        this.toggleMenu.html = /* html */ `<img src="img/menu.svg">`;
+        this.toggleMenu.classes.add("menu", "opacity-70");
+        this.getParent().app.pointingTooltip.addTarget(this.toggleMenu, "Menu");
 
-                // Side bar that the toggler opens/closes
-                const sideBar = this.getParent().sideBar.element;
+        this.main.classes.add("main", "flex", "grow");
 
-                // Tooltip builder
-                container.addComponent(new TooltipBuilder(
-                    toggler,
-                    new PointingTooltip("Sidebar", "bottom")
-                ));
-                
-                // Initialize classes
-                toggler.classes.add("menu", "opacity-70");
-    
-                // Opens the menu
-                toggler.setActiveListener(() => {
-                    // Open side bar to previous position before closed
-                    sideBar.style.width = sideBar.width || "";
-                    // Set min-width to default
-                    sideBar.style.minWidth = "";
+        this.textFieldTitle.classes.add("title");
+        this.textFieldTitle.setAttribute("maxlength", 64);
+
+        this.buttonSettings.html = /* html */ `<img src="img/settings.svg">`;
+        this.buttonSettings.classes.add("settings", "opacity-70");
+        this.getParent().app.pointingTooltip.addTarget(this.buttonSettings, "Settings");
+
+        // Resizes title input to fit value
+        this.textFieldTitle.resize = () => {
+            // Get or create an element if it doesn't exist yet
+            // This element will hold the input's value
+            let valueElement = this.element.querySelector("#editor-menu-title-text-field-value");
+            if (!valueElement) {
+                valueElement = document.createElement("div");
+                valueElement.id = "editor-menu-title-text-field-value";
+                valueElement.classList.add("visually-hidden");
+                Object.assign(valueElement.style, {
+                    fontSize: "17px",
+                    whiteSpace: "pre",
+                    width: "auto"
                 });
-    
-                // Closes the menu
-                toggler.setInactiveListener(() => {
-                    // Side bar has a min-width by default,
-                    // so it needs to be removed to be closed
-                    sideBar.style.width = sideBar.style.minWidth = "0px";
-                });
-            },
-            // Attach the main part of the editor menu (grows)
-            // This notebook panel will hold notebook related actions and buttons
-            // including the notebook title and menu buttons
-            main: () => {
-                this.main = this.addComponent(new Component(
-                    document.createElement("div")
-                ));
-                this.main.classes.add("main", "flex", "grow");
-            },
-
-            // Title text field
-            titleTextField: () => {
-                // Attach the title text field
-                const titleInput = this.main.titleTextField = this.main.addComponent(new TextField());
-
-                // Set the input properties
-                titleInput.classes.add("title");
-                titleInput.setAttribute("maxlength", 64);
-
-                // Automatically resize input element
-                titleInput.resizeWidth = () => {
-                    // Get or create an element if it doesn't exist yet
-                    // This element will hold the input's value
-                    let valueElement = this.element.querySelector("#editor-menu-title-text-field-value");
-                    if (!valueElement) {
-                        valueElement = document.createElement("div");
-                        valueElement.id = "editor-menu-title-text-field-value";
-                        valueElement.classList.add("visually-hidden");
-                        Object.assign(valueElement.style, {
-                            fontSize: "17px",
-                            whiteSpace: "pre",
-                            width: "auto"
-                        });
-                        this.element.appendChild(valueElement);
-                    }
-
-                    // The input width will resize to the width of the value element
-                    valueElement.innerText = titleInput.element.value;
-                    titleInput.style.width =
-                        (valueElement.clientWidth + 25) + "px";
-                };
-
-                // Auto select all the text when focused on
-                titleInput.addEventListener("focus", (event) => {
-                    titleInput.element.select();
-                }, undefined, false);
-
-                // On unfocus (blur)
-                titleInput.addEventListener("blur", (event) => {
-                    // If the notebook title is empty,
-                    // set it to the default "New notebook"
-                    if (titleInput.element.value.trim() === "") {
-                        titleInput.element.value = "New notebook";
-                        titleInput.resizeWidth();
-                    }
-                }, undefined, false);
-
-                // When the user types something,
-                // Auto resize to fit the value
-                titleInput.addEventListener("input", (event) => {
-                    titleInput.resizeWidth();
-                }, undefined, false);
-            },
-
-            // Settings button on the right, opens the notebook's settings
-            settingsButton: () => {
-                // Container for the settings button
-                const container = this.addComponent(new Container(
-                    "settings-button",
-                    document.createElement("div")
-                ));
-
-                // Attach the settings button
-                const button = this.buttons.settings = container.addComponent(new Button({
-                    innerHTML: /* html */ `<img src="img/settings.svg">`
-                }));
-                this.buttons.settings.classes.add("settings", "opacity-70");
-
-                // Tooltip builder for the settings button
-                container.addComponent(new TooltipBuilder(
-                    button,
-                    new PointingTooltip("Settings", "bottom")
-                ));
+                this.element.appendChild(valueElement);
             }
+
+            // The input width will resize to the width of the value element
+            valueElement.innerText = this.textFieldTitle.value;
+            this.textFieldTitle.style.width =
+                (valueElement.clientWidth + 25) + "px";
         };
+    }
+
+    initFunction() {
+        // Menu toggler
+        const sideBar = this.getParent().sideBar;
+        this.toggleMenu.setActiveListener(() => {
+            sideBar.style.width = sideBar.width || "";
+            sideBar.style.minWidth = "";
+        });
+        this.toggleMenu.setInactiveListener(() => {
+            sideBar.style.width = sideBar.style.minWidth = "0px";
+        });
+
+        // Title input
+        const titleInput = this.textFieldTitle;
+
+        // Auto select all the text when focused on
+        titleInput.addEventListener("focus", (event) => {
+            titleInput.element.select();
+        }, null, false);
+
+        // On unfocus (blur)
+        titleInput.addEventListener("blur", (event) => {
+            // If the notebook title is empty,
+            // set it to the default "New notebook"
+            if (titleInput.element.value.trim() === "") {
+                titleInput.element.value = "New notebook";
+                titleInput.resize();
+            }
+        }, null, false);
+
+        // When the user types something, resize to fit to value
+        titleInput.addEventListener("input", (event) => {
+            titleInput.resize();
+        }, null, false);
     }
 }
 
@@ -343,13 +291,15 @@ class EditorContent extends Component {
 // Editor
 // The main part of editing is here
 class Editor extends Component {
-    constructor(notebookHandler) {
+    constructor(app) {
         // Initialize element
         super(document.createElement("div"));
         this.classes.add("editor", "flex");
 
+        this.app = app;
+
         // Notebook handler
-        this.notebookHandler = notebookHandler;
+        this.notebookHandler = app.notebookHandler;
 
         // Add the top bar
         this.topBar = this.addComponent(new EditorTopBar);
@@ -365,11 +315,11 @@ class Editor extends Component {
         this.content = this.mainMain.addComponent(new EditorContent);
 
         // Initailize top bar stuff
-        this.topBar._init.menuToggler();
-        this.topBar._init.main();
-        this.topBar._init.titleTextField();
-        this.topBar._init.settingsButton();
+        this.topBar.initView();
+        this.topBar.initFunction();
     }
+
+    // Get the active notebook
     get notebookOpen() {
         return this.notebookHandler.active;
     }
