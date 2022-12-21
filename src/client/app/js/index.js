@@ -9,7 +9,7 @@
 "use strict";
 
 import quill from "./quill.js"
-import { Navigator, NavigatorButton, SpriteSheet } from "./components.js"
+import { Navigator, NavigatorButton, PointingTooltip, SpriteSheet } from "./components.js"
 import { Component } from "./quartz.js";
 
 // Import views
@@ -33,6 +33,9 @@ class App {
 
         // Pages of navigator
         this.pages = {};
+
+        // Pointing tooltip
+        this.pointingTooltip = new PointingTooltip("bottom", 500);
 
         // Initialize
         this._init = {
@@ -61,7 +64,7 @@ class App {
 
                 // Initialize all pages
                 home.initialize(this);
-                notebook.initialize(this.notebookHandler);
+                notebook.initialize(this);
                 templates.initialize();
                 trash.initialize();
                 settings.initialize();
@@ -111,6 +114,9 @@ class App {
         // Render navigator
         this.navigator.menu.renderAt(quill.app);
         this.navigator.viewer.renderAt(quill.app);
+
+        // Tooltip
+        this.pointingTooltip.renderAt(quill.app);
         
         // Auto activate a tab
         // Based on hash if there is one
