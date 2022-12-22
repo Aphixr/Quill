@@ -799,8 +799,7 @@ class Dropdown extends Component {
         });
     }
 
-    // Add a row to the dropdown
-    // Row is added to the end if no index is provided
+    // Add a row to the dropdown using an existing row
     addRow(row, index) {
         if (!(row instanceof DropdownRow)) {
             throw new TypeError("'row' argument expected instance of DropdownRow");
@@ -810,6 +809,50 @@ class Dropdown extends Component {
 
         // Insert or append row to this.rows
         // Set index
+        this.insertRow(row, index);
+
+        // Set row height and info
+        row.element.style.height = this.rowHeight + "px";
+        row.height = this.rowHeight;
+        row.owner = this;
+
+        return row;
+    }
+
+    // Add multiple rows
+    addRows(rows, index) {
+        if (!dev.isIterable(rows)) {
+            throw new TypeError("'rows' argument expected iterable");
+        }
+        for (const i in rows) {
+            this.addRow(rows[i], index + i);
+        }
+    }
+    
+    // Create a new row and return it
+    createRow(index) {
+        const row = this.addComponent(new DropdownRow());
+
+        this.insertRow(row, index);
+
+        // Set height
+        row.element.style.height = this.rowHeight + "px";
+        row.height = this.rowHeight;
+        row.owner = this;
+
+        return row;
+    }
+
+    // Create multiple rows
+    createRows(amount, index) {
+        for (let i = 0; i < amount; i++) {
+            this.createRow(index + i);
+        }
+    }
+
+    // Insert a row at an index
+    // Row is added to the end if no index is provided
+    insertRow(row, index) {
         if (index) {
             this.rows.splice(index, 0, row);
             row.index = index;
@@ -820,14 +863,6 @@ class Dropdown extends Component {
             this.rows.push(row);
             row.index = this.rows.length - 1;
         }
-
-        // Set height
-        row.element.style.height = this.rowHeight + "px";
-
-        row.height = this.rowHeight;
-        row.owner = this;
-
-        return row;
     }
 
     // Display dropdown
