@@ -11,6 +11,7 @@
 
 import dev from "../dev.js"
 import { Editor } from "./editor.js"
+import { NavigatorButton, View } from "../components.js"
 
 // A piece of a notebook (abstract)
 // Pieces can have a title and a owner
@@ -19,8 +20,8 @@ class NotebookPiece {
         dev.class.abstract(NotebookPiece);
 
         // Properties
-        this.title = title;
-        this.owner = owner;
+        this._title = title;
+        this._owner = owner;
     }
 
     set title(value) {
@@ -28,7 +29,7 @@ class NotebookPiece {
     }
 
     set owner(value) {
-        if (!(owner instanceof Notebook)) {
+        if (!(this.owner instanceof Notebook)) {
             throw new TypeError("Expected instance of Notebook for argument 'value'");
         }
         return this._owner = value;
@@ -86,6 +87,8 @@ class Notebook {
         this.title = title || Notebook.DEFAULT_TITLE;
         this.isTrash = false;
         this.isOpen = false;
+
+        this.pieces = [];
     }
 
     // Get/set title
@@ -94,6 +97,16 @@ class Notebook {
     }
     get title() {
         return this._title;
+    }
+
+    // Create page
+    createPage() {
+        this.pieces.push(new NotebookPage());
+    }
+
+    // Create section
+    createSection() {
+        this.pieces.push(new NotebookSection());
     }
 }
 
@@ -165,19 +178,40 @@ class NotebookHandler {
         // Check if there is an active editor first
         if (this.exists(notebookSymbol)) {
             this.active = this.notebooks[notebookSymbol];
+            this.notebooks[notebookSymbol].isOpen = true;
         }
     }
 
     // Close the currently opened notebook
     close() {
         this.active = null;
+        this.notebooks[notebookSymbol].isOpen = false;
     }
 
     // Display the open notebook contents to the active editor
     display() {
-        if (this.editor instanceof Editor && this.active instanceof Notebook) {
-            const notebook = this.active;
-            this.editor.topBar.textFieldTitle.value = notebook.title;
+        if (!(this.editor instanceof Editor) || !(this.active instanceof Notebook)) {
+            return;
+        }
+        const notebook = this.active;
+        this.editor.topBar.textFieldTitle.value = notebook.title;
+        this.displayPieces();
+    }
+
+    // Display the open notebook's pieces
+    displayPieces() {
+        if (!(this.editor instanceof Editor) || !(this.active instanceof Notebook)) {
+            return;
+        }
+
+        const sideBar = this.editor.sideBar;
+        
+        // Clear contents
+        sideBar.main.text = "";
+
+        const notebook = this.active;
+        for (const i in notebook.pieces) {
+            const piece = notebook.pieces[i];
         }
     }
 
