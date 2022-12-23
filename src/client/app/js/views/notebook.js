@@ -22,7 +22,7 @@ notebook.setInit(View.InitOn.Manual, function(app) {
     // Editor view sidebar resizer
     (function resizer() {
         // Add the horizontal resizer
-        editorSideBar.resizer = editorSideBar.main.addComponent(new HorizontalResizer("right"));
+        editorSideBar.resizer = editorSideBar.container.addComponent(new HorizontalResizer("right"));
         editorSideBar.style.width = storage.memory["editor.sideBar.width"] || "";
         
         // Add listeners

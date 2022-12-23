@@ -14,8 +14,8 @@ import { Component } from "../quartz.js"
 import {
     Navigator, NavigatorButton, View,
     Button, Toggler, TextField,
-    DropdownFacade, DropdownToggler, Dropdown, DropdownRow,
-    Section, Main, Header, SideBar, Icon
+    DropdownFacade, DropdownToggler, Dropdown,
+    Section, Container, Main, Header, SideBar, Icon
 } from "../components.js"
 
 // Editor top bar
@@ -242,40 +242,77 @@ class EditorSideBar extends SideBar {
         this.classes.add("editor-side-bar");
 
         // Header
-        this.main = this.addComponent(new Main());
-        this.header = this.main.addComponent(new Header());
+        this.container = this.addComponent(new Container());
+        this.header = this.container.addComponent(new Header());
+        this.main = this.container.addComponent(new Main());
 
-        this._init = {
-            header: () => {
-                const header = this.header;
-                const location = header.addComponent(new Section("location", ""));
-                const dropdown = new Dropdown({
-                    alignment: "right",
-                    width: 120,
-                    rowHeight: 24
-                });
-                const add = new DropdownToggler(dropdown);
-                const dropdownFacade = header.addComponent(new DropdownFacade(add, dropdown));
+        // Keep track of pages and sections added
+        this.numPagesAdded = 0;
+        this.numSectionsAdded = 0;
+    }
 
-                header.classes.add("flex");
+    // Initialize view
+    initView() {
+        const header = this.header;
+        header.location = header.addComponent(new Section("location"));
+        header.dropdownAdd = new Dropdown({
+            alignment: "right",
+            width: 120,
+            rowHeight: 24
+        });
+        header.buttonAdd = new DropdownToggler(header.dropdownAdd);
+        header.dropdownFacade = header.addComponent(new DropdownFacade(
+            header.buttonAdd, header.dropdownAdd
+        ));
 
-                location.classes.add("location", "grow");
+        header.classes.add("flex");
+        header.location.classes.add("location", "grow");
+        header.dropdownAdd.createRows(2);
+        header.buttonAdd.classes.add("new", "opacity-70");
+        header.buttonAdd.addComponent(new Icon("img/new.svg", 0, 0, 12, 12));
+        this.addPage = header.dropdownAdd.rows[0].addComponent(new Button({
+            innerText: "Add page"
+        }));
+        this.addSection = header.dropdownAdd.rows[1].addComponent(new Button({
+            innerText: "Add section"
+        }));
+        
+        this.navigator = new Navigator(this.main.element, this.editor.content.element);
+    }
 
-                dropdown.addRow(new DropdownRow());
-                dropdown.addRow(new DropdownRow());
-                
-                add.classes.add("new", "opacity-70");
-                add.addComponent(new Icon("./img/new.svg", 0, 0, 12, 12));
+    // Initialize function
+    initFunction() {
+        this.addPage.addClickListener(() => {
+            this.numPagesAdded++;
+            
+            this.notebookHandler.active.createPage();
 
-                const addPage = dropdown.rows[0].addComponent(new Button());
-                const addSection = dropdown.rows[1].addComponent(new Button());
-                
-                addPage.element.innerText = "Add page";
-                addSection.element.innerText = "Add section";
-            }
-        };
+            const button = new NavigatorButton("page" + this.numPagesAdded);
+            const view = new View("page" + this.numPagesAdded);
+            button.text = "Page " + this.numPagesAdded;
+            this.editor.sideBar.navigator.addPage({
+                button: button,
+                view: view
+            });
 
-        this._init.header();
+            button.element.click();
+        });
+
+        this.addSection.addClickListener(() => {
+            this.numSectionsAdded++;
+
+            this.notebookHandler.active.createSection();
+
+            const button = new NavigatorButton("section" + this.numSectionsAdded);
+            const view = new View("section" + this.numSectionsAdded);
+            button.text = "Section " + this.numSectionsAdded;
+            this.editor.sideBar.navigator.addPage({
+                button: button,
+                view: view
+            });
+
+            button.element.click();
+        });
     }
 }
 
@@ -314,9 +351,24 @@ class Editor extends Component {
         this.panel = this.mainMain.addComponent(new EditorPanel);
         this.content = this.mainMain.addComponent(new EditorContent);
 
-        // Initailize top bar stuff
+        // Assign this object to this editor's components
+        const editor = this;
+        const info = {
+            app: app,
+            notebookHandler: editor.notebookHandler,
+            editor: editor
+        };
+
+        Object.assign(this.topBar, info);
+        Object.assign(this.sideBar, info);
+        Object.assign(this.panel, info);
+        Object.assign(this.content, info);
+
+        // Initailize components
         this.topBar.initView();
         this.topBar.initFunction();
+        this.sideBar.initView();
+        this.sideBar.initFunction();
     }
 
     // Get the active notebook
