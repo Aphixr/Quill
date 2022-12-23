@@ -76,11 +76,14 @@ button, input[type='button'], input[type='submit'] {
     height: 12px;
 }
 ::-webkit-scrollbar-thumb {
-    background-color: #2e323b;
+    background-color: #c6c6c6;
+    background-clip: content-box;
+    min-height: 36px;
+    border: 3px solid transparent;
     border-radius: 12px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #3e424b;
+    background-color: #a3a3a3;
 }
 ::-webkit-scrollbar-corner {
     background: inherit;
