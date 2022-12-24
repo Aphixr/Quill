@@ -88,7 +88,13 @@ class Notebook {
         this.isTrash = false;
         this.isOpen = false;
 
+        this.cover = null;
         this.pieces = [];
+
+        this.countPages = 0;
+        this.countSections = 0;
+
+        this.createCover();
     }
 
     // Get/set title
@@ -99,14 +105,27 @@ class Notebook {
         return this._title;
     }
 
+    // Create the cover
+    createCover() {
+        this.cover = new NotebookCover(this);
+        this.pieces.unshift(this.cover);
+        return this.cover;
+    }
+
     // Create page
     createPage() {
-        this.pieces.push(new NotebookPage());
+        this.countPages++;
+        const page = new NotebookPage("Page " + this.countPages, this);
+        this.pieces.push(page);
+        return page;
     }
 
     // Create section
     createSection() {
-        this.pieces.push(new NotebookSection());
+        this.countSections++;
+        const section = new NotebookSection("Section " + this.countSections, this);
+        this.pieces.push(section);
+        return section;
     }
 }
 
@@ -208,6 +227,11 @@ class NotebookHandler {
         
         // Clear contents
         sideBar.main.text = "";
+
+        // Add the cover navigation
+        const coverButton = new NavigatorButton("cover");
+        const coverView = new View("cover");
+        this.editor.sideBar.addNavigatorPage(this.active.cover, coverButton, coverView);
 
         const notebook = this.active;
         for (const i in notebook.pieces) {
