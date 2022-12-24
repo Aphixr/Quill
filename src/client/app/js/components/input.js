@@ -37,6 +37,26 @@ class Input extends Component {
             this.element.addEventListener(type, listener, options);
         }
     }
+
+    // Disable input
+    disable() {
+        this.element.setAttribute("disabled", "disabled");
+    }
+
+    // Enable input
+    enable() {
+        this.element.removeAttribute("disabled");
+    }
+
+    // Focus on input
+    focus() {
+        this.element.focus();
+    }
+
+    // Returns true if input is enabled
+    get isEnabled() {
+        return !this.element.hasAttribute("disabled");
+    }
 }
 
 /* ===================== */
@@ -201,6 +221,11 @@ class TextField extends Input {
         super(document.createElement("input"));
         this.classes.add("text-field");
         this.setProperties(info);
+    }
+
+    // Select all contents in text field
+    select() {
+        this.element.select();
     }
 
     // Set value
