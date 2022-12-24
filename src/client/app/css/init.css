@@ -120,7 +120,7 @@ h6 { font-size: var(--fs-xxs) }
 small { font-size: var(--fs-xs) }
 img { pointer-events: none }
 
-:focus-visible {
+:not(.input.text-field):focus-visible {
     opacity: 1;
     outline: 2px solid #5540ffac;
     outline-offset: -2px;
