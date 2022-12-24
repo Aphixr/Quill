@@ -102,8 +102,10 @@ class EditorTopBar extends Header {
         }, null, false);
 
         // When the user types something, resize to fit to value
+        // Also update the notebook cover title
         titleInput.addEventListener("input", (event) => {
             titleInput.resize();
+            this.notebookHandler.active.cover.title = titleInput.value;
         }, null, false);
     }
 }
@@ -285,34 +287,57 @@ class EditorSideBar extends SideBar {
         this.addPage.addClickListener(() => {
             this.numPagesAdded++;
             
-            this.notebookHandler.active.createPage();
+            const page = this.notebookHandler.active.createPage();
 
             const button = new NavigatorButton("page" + this.numPagesAdded);
             const view = new View("page" + this.numPagesAdded);
-            button.text = "Page " + this.numPagesAdded;
-            this.editor.sideBar.navigator.addPage({
-                button: button,
-                view: view
-            });
-
-            button.element.click();
+            
+            this.addNavigatorPage(page, button, view);
         });
 
         this.addSection.addClickListener(() => {
             this.numSectionsAdded++;
 
-            this.notebookHandler.active.createSection();
+            const section = this.notebookHandler.active.createSection();
 
             const button = new NavigatorButton("section" + this.numSectionsAdded);
             const view = new View("section" + this.numSectionsAdded);
-            button.text = "Section " + this.numSectionsAdded;
-            this.editor.sideBar.navigator.addPage({
-                button: button,
-                view: view
-            });
-
-            button.element.click();
+            
+            this.addNavigatorPage(section, button, view);
         });
+    }
+
+    // Add a navigator page
+    addNavigatorPage(piece, button, view) {
+        button.main = button.addComponent(new Main("title"));
+
+        button.textFieldTitle = button.main.addComponent(new TextField());
+        button.textFieldTitle.value = piece.title;
+        button.textFieldTitle.disable();
+
+        // Let the user rename on double click
+        button.main.addEventListener("dblclick", () => {
+            button.textFieldTitle.enable();
+            button.textFieldTitle.style.pointerEvents = "auto";
+            button.textFieldTitle.select();
+        });
+
+        // Disable text field when it loses focus
+        button.textFieldTitle.addEventListener("blur", () => {
+            button.textFieldTitle.disable();
+            button.textFieldTitle.style.pointerEvents = "none";
+            window.getSelection().removeAllRanges();
+        }, null, false);
+
+        button.classes.add("notebook-piece", "notebook-section");
+
+        // Add page to navigator
+        this.editor.sideBar.navigator.addPage({
+            button: button,
+            view: view
+        });
+
+        button.element.click();
     }
 }
 
