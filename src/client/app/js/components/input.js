@@ -151,7 +151,7 @@ class Toggler extends Button {
     
     // Toggle to a active state
     // For less repetitive code and easier for extended classes to override
-    toggleTo(active, event=null) {
+    toggleTo(active, event={}) {
         // Check if it allows refiring before continuing
         if (!this.allowRefiring && !!this.isActive === !!active) {
             return;
@@ -159,7 +159,9 @@ class Toggler extends Button {
 
         // Fire onBeforeChange
         if (dev.isType("function", this.onBeforeChange)) {
-            this.onBeforeChange(event);
+            if (this.onBeforeChange(event)) {
+                return;
+            }
         }
 
         // Update info
@@ -188,12 +190,12 @@ class Toggler extends Button {
     }
 
     // Manual activate
-    activate(event=null) {
+    activate(event={}) {
         this.toggleTo(true, event);
     }
 
     // Manual deactivate
-    deactivate(event=null) {
+    deactivate(event={}) {
         this.toggleTo(false, event);
     }
 }
@@ -370,7 +372,7 @@ class NavigatorButton extends Toggler {
         this.blurOnClick = true;
     }
 
-    toggleTo(active, event=null) {
+    toggleTo(active, event={}) {
         // Check if it allows refiring before continuing
         if (!this.allowRefiring && !!this.isActive === !!active) {
             return;
@@ -384,7 +386,9 @@ class NavigatorButton extends Toggler {
 
         // Fire onBeforeChange
         if (dev.isType("function", this.onBeforeChange)) {
-            this.onBeforeChange(event);
+            if (this.onBeforeChange(event)) {
+                return;
+            }
         }
 
         // Deactivate the old activeButton
@@ -519,7 +523,7 @@ class NavigatorMenu extends Component {
     }
 
     // Deactivate the current active button
-    deactivateActiveButton(event=null) {
+    deactivateActiveButton(event={}) {
         if (this.activeButton instanceof NavigatorButton) {
             this.activeButton.deactivate(event);
             this.activeButton = null;
