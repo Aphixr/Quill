@@ -20,6 +20,7 @@ class NotebookPiece {
         dev.class.abstract(NotebookPiece);
 
         // Properties
+        this.symbol = Symbol();
         this._title = title;
         this._owner = owner;
     }
@@ -89,7 +90,7 @@ class Notebook {
         this.isOpen = false;
 
         this.cover = null;
-        this.pieces = [];
+        this.pieces = {};
 
         this.countPages = 0;
         this.countSections = 0;
@@ -108,7 +109,7 @@ class Notebook {
     // Create the cover
     createCover() {
         this.cover = new NotebookCover(this);
-        this.pieces.unshift(this.cover);
+        this.pieces[this.cover.symbol] = this.cover;
         return this.cover;
     }
 
@@ -116,7 +117,7 @@ class Notebook {
     createPage() {
         this.countPages++;
         const page = new NotebookPage("Page " + this.countPages, this);
-        this.pieces.push(page);
+        this.pieces[page.symbol] = page;
         return page;
     }
 
@@ -124,8 +125,18 @@ class Notebook {
     createSection() {
         this.countSections++;
         const section = new NotebookSection("Section " + this.countSections, this);
-        this.pieces.push(section);
+        this.pieces[section.symbol] = section;
         return section;
+    }
+
+    // Delete page
+    deletePage(symbol) {
+        delete this.pieces[symbol];
+    }
+
+    // Delete section
+    deleteSection(symbol) {
+        delete this.pieces[symbol];
     }
 }
 
@@ -252,6 +263,6 @@ class NotebookHandler {
     }
 }
 
-export { NotebookHandler, Notebook, NotebookPage, NotebookCover, NotebookSection }
+export { NotebookHandler, Notebook, NotebookPiece, NotebookPage, NotebookCover, NotebookSection }
 
 
