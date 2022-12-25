@@ -517,6 +517,13 @@ class NavigatorMenu extends Component {
         }
     }
 
+    // Remove a button from the navigator menu
+    removeButton(name) {
+        const button = this.removeComponent(this.buttons[name]);
+        delete this.buttons[name];
+        return button;
+    }
+
     // Set all buttons with a same active listener
     setSharedActiveListener(listener) {
         this.sharedOnActive = listener;
@@ -660,6 +667,13 @@ class NavigatorViewer extends Component {
         }
     }
 
+    // Remove a button from the navigator menu
+    removeView(name) {
+        const view = this.removeComponent(this.views[name]);
+        delete this.views[name];
+        return view;
+    }
+
     // Set all views with a same show listener
     setSharedShowListener(listener) {
         this.sharedOnShow = listener;
@@ -711,6 +725,13 @@ class Navigator {
         for (const page of pages) {
             this.addPage(page);
         }
+    }
+
+    // Delete a page
+    deletePage(name) {
+        this.menu.removeButton(name);
+        this.viewer.removeView(name);
+        delete this.pages[name];
     }
 
     // Open a page
