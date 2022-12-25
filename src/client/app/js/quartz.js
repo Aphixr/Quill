@@ -184,6 +184,22 @@ class Component {
     }
 
     /**
+     * Remove a component from this component
+     * @param {Component} component The component to remove
+     * @returns {Component} The removed component
+     */
+    removeComponent(component) {
+        if (!(component instanceof Component)) {
+            throw new TypeError("`component` argument expected instance of Component");
+        }
+        component.parent = null;
+        const index = this.children.indexOf(component);
+        this.children.splice(index, 1);
+        this.element.removeChild(component.element);
+        return component;
+    }
+
+    /**
      * Remove an event listener to the component
      * @param {String} type Type of event
      * @param {function(): any} listener Function to remove
