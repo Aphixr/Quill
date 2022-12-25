@@ -11,6 +11,7 @@
 
 // Import
 import { Component } from "../quartz.js"
+import { NotebookPiece } from "./notebook.js"
 import {
     Navigator, NavigatorButton, View,
     Button, Toggler, TextField,
@@ -35,7 +36,7 @@ class EditorTopBar extends Header {
         this.textFieldTitle = this.main.addComponent(new TextField());
         this.buttonSettings = this.addComponent(new Button());
 
-        this.toggleMenu.html = /* html */ `<img src="img/menu.svg">`;
+        this.toggleMenu.addComponent(new Icon("img/menu.svg", 0, 0, 20, 20));
         this.toggleMenu.classes.add("menu", "opacity-70");
         this.getParent().app.pointingTooltip.addTarget(this.toggleMenu, "Menu");
 
@@ -309,27 +310,76 @@ class EditorSideBar extends SideBar {
 
     // Add a navigator page
     addNavigatorPage(piece, button, view) {
-        button.main = button.addComponent(new Main("title"));
+        if (!(piece instanceof NotebookPiece)) {
+            throw new TypeError("'piece' argument expected instance of NotebookPiece");
+        }
+        if (!(button instanceof NavigatorButton)) {
+            throw new TypeError("'button' argument expected instance of NavigatorButton");
+        }
+        if (!(view instanceof View)) {
+            throw new TypeError("'view' argument expected instance of View");
+        }
 
+        button.classes.add("notebook-piece", "notebook-section");
+
+        // Create components
+        button.main = button.addComponent(new Main("title"));
         button.textFieldTitle = button.main.addComponent(new TextField());
+        button.dropdownMore = new Dropdown({
+            alignment: "right",
+            width: 120,
+            rowHeight: 24
+        });
+        button.buttonMore = new DropdownToggler(button.dropdownMore);
+        button.dropdownFacade = button.addComponent(new DropdownFacade(
+            button.buttonMore, button.dropdownMore
+        ));
+
         button.textFieldTitle.value = piece.title;
         button.textFieldTitle.disable();
-
+        
         // Let the user rename on double click
-        button.main.addEventListener("dblclick", () => {
+        button.textFieldTitle.on = () => {
             button.textFieldTitle.enable();
             button.textFieldTitle.style.pointerEvents = "auto";
             button.textFieldTitle.select();
-        });
-
+        };
         // Disable text field when it loses focus
-        button.textFieldTitle.addEventListener("blur", () => {
+        button.textFieldTitle.off = () => {
             button.textFieldTitle.disable();
             button.textFieldTitle.style.pointerEvents = "none";
             window.getSelection().removeAllRanges();
-        }, null, false);
+            piece.title = button.textFieldTitle.value;
+        };
 
-        button.classes.add("notebook-piece", "notebook-section");
+        button.buttonMore.addComponent(new Icon("img/menu.svg", 15, 0, 15, 15));
+        button.dropdownFacade.classes.add("more");
+        button.dropdownMore.createRows(2);
+        const buttonRename = button.dropdownMore.rows[0].addComponent(new Button({
+            innerText: "Rename"
+        }));
+        const buttonDelete = button.dropdownMore.rows[1].addComponent(new Button({
+            innerText: "Delete"
+        }));
+
+        // Rename piece
+        buttonRename.addClickListener(button.textFieldTitle.on);
+        
+        // Delete piece
+        buttonDelete.addClickListener(() => {
+            this.notebookHandler.active.deletePage(piece.symbol);
+        });
+        
+        // Cancel toggle if not clicked on button or main
+        button.setBeforeChangeListener((event) => {
+            return button.element.contains(event.target) &&
+                   event.target !== button.element &&
+                   event.target !== button.main.element;
+        });
+
+        // For text field
+        button.main.addEventListener("dblclick", button.textFieldTitle.on);
+        button.textFieldTitle.addEventListener("blur", button.textFieldTitle.off, null, false);
 
         // Add page to navigator
         this.editor.sideBar.navigator.addPage({
@@ -337,6 +387,7 @@ class EditorSideBar extends SideBar {
             view: view
         });
 
+        // Open this new page
         button.element.click();
     }
 }

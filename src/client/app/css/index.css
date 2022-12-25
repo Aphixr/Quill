@@ -290,10 +290,10 @@
 .editor-side-bar .main.navigator-menu .navigator-button.notebook-piece {
     font-size: var(--fs-s);
     text-align: left;
-    display: block;
+    display: flex;
+    align-items: center;
     width: 100%;
     height: 32px;
-    padding-inline: 12px;
     cursor: default;
     transition: 0.1s;
 }
@@ -309,7 +309,7 @@
 }
 .editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .text-field {
     background: transparent;
-    padding: 6px;
+    padding: 6px 12px;
     width: 100%;
     cursor: default;
     pointer-events: none;
@@ -320,6 +320,25 @@
 }
 .editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .text-field[disabled] {
     color: black;
+}
+.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .more {
+    margin-inline: 4px;
+}
+.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .more > button {
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: 0.12s;
+}
+
+.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .more > button:hover {
+    background-color: #0000000a;
+}
+.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece.active .more button,
+.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece:hover .more button,
+.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece:focus-within .more button {
+    opacity: 1;
 }
 
 /* =====================
