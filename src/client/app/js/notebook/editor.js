@@ -248,6 +248,7 @@ class EditorSideBar extends SideBar {
         this.container = this.addComponent(new Container());
         this.header = this.container.addComponent(new Header());
         this.main = this.container.addComponent(new Main());
+        this.navigator;
 
         // Keep track of pages and sections added
         this.numPagesAdded = 0;
@@ -367,7 +368,25 @@ class EditorSideBar extends SideBar {
         
         // Delete piece
         buttonDelete.addClickListener(() => {
+            // Automatically open previous page
+            // if this button was active
+            if (button.isActive) {
+                const index = this.navigator.menu.children.indexOf(button);
+                // Open next if it exists
+                if (this.navigator.menu.children[index + 1]) {
+                    this.navigator.menu.children[index + 1].activate();
+                }
+                // Open previous if it exists
+                else if (index - 1 >= 0) {
+                    this.navigator.menu.children[index - 1].activate();
+                }
+                // If none, it means there are no pages
+                else;
+            }
+
+            // Delete page from notebook and navigator
             this.notebookHandler.active.deletePage(piece.symbol);
+            this.navigator.deletePage(button.name);
         });
         
         // Cancel toggle if not clicked on button or main
