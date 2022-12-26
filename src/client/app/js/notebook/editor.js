@@ -384,9 +384,15 @@ class EditorSideBar extends SideBar {
                 else;
             }
 
+            button.style.overflowY = "hidden";
+            button.style.height = "0px";
+            button.style.opacity = "0";
+
             // Delete page from notebook and navigator
-            this.notebookHandler.active.deletePage(piece.symbol);
-            this.navigator.deletePage(button.name);
+            setTimeout(() => {
+                this.notebookHandler.active.deletePage(piece.symbol);
+                this.navigator.deletePage(button.name);
+            }, 120);
         });
         
         // Cancel toggle if not clicked on button or main
@@ -404,6 +410,12 @@ class EditorSideBar extends SideBar {
         this.editor.sideBar.navigator.addPage({
             button: button,
             view: view
+        });
+
+        setTimeout(() => {
+            button.style.top = "0px";
+            button.style.height = "32px";
+            button.style.opacity = "1";
         });
 
         // Open this new page
