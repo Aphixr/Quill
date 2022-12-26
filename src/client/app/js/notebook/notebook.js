@@ -240,7 +240,7 @@ class NotebookHandler {
         sideBar.main.text = "";
 
         // Add the cover navigation
-        const coverButton = new NavigatorButton("cover");
+        const coverButton = new NavigatorButton(null, "cover");
         const coverView = new View("cover");
         this.editor.sideBar.addNavigatorPage(this.active.cover, coverButton, coverView);
 

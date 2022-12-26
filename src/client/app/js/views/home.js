@@ -46,8 +46,8 @@ home.setInit(View.InitOn.Manual, function(app) {
 
         // New notebook button
         const createDiv = header.addComponent(new Component(document.createElement("div")));
-        const create = createDiv.addComponent(new Button());
-        const createIcon = create.addComponent(new Icon("./img/new.svg", 0, 0, 12, 12));
+        const createIcon = new Icon("./img/new.svg", 0, 0, 12, 12);
+        const create = createDiv.addComponent(new Button(createIcon));
 
         app.pointingTooltip.addTarget(create, "New notebook");
         createIcon.classes.add("opacity-80");

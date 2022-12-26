@@ -47,7 +47,7 @@ class App {
                 // Returns a NavigatorButton
                 const createButton = (index, name) => {
                     // Navigator button
-                    const button = new NavigatorButton(name.toLowerCase());
+                    const button = new NavigatorButton(null, name.toLowerCase());
                     button.classes.add("opacity-60");
 
                     // Label

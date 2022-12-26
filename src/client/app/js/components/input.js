@@ -21,9 +21,31 @@ import { Component } from "../quartz.js"
 class Input extends Component {
     // Constructor
     // `element` argument should be a `document.createElement()`
-    constructor(element) {
+    constructor(element, content, classes=[], info) {
         dev.class.abstract(Input);
         super(element);
+
+        // Add any content to this component
+        if (content) {
+            if (content instanceof Component) {
+                this.addComponent(content);
+            } else {
+                this.html = String(content);
+            }
+        }
+
+        // Add any classes
+        if (classes) {
+            if (dev.isType("string", classes)) {
+                this.classes.add(classes);
+            } else if (dev.isIterable(classes)) {
+                this.classes.add(...classes);
+            } else {
+                throw new TypeError("'classes' argument expected string or iterable");
+            }
+        }
+
+        this.setProperties(info);
 
         // Initialize element
         this.classes.add("input");
@@ -65,10 +87,9 @@ class Input extends Component {
 
 // Button class
 class Button extends Input {
-    constructor(info) {
-        super(document.createElement("button"));
+    constructor(content, classes, info) {
+        super(document.createElement("button"), content, classes, info);
         this.classes.add("button");
-        this.setProperties(info);
 
         // Auto unfocus on click
         this.blurOnClick = false;
@@ -90,8 +111,8 @@ class Button extends Input {
 // Order fired when clicked on:
 //  onBeforeChange(), onActive()/onInactive(), onChange()
 class Toggler extends Button {
-    constructor(initialIsActive, info) {
-        super(info);
+    constructor(content, initialIsActive, classes, info) {
+        super(content, classes, info);
         this.classes.add("toggler");
         this.isActive = !!initialIsActive;
 
@@ -203,8 +224,8 @@ class Toggler extends Button {
 // Hover toggler
 // Same as Toggler be can hover to activate
 class HoverToggler extends Toggler {
-    constructor(delay=0, initialIsActive, info) {
-        super(initialIsActive, info);
+    constructor(content, delay=0, initialIsActive, classes, info) {
+        super(content, classes, initialIsActive, info);
 
         this.delay = delay;
 
@@ -219,10 +240,9 @@ class HoverToggler extends Toggler {
 
 // Input field
 class TextField extends Input {
-    constructor(info) {
-        super(document.createElement("input"));
+    constructor(classes, info) {
+        super(document.createElement("input"), null, classes, info);
         this.classes.add("text-field");
-        this.setProperties(info);
     }
 
     // Select all contents in text field
@@ -247,14 +267,13 @@ class TextField extends Input {
 
 // Resizer (abstract)
 class Resizer extends Input {
-    constructor(direction, info) {
+    constructor(direction, classes, info) {
         dev.class.abstract(Resizer);
         if (!dev.isValid(direction.clean(), "horizontal", "vertical")) {
             throw new SyntaxError("'direction' argument must be 'horizontal' or 'vertical'");
         }
-        super(document.createElement("div"));
+        super(document.createElement("div"), null, classes, info);
         this.classes.add("resizer");
-        this.setProperties(info);
 
         // Properties
         dev.class.constant(this, "direction", direction.clean());
@@ -314,8 +333,8 @@ class Resizer extends Input {
 
 // Horizontal resizer
 class HorizontalResizer extends Resizer {
-    constructor(position, info) {
-        super("horizontal", info);
+    constructor(position, classes, info) {
+        super("horizontal", classes, info);
         this.classes.add("horizontal-resizer");
 
         // Set the position
@@ -329,8 +348,8 @@ class HorizontalResizer extends Resizer {
 
 // Vertical resizer
 class VerticalResizer extends Resizer {
-    constructor(position, info) {
-        super("vertical", info);
+    constructor(position, classes, info) {
+        super("vertical", classes, info);
         this.classes.add("vertical-resizer");
 
         // Set the position
@@ -351,8 +370,8 @@ class VerticalResizer extends Resizer {
 // Order fired when clicked on:
 //  onBeforeChange(), sharedOnActive(), onActive()/onInactive(), onChange()
 class NavigatorButton extends Toggler {
-    constructor(name, info) {
-        super(false, info);
+    constructor(content, name, classes, info) {
+        super(content, false, classes, info);
         this.classes.add("navigator-button");
 
         // Access owner components
@@ -751,8 +770,8 @@ class Navigator {
 
 // Button that toggles the dropdown
 class DropdownToggler extends Toggler {
-    constructor(target=null) {
-        super();
+    constructor(content, target=null, classes, info) {
+        super(content, false, classes, info);
         this.classes.add("dropdown-toggler");
 
         this.target = target;
@@ -966,8 +985,8 @@ class DropdownFacade extends Component {
 class Tooltip extends Input {
     // Constructor
     // `delay` is in milliseconds
-    constructor(delay) {
-        super(document.createElement("div"));
+    constructor(delay, classes=[], info) {
+        super(document.createElement("div"), null, classes, info);
         this.classes.add("tooltip");
 
         // Properties
@@ -1031,8 +1050,8 @@ class Tooltip extends Input {
 // Pointing tooltip
 // The tooltip has an arrow that points to the target
 class PointingTooltip extends Tooltip {
-    constructor(position, delay) {
-        super(delay);
+    constructor(position, delay, classes=[], info) {
+        super(delay, classes, info);
         this.classes.add("pointing-tooltip");
 
         // Set the position and check if it's a valid value
@@ -1059,8 +1078,8 @@ class PointingTooltip extends Tooltip {
 // Mouse location tooltip
 // Tooltip appears at mouse position
 class MouseTooltip extends Tooltip {
-    constructor(text, delay) {
-        super(text, delay);
+    constructor(delay, classes=[], info) {
+        super(delay, classes, info);
         this.classes.add("mouse-tooltip");
     }
 }

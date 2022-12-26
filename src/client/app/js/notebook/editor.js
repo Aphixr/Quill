@@ -31,22 +31,24 @@ class EditorTopBar extends Header {
     }
 
     initView() {
-        this.toggleMenu = this.addComponent(new Toggler(true));
+        this.toggleMenu = this.addComponent(new Toggler(
+            new Icon("img/menu.svg", 0, 0, 20, 20), true, ["menu", "opacity-70"]
+        ));
         this.main = this.addComponent(new Main());
-        this.textFieldTitle = this.main.addComponent(new TextField());
-        this.buttonSettings = this.addComponent(new Button());
+        this.textFieldTitle = this.main.addComponent(new TextField("title"));
+        this.buttonSettings = this.addComponent(new Button(
+            /* html */ `<img src="img/settings.svg">`, ["settings", "opacity-70"]
+        ));
 
-        this.toggleMenu.addComponent(new Icon("img/menu.svg", 0, 0, 20, 20));
-        this.toggleMenu.classes.add("menu", "opacity-70");
         this.getParent().app.pointingTooltip.addTarget(this.toggleMenu, "Menu");
 
         this.main.classes.add("main", "flex", "grow");
 
-        this.textFieldTitle.classes.add("title");
+        // this.textFieldTitle.classes.add("title");
         this.textFieldTitle.setAttribute("maxlength", 64);
 
-        this.buttonSettings.html = /* html */ `<img src="img/settings.svg">`;
-        this.buttonSettings.classes.add("settings", "opacity-70");
+        // this.buttonSettings.html = /* html */ `<img src="img/settings.svg">`;
+        // this.buttonSettings.classes.add("settings", "opacity-70");
         this.getParent().app.pointingTooltip.addTarget(this.buttonSettings, "Settings");
 
         // Resizes title input to fit value
@@ -171,6 +173,7 @@ class EditorPanel extends Component {
         // Initialize
         this.initView();
         this.controls.initView();
+        this.initFunction();
     }
 
     initView() {
@@ -190,9 +193,7 @@ class EditorPanel extends Component {
 
             // Add the page
             this.navigator.addPage(this.navigatorPages[name] = {
-                button: new NavigatorButton(name, {
-                    innerText: capName
-                }),
+                button: new NavigatorButton(capName, name),
                 view: new View(name)
             });
         }
@@ -248,7 +249,9 @@ class EditorSideBar extends SideBar {
             width: 120,
             rowHeight: 24
         });
-        header.buttonAdd = new DropdownToggler(header.dropdownAdd);
+        header.buttonAdd = new DropdownToggler(
+            new Icon("img/new.svg", 0, 0, 12, 12), header.dropdownAdd, ["new", "opacity-70"]
+        );
         header.dropdownFacade = header.addComponent(new DropdownFacade(
             header.buttonAdd, header.dropdownAdd
         ));
@@ -256,14 +259,10 @@ class EditorSideBar extends SideBar {
         header.classes.add("flex");
         header.location.classes.add("location", "grow");
         header.dropdownAdd.createRows(2);
-        header.buttonAdd.classes.add("new", "opacity-70");
-        header.buttonAdd.addComponent(new Icon("img/new.svg", 0, 0, 12, 12));
-        this.addPage = header.dropdownAdd.rows[0].addComponent(new Button({
-            innerText: "Add page"
-        }));
-        this.addSection = header.dropdownAdd.rows[1].addComponent(new Button({
-            innerText: "Add section"
-        }));
+        // header.buttonAdd.classes.add("new", "opacity-70");
+        // header.buttonAdd.addComponent(new Icon("img/new.svg", 0, 0, 12, 12));
+        this.addPage = header.dropdownAdd.rows[0].addComponent(new Button("Add page"));
+        this.addSection = header.dropdownAdd.rows[1].addComponent(new Button("Add section"));
         
         this.navigator = new Navigator(this.main.element, this.editor.content.element);
     }
@@ -275,7 +274,7 @@ class EditorSideBar extends SideBar {
             
             const page = this.notebookHandler.active.createPage();
 
-            const button = new NavigatorButton("page" + this.numPagesAdded);
+            const button = new NavigatorButton(null, "page" + this.numPagesAdded);
             const view = new View("page" + this.numPagesAdded);
             
             this.addNavigatorPage(page, button, view);
@@ -286,7 +285,7 @@ class EditorSideBar extends SideBar {
 
             const section = this.notebookHandler.active.createSection();
 
-            const button = new NavigatorButton("section" + this.numSectionsAdded);
+            const button = new NavigatorButton(null, "section" + this.numSectionsAdded);
             const view = new View("section" + this.numSectionsAdded);
             
             this.addNavigatorPage(section, button, view);
@@ -322,7 +321,9 @@ class EditorSideBar extends SideBar {
             width: 120,
             rowHeight: 24
         });
-        button.buttonMore = new DropdownToggler(button.dropdownMore);
+        button.buttonMore = new DropdownToggler(
+            new Icon("img/menu.svg", 15, 0, 15, 15), button.dropdownMore
+        );
         button.dropdownFacade = button.addComponent(new DropdownFacade(
             button.buttonMore, button.dropdownMore
         ));
@@ -346,17 +347,15 @@ class EditorSideBar extends SideBar {
         };
 
         // Dropdown compoennts
-        button.buttonMore.addComponent(new Icon("img/menu.svg", 15, 0, 15, 15));
+        // button.buttonMore.addComponent(new Icon("img/menu.svg", 15, 0, 15, 15));
         button.dropdownFacade.classes.add("more");
         button.dropdownMore.createRows(2);
-        const buttonRename = button.dropdownMore.rows[0].addComponent(new Button({
-            innerText: "Rename"
-        }));
-        const buttonDelete = button.dropdownMore.rows[1].addComponent(new Button({
-            innerText: "Delete"
-        }));
-
-        buttonDelete.classes.add("delete");
+        const buttonRename = button.dropdownMore.rows[0].addComponent(new Button(
+            "Rename", "rename"
+        ));
+        const buttonDelete = button.dropdownMore.rows[1].addComponent(new Button(
+            "Delete", "delete"
+        ));
 
         // Rename piece
         buttonRename.addClickListener(button.textFieldTitle.on);
