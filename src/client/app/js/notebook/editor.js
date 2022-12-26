@@ -121,21 +121,13 @@ class EditorMenu extends Component {
         // Holds the buttons
         this.buttons = {};
 
-        // Initialize components
-        // Make sure methods should be arrow functions
-        this._init = {
-            // Attach the main part of the editor menu (grows)
-            // NavigatorMenu will go in here
-            main: () => {
-                this.main = this.addComponent(new Component(
-                    document.createElement("div")
-                ));
-                this.main.classes.add("main", "grow");
-            },
-        };
-
         // Initialize
-        this._init.main();
+        this.initView();
+    }
+
+    initView() {
+        this.main = this.addComponent(new Main());
+        this.main.classes.add("main", "grow");
     }
 }
 
@@ -146,22 +138,15 @@ class EditorControls extends Component {
     constructor() {
         super(document.createElement("div"));
         this.classes.add("editor-controls", "flex");
+    }
 
-        // Initialize
-        this._init = {
-            // Fixed controls
-            // These controls will be always be on the editor controls,
-            // even after switching editor panel tabs
-            // Initialized in EditorPanel..constructor
-            fixed: () => {
-                // Create the component
-                const fixed = this.fixed = this.addComponent(new Component(
-                    document.createElement("div")
-                ));
-
-                fixed.classes.add("fixed");
-            }
-        };
+    initView() {
+        // Fixed controls
+        // These controls will be always be on the editor controls,
+        // even after switching editor panel tabs
+        // Initialized in EditorPanel..constructor
+        this.fixed = this.addComponent(new Section());
+        this.fixed.classes.add("fixed");
     }
 }
 
@@ -182,58 +167,57 @@ class EditorPanel extends Component {
         this.navigator = undefined;
         this.navigatorMenu = undefined;
         this.navigatorViewer = undefined;
-        
-        // Initialize
-        this._init = {
-            navigator: () => {
-                // Navigator
-                this.navigator = new Navigator();
-                this.navigatorMenu = this.menu.main.addComponent(this.navigator.menu);
-                this.navigatorViewer = this.controls.addComponent(this.navigator.viewer);
-
-                this.navigatorMenu.classes.add("flex");
-                this.navigatorViewer.classes.add("grow");
-
-                // Add the pages
-                this.navigatorPages = {};
-                for (const name of ["edit", "insert", "draw", "interaction", "view"]) {
-                    // Converts the first letter to upper case
-                    const capName = name[0].toUpperCase() + name.substring(1);
-
-                    // Add the page
-                    this.navigator.addPage(this.navigatorPages[name] = {
-                        button: new NavigatorButton(name, {
-                            innerText: capName
-                        }),
-                        view: new View(name)
-                    });
-                }
-
-                // The blue bar on the bottom that moves
-                // when the user click on something
-                this.menu.main.activeIndicator =
-                    this.menu.main.addComponent(new Component(
-                        document.createElement("div")
-                    ));
-                this.menu.main.activeIndicator.classes.add("active-indicator");
-
-                // Set click listeners for the menu buttons
-                this.navigator.menu.setSharedActiveListener((button) => {
-                    // Constants
-                    const activeIndicator = this.menu.main.activeIndicator.element;
-
-                    // Translate the active indicator
-                    activeIndicator.style.transform = `translateX(${
-                        button.element.offsetLeft - button.getParent().element.offsetLeft
-                    }px)`;
-                    activeIndicator.style.width = `${button.element.clientWidth}px`;
-                });
-            }
-        };
 
         // Initialize
-        this._init.navigator();
-        this.controls._init.fixed();
+        this.initView();
+        this.controls.initView();
+    }
+
+    initView() {
+        // Navigator
+        this.navigator = new Navigator();
+        this.navigatorMenu = this.menu.main.addComponent(this.navigator.menu);
+        this.navigatorViewer = this.controls.addComponent(this.navigator.viewer);
+
+        this.navigatorMenu.classes.add("flex");
+        this.navigatorViewer.classes.add("grow");
+
+        // Add the pages
+        this.navigatorPages = {};
+        for (const name of ["edit", "insert", "draw", "interaction", "view"]) {
+            // Converts the first letter to upper case
+            const capName = name[0].toUpperCase() + name.substring(1);
+
+            // Add the page
+            this.navigator.addPage(this.navigatorPages[name] = {
+                button: new NavigatorButton(name, {
+                    innerText: capName
+                }),
+                view: new View(name)
+            });
+        }
+
+        // The blue bar on the bottom that moves
+        // when the user click on something
+        this.menu.main.activeIndicator =
+            this.menu.main.addComponent(new Component(
+                document.createElement("div")
+            ));
+        this.menu.main.activeIndicator.classes.add("active-indicator");
+    }
+    
+    initFunction() {
+        // Set click listeners for the menu buttons
+        this.navigator.menu.setSharedActiveListener((button) => {
+            // Constants
+            const activeIndicator = this.menu.main.activeIndicator.element;
+
+            // Translate the active indicator
+            activeIndicator.style.transform = `translateX(${
+                button.element.offsetLeft - button.getParent().element.offsetLeft
+            }px)`;
+            activeIndicator.style.width = `${button.element.clientWidth}px`;
+        });
     }
 }
 
@@ -322,6 +306,13 @@ class EditorSideBar extends SideBar {
         }
 
         button.classes.add("notebook-piece", "notebook-section");
+        
+        // Cancel toggle if not clicked on button or main
+        button.setBeforeChangeListener((event) => {
+            return button.element.contains(event.target) &&
+                   event.target !== button.element &&
+                   event.target !== button.main.element;
+        });
 
         // Create components
         button.main = button.addComponent(new Main("title"));
@@ -336,6 +327,7 @@ class EditorSideBar extends SideBar {
             button.buttonMore, button.dropdownMore
         ));
 
+        // Title text field
         button.textFieldTitle.value = piece.title;
         button.textFieldTitle.disable();
         
@@ -353,6 +345,7 @@ class EditorSideBar extends SideBar {
             piece.title = button.textFieldTitle.value;
         };
 
+        // Dropdown compoennts
         button.buttonMore.addComponent(new Icon("img/menu.svg", 15, 0, 15, 15));
         button.dropdownFacade.classes.add("more");
         button.dropdownMore.createRows(2);
@@ -363,15 +356,18 @@ class EditorSideBar extends SideBar {
             innerText: "Delete"
         }));
 
+        buttonDelete.classes.add("delete");
+
         // Rename piece
         buttonRename.addClickListener(button.textFieldTitle.on);
         
         // Delete piece
         buttonDelete.addClickListener(() => {
-            // Automatically open previous page
-            // if this button was active
+            // If the user deleted this button while it was active
+            // Another page needs to be made active
             if (button.isActive) {
                 const index = this.navigator.menu.children.indexOf(button);
+
                 // Open next if it exists
                 if (this.navigator.menu.children[index + 1]) {
                     this.navigator.menu.children[index + 1].activate();
@@ -384,6 +380,7 @@ class EditorSideBar extends SideBar {
                 else;
             }
 
+            // CSS transition will make the button slide away
             button.style.overflowY = "hidden";
             button.style.height = "0px";
             button.style.opacity = "0";
@@ -393,13 +390,6 @@ class EditorSideBar extends SideBar {
                 this.notebookHandler.active.deletePage(piece.symbol);
                 this.navigator.deletePage(button.name);
             }, 120);
-        });
-        
-        // Cancel toggle if not clicked on button or main
-        button.setBeforeChangeListener((event) => {
-            return button.element.contains(event.target) &&
-                   event.target !== button.element &&
-                   event.target !== button.main.element;
         });
 
         // For text field
@@ -412,6 +402,7 @@ class EditorSideBar extends SideBar {
             view: view
         });
 
+        // CSS transition will make button slide down
         setTimeout(() => {
             button.style.top = "0px";
             button.style.height = "32px";
