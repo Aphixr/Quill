@@ -370,7 +370,7 @@ class VerticalResizer extends Resizer {
 // Order fired when clicked on:
 //  onBeforeChange(), sharedOnActive(), onActive()/onInactive(), onChange()
 class NavigatorButton extends Toggler {
-    constructor(content, name, classes, info) {
+    constructor(content, classes, info) {
         super(content, false, classes, info);
         this.classes.add("navigator-button");
 
@@ -379,10 +379,6 @@ class NavigatorButton extends Toggler {
         this.menu = null;
         this.viewer = null;
         this.navigator = null;
-
-        // Name of this button
-        // Used to decided which View to open
-        this.name = String(name || "");
 
         // The view this button is supposed to show
         this.targetView = null;
@@ -421,8 +417,8 @@ class NavigatorButton extends Toggler {
         }
 
         // If targetView is null, retrieve the targetView
-        if (!this.targetView && this.viewer.views[this.name]) {
-            this.targetView = this.viewer.views[this.name];
+        if (!this.targetView && this.viewer.views[this.getIndex()]) {
+            this.targetView = this.viewer.views[this.getIndex()];
             this.targetView.activator = this;
         }
 
@@ -477,6 +473,11 @@ class NavigatorButton extends Toggler {
         this.name = String(name);
     }
 
+    // Get the index of this button in the navigator menu
+    getIndex() {
+        return this.menu.getButtonIndex(this);
+    }
+
     // Set which view the button is supposed to open
     for(view) {
         if (!(view instanceof View)) {
@@ -504,14 +505,18 @@ class NavigatorMenu extends Component {
         // Properties
         this.sharedOnActive = null;
         this.activeButton = null;
-        this.buttons = {};
-        dev.class.iterable(this.buttons, (button) => button instanceof NavigatorButton);
+        this.buttons = [];
+        // dev.class.iterable(this.buttons, (button) => button instanceof NavigatorButton);
     }
 
     // Add one button onto the navigator menu
-    addButton(button) {
+    addButton(button, index) {
         if (!(button instanceof NavigatorButton)) {
             return;
+        }
+
+        if (index == undefined) {
+            index = this.buttons.length;
         }
 
         Object.assign(button, {
@@ -521,12 +526,16 @@ class NavigatorMenu extends Component {
         });
 
         // Sets the button's targetView if the view exists NavigatorView
-        if (!(button.targetView instanceof View) && this.viewer.views[button.name]) {
-            button.targetView = this.viewer.views[button.name];
+        if (!(button.targetView instanceof View) && this.viewer.views[index]) {
+            button.targetView = this.viewer.views[index];
         }
 
         // Add button
-        this.buttons[button.name] = this.addComponent(button);
+        if (index < this.buttons.length) {
+            this.buttons.splice(index, 0, this.insertComponentBefore(button, this.buttons[index]));
+        } else {
+            this.buttons.push(this.addComponent(button));
+        }
     }
 
     // Add some buttons onto the navigator menu
@@ -537,15 +546,21 @@ class NavigatorMenu extends Component {
     }
 
     // Remove a button from the navigator menu
-    removeButton(name) {
-        const button = this.removeComponent(this.buttons[name]);
-        delete this.buttons[name];
+    removeButton(button) {
+        this.removeComponent(button);
+        this.buttons.splice(this.buttons.indexOf(button), 1);
         return button;
     }
 
     // Set all buttons with a same active listener
     setSharedActiveListener(listener) {
         this.sharedOnActive = listener;
+    }
+
+    // Get the index of a button
+    // Returns -1 if not found
+    getButtonIndex(button) {
+        return this.buttons.indexOf(button);
     }
 
     // Deactivate the current active button
@@ -660,18 +675,33 @@ class NavigatorViewer extends Component {
         // Properties
         this.sharedOnShow = null;
         this.activeView = null;
-        this.views = {};
-        dev.class.iterable(this.views, (view) => view instanceof View);
+        this.views = [];
+        // dev.class.iterable(this.views, (view) => view instanceof View);
     }
 
     // Add one view onto the navigator view
-    addView(view, ...args) {
+    addView(view, index, ...args) {
+        if (!(view instanceof View)) {
+            return;
+        }
+
+        if (index == undefined) {
+            index = this.views.length;
+        }
+
         Object.assign(view, {
             menu: this.menu,
             viewer: this,
             navigator: this.navigator
         });
-        this.views[view.name] = this.addComponent(view);
+
+        // Add view
+        // this.views[index] = this.addComponent(view);
+        if (index < this.views.length) {
+            this.views.splice(index, 0, this.insertComponentBefore(view, this.views[index]))
+        } else {
+            this.views.push(this.addComponent(view));
+        }
 
         // Checks the view's initOn
         if (view.initOn == View.InitOn.Add) {
@@ -687,9 +717,9 @@ class NavigatorViewer extends Component {
     }
 
     // Remove a button from the navigator menu
-    removeView(name) {
-        const view = this.removeComponent(this.views[name]);
-        delete this.views[name];
+    removeView(view) {
+        this.removeComponent(view);
+        this.views.splice(this.views.indexOf(view), 1);
         return view;
     }
 
@@ -726,15 +756,15 @@ class Navigator {
     // Add one page onto the navigator
     // Calls NavigatorMenu.addButton() and NavigatorViewer.addView()
     addPage(pageInfo) {
-        const { button, view } = pageInfo;
+        const { button, view, index } = pageInfo;
         this.pages[button.name || view.name] = pageInfo;
 
         // Add buttons and views if there are any
         if (button instanceof NavigatorButton) {
-            this.menu.addButton(button);
+            this.menu.addButton(button, index);
         }
         if (view instanceof View) {
-            this.viewer.addView(view);
+            this.viewer.addView(view, index);
         }
     }
 
@@ -747,10 +777,10 @@ class Navigator {
     }
 
     // Delete a page
-    deletePage(name) {
-        this.menu.removeButton(name);
-        this.viewer.removeView(name);
-        delete this.pages[name];
+    deletePage(index) {
+        delete this.pages[this.viewer.views[index].name];
+        this.menu.removeButton(this.menu.buttons[index]);
+        this.viewer.removeView(this.viewer.views[index]);
     }
 
     // Open a page
