@@ -116,7 +116,7 @@ class Notebook {
     // Create page
     createPage() {
         this.countPages++;
-        const page = new NotebookPage("Page " + this.countPages, this);
+        const page = new NotebookPage("Untitled page", this);
         this.pieces[page.symbol] = page;
         return page;
     }
@@ -124,7 +124,7 @@ class Notebook {
     // Create section
     createSection() {
         this.countSections++;
-        const section = new NotebookSection("Section " + this.countSections, this);
+        const section = new NotebookSection("Untitled section", this);
         this.pieces[section.symbol] = section;
         return section;
     }
