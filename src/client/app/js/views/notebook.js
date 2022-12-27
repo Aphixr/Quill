@@ -53,7 +53,7 @@ notebook.setInit(View.InitOn.Manual, function(app) {
     // On show
     this.setShowListener(() => {
         // Activate edit button
-        this.editor.panel.navigator.menu.buttons.edit.activate();
+        this.editor.panel.navigator.menu.buttons[0].activate();
     });
 
 });

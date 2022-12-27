@@ -32,7 +32,7 @@ class App {
         this.navigator = new Navigator();
 
         // Pages of navigator
-        this.pages = {};
+        this.pages = [];
 
         // Pointing tooltip
         this.pointingTooltip = new PointingTooltip("bottom", 500);
@@ -47,7 +47,7 @@ class App {
                 // Returns a NavigatorButton
                 const createButton = (index, name) => {
                     // Navigator button
-                    const button = new NavigatorButton(null, name.toLowerCase());
+                    const button = new NavigatorButton();
                     button.classes.add("opacity-60");
 
                     // Label
@@ -117,20 +117,22 @@ class App {
 
         // Tooltip
         this.pointingTooltip.renderAt(quill.app);
+
+        this.navigator.menu.buttons[0].activate();
         
         // Auto activate a tab
         // Based on hash if there is one
-        const hash = location.hash.substring(1);
-        this.navigator.menu.buttons[
-            hash in this.pages ? hash : "home"
-        ].activate();
+        // const hash = location.hash.substring(1);
+        // this.navigator.menu.buttons[
+        //     hash in this.pages ? hash : "home"
+        // ].activate();
 
         // Remove location hash
         // Added if statement to prevent Firefox from adding an empty #
         // if # is not set to anything on load
-        if (location.hash) {
-            location.hash = "";
-        }
+        // if (location.hash) {
+        //     location.hash = "";
+        // }
 
         // Display milestone (4/4)
         quill.milestoneTrack.done("display");
