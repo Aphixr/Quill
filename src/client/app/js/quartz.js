@@ -202,7 +202,7 @@ class Component {
         }
         component.parent = this;
         this.children.splice(index, 0, component);
-        this.element.insertBefore(component.element, this.children[index].element);
+        this.element.insertBefore(component.element, before.element);
         return component;
     }
 
