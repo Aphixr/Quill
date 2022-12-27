@@ -238,6 +238,69 @@ class HoverToggler extends Toggler {
     }
 }
 
+// Expander
+class Expander extends Toggler {
+    constructor(content, initialIsActive, classes, info) {
+        super(content, initialIsActive, classes, info);
+        this.classes.add("expander");
+
+        // Target component to open/close
+        this.targets = [];
+
+        // The style to set the component when opened/closed
+        this.openedStyle = {
+            display: ""
+        };
+        this.closedStyle = {
+            display: "none"
+        };
+
+        // Toggle targets
+        this.addClickListener(() => {
+            for (const target of this.targets) {
+                if (this.isActive) {
+                    Object.assign(target.style, this.openedStyle);
+                    target.classes.add("expand");
+                } else {
+                    Object.assign(target.style, this.closedStyle);
+                    target.classes.remove("expand");
+                }
+            }
+        });
+    }
+
+    // Set the target component to open/close
+    addTarget(target) {
+        if (!(target instanceof Component)) {
+            throw new TypeError("'target' argument expected instance of Component");
+        }
+        this.targets.push(target);
+    }
+
+    // Add multiple targets
+    addTargets(...targets) {
+        for (const target of targets) {
+            this.addTarget(target);
+        }
+    }
+
+    // Set expand style
+    setOpenedStyle(...styles) {
+        this.openedStyle = {};
+        if (styles) {
+            Object.assign(this.openedStyle, ...styles);
+        }
+    }
+
+    // Set closed style
+    setClosedStyle(...styles) {
+        this.closedStyle = {};
+        if (styles) {
+            Object.assign(this.closedStyle, ...styles);
+        }
+    }
+}
+
 // Input field
 class TextField extends Input {
     constructor(classes, info) {
@@ -1117,7 +1180,7 @@ class MouseTooltip extends Tooltip {
 // Export
 export {
     // Inputs
-    Button, Toggler, HoverToggler, TextField,
+    Button, Toggler, HoverToggler, Expander, TextField,
     // Resizer related
     HorizontalResizer, VerticalResizer,
     // Navigator related
