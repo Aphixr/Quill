@@ -192,8 +192,8 @@ class EditorPanel extends Component {
             const capName = name[0].toUpperCase() + name.substring(1);
 
             // Add the page
-            this.navigator.addPage(this.navigatorPages[name] = {
-                button: new NavigatorButton(capName, name),
+            this.navigator.addPage({
+                button: new NavigatorButton(capName),
                 view: new View(name)
             });
         }
@@ -387,7 +387,7 @@ class EditorSideBar extends SideBar {
             // Delete page from notebook and navigator
             setTimeout(() => {
                 this.notebookHandler.active.deletePage(piece.symbol);
-                this.navigator.deletePage(button.name);
+                this.navigator.deletePage(button.getIndex());
             }, 120);
         });
 
@@ -396,7 +396,10 @@ class EditorSideBar extends SideBar {
         button.textFieldTitle.addEventListener("blur", button.textFieldTitle.off, null, false);
 
         // Add page to navigator
-        this.editor.sideBar.navigator.addPage({
+        const activeButton = this.navigator.menu.activeButton;
+        this.navigator.addPage({
+            // Adds page after the active page
+            index: activeButton ? activeButton.getIndex() + 1 : undefined,
             button: button,
             view: view
         });
@@ -407,6 +410,9 @@ class EditorSideBar extends SideBar {
             button.style.height = "32px";
             button.style.opacity = "1";
         });
+
+        // Let the user rename immediately after creating
+        button.textFieldTitle.on();
 
         // Open this new page
         button.element.click();
