@@ -184,6 +184,29 @@ class Component {
     }
 
     /**
+     * Insert a component before a child component
+     * @param {Component} component The component to insert
+     * @param {Component} before A child component to insert before
+     * @returns {Component} The component inserted
+     */
+    insertComponentBefore(component, before) {
+        if (!(component instanceof Component)) {
+            throw new TypeError("`component` argument expected instance of Component");
+        }
+        if (!(before instanceof Component)) {
+            throw new TypeError("`before` argument expected instance of Component");
+        }
+        const index = this.children.indexOf(before);
+        if (index === -1) {
+            throw new SyntaxError("`before` argument expected child Component");
+        }
+        component.parent = this;
+        this.children.splice(index, 0, component);
+        this.element.insertBefore(component.element, this.children[index].element);
+        return component;
+    }
+
+    /**
      * Remove a component from this component
      * @param {Component} component The component to remove
      * @returns {Component} The removed component
