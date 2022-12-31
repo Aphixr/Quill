@@ -223,6 +223,38 @@ class Component {
     }
 
     /**
+     * Remove a component from this component.
+     * The component does not have to be a child of this component,
+     * it can be can be a grandchild.
+     * @param {Component} component The descendant component to remove
+     * @returns {Component} The removed component
+     */
+    removeDescendantComponent(component) {
+        if (!(component instanceof Component)) {
+            throw new TypeError("`component` argument expected instance of Component");
+        }
+        component.parent = null;
+        const { index, parent } = (function search(check) {
+            let result = null;
+            let index = check.children.indexOf(component);
+            if (index === -1) {
+                for (const child of check.children) {
+                    result = search(child);
+                }
+            } else {
+                result = {
+                    index: index,
+                    parent: check
+                }
+            }
+            return result;
+        })(this);
+        parent.children.splice(index, 1);
+        component.element.remove();
+        return component;
+    }
+
+    /**
      * Remove an event listener to the component
      * @param {String} type Type of event
      * @param {function(): any} listener Function to remove
