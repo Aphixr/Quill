@@ -11,10 +11,10 @@
 
 // Import
 import { Component } from "../quartz.js"
-import { NotebookPiece } from "./notebook.js"
+import { NotebookPage, NotebookSection } from "./notebook.js"
 import {
-    Navigator, NavigatorButton, View,
-    Button, Toggler, TextField,
+    Navigator, NavigatorMenu, NavigatorViewer, NavigatorButton, View,
+    Button, Toggler, Expander, TextField,
     DropdownFacade, DropdownToggler, Dropdown,
     Section, Container, Main, Header, SideBar, Icon
 } from "../components.js"
@@ -47,8 +47,6 @@ class EditorTopBar extends Header {
         // this.textFieldTitle.classes.add("title");
         this.textFieldTitle.setAttribute("maxlength", 64);
 
-        // this.buttonSettings.html = /* html */ `<img src="img/settings.svg">`;
-        // this.buttonSettings.classes.add("settings", "opacity-70");
         this.getParent().app.pointingTooltip.addTarget(this.buttonSettings, "Settings");
 
         // Resizes title input to fit value
@@ -238,6 +236,9 @@ class EditorSideBar extends SideBar {
         // Keep track of pages and sections added
         this.numPagesAdded = 0;
         this.numSectionsAdded = 0;
+
+        // Like focused element, but stays focused when clicked off
+        this.activeButton = null;
     }
 
     // Initialize view
@@ -259,12 +260,13 @@ class EditorSideBar extends SideBar {
         header.classes.add("flex");
         header.location.classes.add("location", "grow");
         header.dropdownAdd.createRows(2);
-        // header.buttonAdd.classes.add("new", "opacity-70");
-        // header.buttonAdd.addComponent(new Icon("img/new.svg", 0, 0, 12, 12));
         this.addPage = header.dropdownAdd.rows[0].addComponent(new Button("Add page"));
         this.addSection = header.dropdownAdd.rows[1].addComponent(new Button("Add section"));
         
-        this.navigator = new Navigator(this.main.element, this.editor.content.element);
+        this.navigator = new Navigator(
+            new NavigatorMenu(this.main.element),
+            new NavigatorViewer(this.editor.content.element)
+        );
     }
 
     // Initialize function
@@ -284,96 +286,119 @@ class EditorSideBar extends SideBar {
             this.numSectionsAdded++;
 
             const section = this.notebookHandler.active.createSection();
-
-            const button = new NavigatorButton(null, "section" + this.numSectionsAdded);
-            const view = new View("section" + this.numSectionsAdded);
             
-            this.addNavigatorPage(section, button, view);
+            this.addNotebookSection(section);
         });
     }
 
-    // Add a navigator page
-    addNavigatorPage(piece, button, view) {
-        if (!(piece instanceof NotebookPiece)) {
-            throw new TypeError("'piece' argument expected instance of NotebookPiece");
+    // Make a button active
+    makeActive(button) {
+        // Old active
+        if (this.activeButton) {
+            this.activeButton.classes.remove("latest");
         }
-        if (!(button instanceof NavigatorButton)) {
-            throw new TypeError("'button' argument expected instance of NavigatorButton");
-        }
-        if (!(view instanceof View)) {
-            throw new TypeError("'view' argument expected instance of View");
-        }
+        // New active
+        this.activeButton = button;
+        this.activeButton.classes.add("latest");
+    }
 
-        button.classes.add("notebook-piece", "notebook-section");
-        
-        // Cancel toggle if not clicked on button or main
-        button.setBeforeChangeListener((event) => {
-            return button.element.contains(event.target) &&
-                   event.target !== button.element &&
-                   event.target !== button.main.element;
-        });
-
-        // Create components
-        button.main = button.addComponent(new Main("title"));
-        button.textFieldTitle = button.main.addComponent(new TextField());
-        button.dropdownMore = new Dropdown({
+    // Create components
+    createButtonComponents(piece, menuButton, contentView) {
+        const button = menuButton || new NavigatorButton();
+        const view = contentView || null;
+        const main = button.addComponent(new Main("title"));
+        const title = main.addComponent(new TextField());
+        const dropdown = new Dropdown({
             alignment: "right",
             width: 120,
             rowHeight: 24
         });
-        button.buttonMore = new DropdownToggler(
-            new Icon("img/menu.svg", 15, 0, 15, 15), button.dropdownMore
+        const more = new DropdownToggler(
+            new Icon("img/menu.svg", 15, 0, 15, 15), dropdown
         );
-        button.dropdownFacade = button.addComponent(new DropdownFacade(
-            button.buttonMore, button.dropdownMore
-        ));
+        const dropdownFacade = button.addComponent(new DropdownFacade(more, dropdown));
 
-        // Title text field
-        button.textFieldTitle.value = piece.title;
-        button.textFieldTitle.disable();
+        button.classes.add(
+            "notebook-piece",
+            piece instanceof NotebookPage ? "notebook-page" : "notebook-section"
+        );
+
+        // Return all objects
+        return {
+            button: button,
+            view: view,
+            main: main,
+            title: title,
+            dropdown: dropdown,
+            more: more,
+            dropdownFacade: dropdownFacade
+        }
+    }
+
+    // Initialize components
+    initializeButtonComponents(piece, components, sectionComponents={}) {
+        const { button, main, title, dropdown, dropdownFacade } = components;
+        const { container, notebookPieces } = sectionComponents;
         
-        // Let the user rename on double click
-        button.textFieldTitle.on = () => {
-            button.textFieldTitle.enable();
-            button.textFieldTitle.style.pointerEvents = "auto";
-            button.textFieldTitle.select();
+        // Dropdown
+        dropdownFacade.classes.add("more");
+        dropdown.createRows(2);
+        const renamePage = dropdown.rows[0].addComponent(new Button("Rename", "rename"));
+        const deletePage = dropdown.rows[1].addComponent(new Button("Delete", "delete"));
+
+        // Cancel toggle if not clicked on button or main
+        button.setBeforeChangeListener((event) => {
+            return button.element.contains(event.target) &&
+                   event.target !== button.element &&
+                   event.target !== main.element;
+        });
+
+        // Make this the active button when clicked on
+        button.addClickListener(() => {
+            this.makeActive(button);
+        });
+        
+        // Title
+        title.value = piece.title;
+        title.disable();
+
+        // Rename title
+        title.on = () => {
+            title.enable();
+            title.style.pointerEvents = "auto";
+            title.select();
         };
-        // Disable text field when it loses focus
-        button.textFieldTitle.off = () => {
-            button.textFieldTitle.disable();
-            button.textFieldTitle.style.pointerEvents = "none";
+
+        // Disable text field
+        title.off = () => {
+            title.disable();
+            title.style.pointerEvents = "none";
             window.getSelection().removeAllRanges();
-            piece.title = button.textFieldTitle.value;
+            piece.title = title.value;
         };
 
-        // Dropdown compoennts
-        // button.buttonMore.addComponent(new Icon("img/menu.svg", 15, 0, 15, 15));
-        button.dropdownFacade.classes.add("more");
-        button.dropdownMore.createRows(2);
-        const buttonRename = button.dropdownMore.rows[0].addComponent(new Button(
-            "Rename", "rename"
-        ));
-        const buttonDelete = button.dropdownMore.rows[1].addComponent(new Button(
-            "Delete", "delete"
-        ));
+        if (piece instanceof NotebookPage) {
+            main.addEventListener("dblclick", title.on);
+        }
+        title.addEventListener("blur", title.off, null, false);
 
-        // Rename piece
-        buttonRename.addClickListener(button.textFieldTitle.on);
-        
-        // Delete piece
-        buttonDelete.addClickListener(() => {
+        // Rename
+        renamePage.addClickListener(title.on);
+
+        // Delete
+        deletePage.addClickListener(() => {
             // If the user deleted this button while it was active
             // Another page needs to be made active
             if (button.isActive) {
-                const index = this.navigator.menu.children.indexOf(button);
+                const index = this.navigator.menu.buttons.indexOf(button);
 
                 // Open next if it exists
-                if (this.navigator.menu.children[index + 1]) {
-                    this.navigator.menu.children[index + 1].activate();
+                if (this.navigator.menu.buttons[index + 1]) {
+                    this.navigator.menu.buttons[index + 1].activate();
                 }
                 // Open previous if it exists
                 else if (index - 1 >= 0) {
-                    this.navigator.menu.children[index - 1].activate();
+                    this.navigator.menu.buttons[index - 1].activate();
                 }
                 // If none, it means there are no pages
                 else;
@@ -384,25 +409,82 @@ class EditorSideBar extends SideBar {
             button.style.height = "0px";
             button.style.opacity = "0";
 
-            // Delete page from notebook and navigator
+            if (piece instanceof NotebookSection) {
+                // Remove the notebook pieces
+                container.removeComponent(notebookPieces);
+            }
+
+            // Set the new active button to the active navigator button
+            this.makeActive(this.navigator.menu.activeButton);
+
+            // Delete page/section from notebook and navigator
             setTimeout(() => {
                 this.notebookHandler.active.deletePage(piece.symbol);
-                this.navigator.deletePage(button.getIndex());
+                if (piece instanceof NotebookPage) {
+                    this.navigator.deletePage(button.getIndex());
+                }
+                if (piece instanceof NotebookSection) {
+                    container.getParent().removeComponent(container);
+                }
             }, 120);
         });
+    }
 
-        // For text field
-        button.main.addEventListener("dblclick", button.textFieldTitle.on);
-        button.textFieldTitle.addEventListener("blur", button.textFieldTitle.off, null, false);
+    // Add a button
+    addButton(piece, components, sectionComponents={}) {
+        const { button, title, view } = components;
+        const { container, empty } = sectionComponents;
 
         // Add page to navigator
-        const activeButton = this.navigator.menu.activeButton;
-        this.navigator.addPage({
-            // Adds page after the active page
-            index: activeButton ? activeButton.getIndex() + 1 : undefined,
-            button: button,
-            view: view
-        });
+        if (piece instanceof NotebookPage) {
+            const shouldAddButton = !this.activeButton || this.activeButton.parentElement instanceof NavigatorMenu
+            this.navigator.addPage({
+                // Adds page after the active page
+                index: (() => {
+                    if (!this.activeButton) {
+                        return;
+                    }
+                    if (this.activeButton instanceof NavigatorButton) {
+                        return this.activeButton.getIndex() + 1;
+                    } else {
+                        return this.navigator.menu.children.indexOf(this.activeButton.getParent());
+                    }
+                })(),
+                button: button,
+                view: view,
+                shouldAddButton: shouldAddButton
+            });
+        }
+
+        // Manually add the button
+        const child = piece instanceof NotebookPage ? button : container;
+        if (this.activeButton) {
+            const activeButton = this.activeButton;
+            const activeButtonParent = activeButton.getParent();
+
+            // If the active button is a navigator button
+            // Add this button after the active button
+            if (activeButton instanceof NavigatorButton) {
+                // Get the index of the active button in its parent
+                const index = activeButtonParent.children.indexOf(this.activeButton) + 1;
+
+                if (index === activeButtonParent.children.length) {
+                    activeButtonParent.addComponent(child);
+                } else {
+                    activeButtonParent.insertComponentBefore(child, this.activeButton.parent.children[index]);
+                }
+            }
+            // If the active button is a section expander
+            // Add the button to the end of the section
+            else {
+                // Automatically expand section if it is closed
+                if (!activeButton.isActive) {
+                    activeButton.element.click();
+                }
+
+                activeButton.targets[0].addComponent(child);
+            }
+        }
 
         // CSS transition will make button slide down
         setTimeout(() => {
@@ -411,11 +493,75 @@ class EditorSideBar extends SideBar {
             button.style.opacity = "1";
         });
 
-        // Let the user rename immediately after creating
-        button.textFieldTitle.on();
+        // Set padding left based on how many sections it is in (deep)
+        let deep = 0;
+        // deep += 0.5 because the buttons is in a .notebook-pieces and a .notebook-section
+        for (let parent = button.getParent(), menu = this.navigator.menu; parent !== menu; deep += 0.5) {
+            parent = parent.getParent();
+        }
+        // Set padding left
+        // 14 is the amount of padding left to increase by for every piece
+        if (piece instanceof NotebookPage) {
+            button.style.paddingLeft = (14 * deep + 35) + "px";
+        }
+        if (piece instanceof NotebookSection) {
+            const paddingLeft = 14 * (deep - 0.5);
+            button.style.paddingLeft = paddingLeft + "px";
+            empty.style.paddingLeft = (paddingLeft + 35 + 14) + "px";
+        }
 
-        // Open this new page
+        // Let the user rename immediately after creating
+        if (piece instanceof NotebookSection || (piece instanceof NotebookPage && button.getIndex() !== 0)) {
+            title.on();
+        }
+
+        // Open this
         button.element.click();
+    }
+
+    // Add a navigator page
+    addNavigatorPage(notebookPage, button, view) {
+        if (!(notebookPage instanceof NotebookPage)) {
+            throw new TypeError("'notebookPage' argument expected instance of NotebookPage");
+        }
+        if (!(button instanceof NavigatorButton)) {
+            throw new TypeError("'button' argument expected instance of NavigatorButton");
+        }
+        if (!(view instanceof View)) {
+            throw new TypeError("'view' argument expected instance of View");
+        }
+
+        const components = this.createButtonComponents(notebookPage, button, view);
+        this.initializeButtonComponents(notebookPage, components);
+        this.addButton(notebookPage, components);
+    }
+
+    // Add a section
+    addNotebookSection(notebookSection) {
+        if (!(notebookSection instanceof NotebookSection)) {
+            throw new TypeError("'notebookSection' argument expected instance of NotebookSection");
+        }
+
+        // Create section components
+        const container = new Container("notebook-section");
+        const button = container.addComponent(new Expander(new Icon("img/arrows.svg", 12, 0, 12, 12)));
+        const notebookPieces = container.addComponent(new Container("notebook-pieces"));
+        const empty = notebookPieces.addComponent(new Component(document.createElement("span")));
+
+        button.addTarget(notebookPieces);
+        notebookPieces.classes.add("notebook-pieces");
+        empty.classes.add("empty");
+        empty.text = "(empty)";
+
+        const sectionComponents = {
+            container: container,
+            notebookPieces: notebookPieces,
+            empty: empty
+        };
+
+        const components = this.createButtonComponents(notebookSection, button);
+        this.initializeButtonComponents(notebookSection, components, sectionComponents);
+        this.addButton(notebookSection, components, sectionComponents);
     }
 }
 
