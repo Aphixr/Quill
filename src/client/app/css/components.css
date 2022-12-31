@@ -19,6 +19,7 @@
     background-size: cover;
     display: block;
     margin: auto;
+    pointer-events: none;
 }
 
 /* Navigator */
