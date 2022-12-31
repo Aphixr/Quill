@@ -286,11 +286,12 @@
 }
 .editor-side-bar .main.navigator-menu {
     overflow-y: auto;
+    padding-bottom: 32px;
 }
 .editor-side-bar .main.navigator-menu::-webkit-scrollbar {
     background-color: #f8f8f8;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece {
+.editor-side-bar .main.navigator-menu .notebook-piece {
     font-size: var(--fs-s);
     text-align: left;
     display: flex;
@@ -304,53 +305,80 @@
     transition: 0.12s;
     transition-timing-function: ease-out;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece.active {
-    background-color: #f8f8f8;
-}
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece:hover {
+.editor-side-bar .main.navigator-menu .notebook-piece:hover {
     background-color: #fafafa;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece:active {
-    background-color: #f6f6f6;
+.editor-side-bar .main.navigator-menu .notebook-page.active {
+    background-color: #fafafa;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .text-field {
+.editor-side-bar .main.navigator-menu .notebook-piece.latest {
+    background-color: #f5f5f5;
+}
+.editor-side-bar .main.navigator-menu .notebook-piece .text-field[disabled] {
+    color: #505050;
+}
+.editor-side-bar .main.navigator-menu .notebook-piece:focus .text-field,
+.editor-side-bar .main.navigator-menu .notebook-page.active .text-field[disabled] {
+    color: black;
+}
+.editor-side-bar .main.navigator-menu .notebook-piece .text-field {
     background: transparent;
     text-overflow: ellipsis;
-    padding: 6px 12px;
+    padding: 6px 0px;
     width: 100%;
     cursor: default;
     pointer-events: none;
     transition: 0.1s;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .text-field:focus {
+.editor-side-bar .main.navigator-menu .notebook-piece .text-field:focus {
     background-color: #f2f2f2;
+    padding-inline: 6px;
     cursor: text;
     box-shadow: 0px -2px 0px #00000030 inset;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .text-field[disabled] {
-    color: black;
+.editor-side-bar .main.navigator-menu .notebook-piece > * {
+    margin-right: 4px;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .more {
-    margin-inline: 4px;
-}
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .more > button {
+.editor-side-bar .main.navigator-menu .notebook-piece > button,
+.editor-side-bar .main.navigator-menu .notebook-piece .more > button {
     width: 27px;
     height: 27px;
     border-radius: 50%;
     opacity: 0;
     transition: 0.12s;
 }
-
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .more > button:hover {
+.editor-side-bar .main.navigator-menu .notebook-piece > button:hover,
+.editor-side-bar .main.navigator-menu .notebook-piece .more > button:hover {
     background-color: #0000000a;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece.active .more button,
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece:hover .more button,
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece:focus-within .more button {
+.editor-side-bar .main.navigator-menu .notebook-piece:hover button,
+.editor-side-bar .main.navigator-menu .notebook-piece:focus-within .more button {
     opacity: 1;
 }
-.editor-side-bar .main.navigator-menu .navigator-button.notebook-piece .more .dropdown .delete {
+.editor-side-bar .main.navigator-menu .notebook-piece .more .dropdown .delete {
     color: #cc0000;
+}
+.editor-side-bar .main.navigator-menu .navigator-button.notebook-page {
+    padding-left: 35px;
+}
+.editor-side-bar .main.navigator-menu .section .expander > .icon {
+    margin-inline: calc((35px - 12px) / 2);
+    opacity: 0.5;
+    transition: 0.12s;
+}
+.editor-side-bar .main.navigator-menu .section .expander.active > .icon {
+    transform: rotate(90deg);
+}
+.editor-side-bar .main.navigator-menu .section .notebook-pieces > .empty {
+    color: #a0a0a0;
+    font-size: var(--fs-xs);
+    font-style: italic;
+    align-items: center;
+    display: none;
+    height: 32px;
+}
+.editor-side-bar .main.navigator-menu .section .notebook-pieces > .empty:only-child {
+    display: flex;
 }
 
 /* =====================
